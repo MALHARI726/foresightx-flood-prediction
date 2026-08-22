@@ -1,21 +1,126 @@
 import requests
+import csv
+import os
+
+from config import (
+    WEATHER_API_URL,
+    GEOCODING_API_URL,
+    API_TIMEOUT,
+    TIMEZONE,
+    DATA_DIR,
+    LIVE_CSV_PATH
+)
 
 
-# Open-Meteo LIVE Weather API
-API_URL = "https://api.open-meteo.com/v1/forecast"
+# =========================================================
+# GET MAHARASHTRA LOCATION COORDINATES
+# =========================================================
 
-
-def get_weather_data(latitude, longitude):
-    """
-    Get live weather and rainfall data
-    using latitude and longitude.
-    """
+def get_coordinates(location):
 
     params = {
+        "name": location,
+        "count": 10,
+        "language": "en",
+        "format": "json",
+        "countryCode": "IN"
+    }
+
+    try:
+
+        response = requests.get(
+            GEOCODING_API_URL,
+            params=params,
+            timeout=API_TIMEOUT
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        results = data.get("results", [])
+
+        if not results:
+
+            return {
+                "success": False,
+                "error": f"Location '{location}' was not found."
+            }
+
+        # Check results for Maharashtra
+        for place in results:
+
+            country = place.get(
+                "country",
+                ""
+            )
+
+            state = place.get(
+                "admin1",
+                ""
+            )
+
+            if (
+                country.lower() == "india"
+                and state.lower() == "maharashtra"
+            ):
+
+                return {
+
+                    "success": True,
+
+                    "location": place.get(
+                        "name"
+                    ),
+
+                    "latitude": place.get(
+                        "latitude"
+                    ),
+
+                    "longitude": place.get(
+                        "longitude"
+                    ),
+
+                    "country": country,
+
+                    "state": state
+                }
+
+        return {
+            "success": False,
+            "error": (
+                f"'{location}' was found, "
+                "but it is not in Maharashtra."
+            )
+        }
+
+    except requests.exceptions.Timeout:
+
+        return {
+            "success": False,
+            "error": "Location API timed out."
+        }
+
+    except requests.exceptions.RequestException as e:
+
+        return {
+            "success": False,
+            "error": f"Location API error: {str(e)}"
+        }
+
+
+# =========================================================
+# GET LIVE WEATHER DATA
+# =========================================================
+
+def get_weather_data(latitude, longitude):
+
+    params = {
+
         "latitude": latitude,
+
         "longitude": longitude,
 
-        # Current live weather
         "current": (
             "temperature_2m,"
             "relative_humidity_2m,"
@@ -25,7 +130,6 @@ def get_weather_data(latitude, longitude):
             "wind_speed_10m"
         ),
 
-        # Hourly forecast data
         "hourly": (
             "precipitation,"
             "rain,"
@@ -34,65 +138,105 @@ def get_weather_data(latitude, longitude):
             "wind_speed_10m"
         ),
 
-        # Forecast for next 3 days
         "forecast_days": 3,
 
-        # Indian time
-        "timezone": "Asia/Kolkata",
+        "timezone": TIMEZONE,
 
-        # Units
         "temperature_unit": "celsius",
+
         "wind_speed_unit": "kmh",
+
         "precipitation_unit": "mm"
     }
 
     try:
 
-        # Send request to Open-Meteo
         response = requests.get(
-            API_URL,
+            WEATHER_API_URL,
             params=params,
-            timeout=10
+            timeout=API_TIMEOUT
         )
 
-        # Check if request was successful
         response.raise_for_status()
 
-        # Convert response into JSON
         data = response.json()
 
-        # Extract current weather
-        current = data.get("current", {})
+        current = data.get(
+            "current",
+            {}
+        )
 
-        # Extract hourly weather
-        hourly = data.get("hourly", {})
+        hourly = data.get(
+            "hourly",
+            {}
+        )
 
-        # Return clean data
         return {
+
             "success": True,
 
-            "location": {
-                "latitude": latitude,
-                "longitude": longitude
-            },
-
             "current": {
-                "time": current.get("time"),
-                "temperature": current.get("temperature_2m"),
-                "humidity": current.get("relative_humidity_2m"),
-                "precipitation": current.get("precipitation"),
-                "rain": current.get("rain"),
-                "showers": current.get("showers"),
-                "wind_speed": current.get("wind_speed_10m")
+
+                "time": current.get(
+                    "time"
+                ),
+
+                "temperature": current.get(
+                    "temperature_2m"
+                ),
+
+                "humidity": current.get(
+                    "relative_humidity_2m"
+                ),
+
+                "precipitation": current.get(
+                    "precipitation"
+                ),
+
+                "rain": current.get(
+                    "rain"
+                ),
+
+                "showers": current.get(
+                    "showers"
+                ),
+
+                "wind_speed": current.get(
+                    "wind_speed_10m"
+                )
             },
 
             "hourly": {
-                "time": hourly.get("time", []),
-                "precipitation": hourly.get("precipitation", []),
-                "rain": hourly.get("rain", []),
-                "temperature": hourly.get("temperature_2m", []),
-                "humidity": hourly.get("relative_humidity_2m", []),
-                "wind_speed": hourly.get("wind_speed_10m", [])
+
+                "time": hourly.get(
+                    "time",
+                    []
+                ),
+
+                "precipitation": hourly.get(
+                    "precipitation",
+                    []
+                ),
+
+                "rain": hourly.get(
+                    "rain",
+                    []
+                ),
+
+                "temperature": hourly.get(
+                    "temperature_2m",
+                    []
+                ),
+
+                "humidity": hourly.get(
+                    "relative_humidity_2m",
+                    []
+                ),
+
+                "wind_speed": hourly.get(
+                    "wind_speed_10m",
+                    []
+                )
             }
         }
 
@@ -100,107 +244,223 @@ def get_weather_data(latitude, longitude):
 
         return {
             "success": False,
-            "error": "Weather API request timed out."
+            "error": "Weather API timed out."
         }
 
     except requests.exceptions.RequestException as e:
 
         return {
             "success": False,
-            "error": f"Weather API request failed: {str(e)}"
-        }
-
-    except Exception as e:
-
-        return {
-            "success": False,
-            "error": f"Unexpected error: {str(e)}"
+            "error": f"Weather API error: {str(e)}"
         }
 
 
-# -------------------------------------------------------
-# TEST THE API
-# -------------------------------------------------------
+# =========================================================
+# GET LOCATION + LIVE WEATHER
+# =========================================================
+
+def get_location_weather(location):
+
+    # Find Maharashtra location
+    coordinates = get_coordinates(location)
+
+    if not coordinates["success"]:
+
+        return coordinates
+
+    # Get live weather
+    weather = get_weather_data(
+        coordinates["latitude"],
+        coordinates["longitude"]
+    )
+
+    if not weather["success"]:
+
+        return weather
+
+    # Combine location + weather
+    return {
+
+        "success": True,
+
+        "location": {
+
+            "name": coordinates[
+                "location"
+            ],
+
+            "state": coordinates[
+                "state"
+            ],
+
+            "country": coordinates[
+                "country"
+            ],
+
+            "latitude": coordinates[
+                "latitude"
+            ],
+
+            "longitude": coordinates[
+                "longitude"
+            ]
+        },
+
+        "current": weather[
+            "current"
+        ],
+
+        "hourly": weather[
+            "hourly"
+        ]
+    }
+
+
+# =========================================================
+# SAVE LIVE WEATHER + FLOOD RISK TO CSV
+# =========================================================
+
+def save_weather_to_csv(
+    data,
+    prediction
+):
+
+    # Create data folder
+    os.makedirs(
+        DATA_DIR,
+        exist_ok=True
+    )
+
+    location = data[
+        "location"
+    ]
+
+    current = data[
+        "current"
+    ]
+
+    # -----------------------------------------------------
+    # Create / overwrite CSV
+    # -----------------------------------------------------
+    # We create a fresh CSV for each request so the user
+    # downloads the current location's result.
+    # -----------------------------------------------------
+
+    with open(
+        LIVE_CSV_PATH,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as file:
+
+        writer = csv.writer(file)
+
+        # Header
+        writer.writerow([
+
+            "location",
+            "state",
+            "country",
+            "latitude",
+            "longitude",
+            "time",
+
+            "temperature_c",
+            "humidity_percent",
+
+            "rainfall_mm",
+            "rain_mm",
+            "showers_mm",
+
+            "wind_speed_kmh",
+
+            "risk_score",
+            "risk_level"
+        ])
+
+        # Data
+        writer.writerow([
+
+            location["name"],
+
+            location["state"],
+
+            location["country"],
+
+            location["latitude"],
+
+            location["longitude"],
+
+            current["time"],
+
+            current["temperature"],
+
+            current["humidity"],
+
+            current["precipitation"],
+
+            current["rain"],
+
+            current["showers"],
+
+            current["wind_speed"],
+
+            prediction["risk_score"],
+
+            prediction["risk_level"]
+        ])
+
+    return LIVE_CSV_PATH
+
+
+# =========================================================
+# OPTIONAL: TEST API SERVICE DIRECTLY
+# =========================================================
 
 if __name__ == "__main__":
 
-    # Mumbai coordinates
-    latitude = 19.0760
-    longitude = 72.8777
+    location = input(
+        "Enter Maharashtra location: "
+    ).strip()
 
-    print("\nConnecting to Open-Meteo LIVE API...")
-
-    weather = get_weather_data(
-        latitude,
-        longitude
+    result = get_location_weather(
+        location
     )
 
-    if weather["success"]:
+    if result["success"]:
 
-        print("\n========== LIVE WEATHER DATA ==========")
-
+        print("\nLocation:")
         print(
-            "Latitude:",
-            weather["location"]["latitude"]
+            result["location"]["name"]
         )
 
         print(
-            "Longitude:",
-            weather["location"]["longitude"]
-        )
-
-        print(
-            "Time:",
-            weather["current"]["time"]
-        )
-
-        print(
-            "Temperature:",
-            weather["current"]["temperature"],
+            "\nTemperature:",
+            result["current"]["temperature"],
             "°C"
         )
 
         print(
             "Humidity:",
-            weather["current"]["humidity"],
+            result["current"]["humidity"],
             "%"
         )
 
         print(
-            "Precipitation:",
-            weather["current"]["precipitation"],
+            "Rainfall:",
+            result["current"]["precipitation"],
             "mm"
         )
 
         print(
-            "Rain:",
-            weather["current"]["rain"],
-            "mm"
-        )
-
-        print(
-            "Showers:",
-            weather["current"]["showers"],
-            "mm"
-        )
-
-        print(
-            "Wind Speed:",
-            weather["current"]["wind_speed"],
+            "Wind:",
+            result["current"]["wind_speed"],
             "km/h"
         )
 
-        print("\n========== NEXT HOURLY RAINFALL ==========")
-
-        rainfall = weather["hourly"]["precipitation"]
-
-        for i, value in enumerate(rainfall[:10]):
-
-            print(
-                f"Hour {i + 1}: {value} mm"
-            )
-
     else:
 
-        print("\nERROR:")
-        print(weather["error"])
+        print(
+            "\nERROR:",
+            result["error"]
+        )
