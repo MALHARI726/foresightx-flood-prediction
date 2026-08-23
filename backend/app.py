@@ -1,20 +1,24 @@
-import types
-import blinker
-
-# Create a dummy Namespace class so Flask can start
-class DummyNamespace:
-    def signal(self, name, doc=None):
-        return lambda *a, **kw: None
-
-blinker.Namespace = DummyNamespace
-
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from routes import routes
+import os
 
 app = Flask(__name__)
+
 CORS(app)
+
 app.register_blueprint(routes)
+
+FRONTEND_FOLDER = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "frontend")
+)
+
+@app.route("/")
+def home():
+    return send_from_directory(
+        FRONTEND_FOLDER,
+        "dashboard.html"
+    )
 
 if __name__ == "__main__":
     app.run(
