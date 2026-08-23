@@ -1,3 +1,13 @@
+import types
+import blinker
+
+# Create a dummy Namespace class so Flask can start
+class DummyNamespace:
+    def signal(self, name, doc=None):
+        return lambda *a, **kw: None
+
+blinker.Namespace = DummyNamespace
+
 from flask import Flask
 from flask_cors import CORS
 
