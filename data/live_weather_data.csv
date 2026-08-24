@@ -1,2 +1,2 @@
 location,state,country,latitude,longitude,time,temperature_c,humidity_percent,rainfall_mm,rain_mm,showers_mm,wind_speed_kmh,risk_score,risk_level
-Kalyān,Maharashtra,India,19.2437,73.13554,2026-08-23T21:45,26.5,89,0.0,0.0,0.0,7.5,15,LOW
+Thane,Maharashtra,India,19.19704,72.96355,2026-08-24T11:15,27.9,80,0.1,0.0,0.1,9.0,15,LOW
