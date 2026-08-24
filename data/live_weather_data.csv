@@ -1,0 +1,2 @@
+location,state,country,latitude,longitude,time,temperature_c,humidity_percent,rainfall_mm,rain_mm,showers_mm,wind_speed_kmh,risk_score,risk_level
+Kalyān,Maharashtra,India,19.2437,73.13554,2026-08-24T10:45,28.7,76,0.2,0.0,0.2,7.2,10,LOW
