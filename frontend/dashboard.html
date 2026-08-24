@@ -3,243 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maha Flood AI - Weather Dashboard</title>
 
-    <title>ForesightX | Flood Prediction</title>
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: "Segoe UI", Arial, sans-serif;
         }
 
         body {
             min-height: 100vh;
+            background: #07111f;
             color: white;
+            overflow-x: hidden;
+        }
 
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: rgba(5, 18, 32, 0.96);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 22px 15px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 21px;
+            box-shadow: 0 8px 25px rgba(0, 174, 255, 0.3);
+        }
+
+        .logo h2 {
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo p {
+            font-size: 11px;
+            color: #7f9bb8;
+            margin-top: 3px;
+        }
+
+        .version {
+            color: #48bfff;
+            font-size: 9px;
+            margin-left: 5px;
+            border: 1px solid #277ca8;
+            padding: 2px 5px;
+            border-radius: 5px;
+        }
+
+        /* Risk box */
+
+        .risk-box {
+            margin: 18px 0;
+            padding: 16px;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 198, 255, 0.12),
+                rgba(0, 255, 170, 0.05)
+            );
+            border: 1px solid rgba(0, 220, 180, 0.35);
+        }
+
+        .risk-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #54e6c4;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .risk-status {
+            background: #071c1d;
+            color: #37f0bd;
+            padding: 5px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+        }
+
+        .risk-normal {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #c4d8e8;
+        }
+
+        .risk-dot {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            background: #47e7ae;
+            border-radius: 50%;
+            margin-right: 7px;
+            vertical-align: middle;
+            box-shadow: 0 0 12px #47e7ae;
+        }
+
+        /* Sidebar menu */
+
+        .menu {
+            margin-top: 10px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 46px;
+            padding: 0 15px;
+            margin-bottom: 6px;
+            border-radius: 11px;
+            text-decoration: none;
+            color: #9ab4cf;
+            font-size: 14px;
+            transition: 0.25s;
+        }
+
+        .menu a i {
+            width: 20px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: linear-gradient(
+                90deg,
+                rgba(0, 125, 255, 0.28),
+                rgba(0, 200, 255, 0.08)
+            );
+            color: #ffffff;
+            border: 1px solid rgba(0, 153, 255, 0.35);
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #ef3340;
+            color: white;
+            font-size: 10px;
+            padding: 4px 7px;
+            border-radius: 5px;
+        }
+
+        .test {
+            margin-left: auto;
+            background: #5b2a91;
+            color: #e5c7ff;
+            font-size: 9px;
+            padding: 4px 7px;
+            border-radius: 4px;
+        }
+
+        /* Bottom status */
+
+        .system-status {
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            bottom: 18px;
+            padding: 16px;
+            border-radius: 15px;
+            background: rgba(13, 31, 49, 0.9);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .online {
+            color: #00e6a8;
+        }
+
+        .system-status p {
+            color: #7895b1;
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 270px;
+            min-height: 100vh;
+
+            /* Weather background */
             background:
                 linear-gradient(
-                    rgba(4, 20, 35, 0.75),
-                    rgba(4, 20, 35, 0.85)
+                    rgba(3, 14, 27, 0.70),
+                    rgba(3, 14, 27, 0.88)
                 ),
-                url("https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=2000&q=80");
+                url("https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=2000&q=85");
 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+
+            padding: 35px 55px;
         }
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: auto;
-            padding: 30px 0;
-        }
+        /* No top sidebar/navigation */
 
-        /* HEADER */
-
-        header {
+        .top-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 35px;
+            margin-bottom: 55px;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
+        .location {
+            background: rgba(8, 28, 48, 0.72);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 10px 18px;
+            border-radius: 30px;
+            color: #d5e5f4;
+            backdrop-filter: blur(12px);
         }
 
-        .logo span {
-            color: #39d9ff;
+        .location i {
+            color: #00bfff;
+            margin-right: 8px;
         }
 
-        .status {
-            background: rgba(0, 255, 170, 0.15);
-            border: 1px solid #00ffaa;
-            padding: 8px 15px;
+        .live {
+            background: #00c997;
+            color: #001b16;
+            padding: 9px 15px;
             border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            max-width: 1000px;
+            margin: auto;
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        .weather-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(7, 29, 48, 0.72);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 11px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            color: #dce9f5;
             font-size: 14px;
         }
 
-        /* TITLE */
-
-        .welcome {
-            margin-bottom: 25px;
-        }
-
-        .welcome h1 {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-
-        .welcome p {
-            color: #c5d5df;
-        }
-
-        /* SEARCH */
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .search-box button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 10px;
-            background: #00bfff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .search-box button:hover {
-            background: #009acd;
-        }
-
-        /* RISK CARD */
-
-        .risk-card {
-            background: rgba(5, 25, 42, 0.85);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .risk-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .risk-level {
-            font-size: 42px;
-            font-weight: bold;
-        }
-
-        .risk-location {
-            color: #b8cad5;
-            margin-top: 5px;
-        }
-
-        .risk-indicator {
-            width: 110px;
-            height: 110px;
+        .weather-dot {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            background: rgba(255, 0, 0, 0.25);
-            border: 5px solid #ff4d4d;
+            background: #00d6a0;
+            box-shadow: 0 0 15px #00d6a0;
         }
 
-        /* WEATHER CARDS */
+        .weather-condition {
+            color: #ffd23f;
+            font-weight: 700;
+        }
 
-        .weather-grid {
+        .hero h1 {
+            margin-top: 35px;
+            font-size: clamp(45px, 6vw, 82px);
+            line-height: 0.98;
+            font-weight: 900;
+            letter-spacing: -3px;
+            text-shadow: 0 5px 35px rgba(0,0,0,0.5);
+        }
+
+        .hero h1 span {
+            color: #35c9ff;
+        }
+
+        .hero-description {
+            max-width: 800px;
+            margin: 28px auto;
+            color: #d0deeb;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        /* ================= WEATHER OUTPUT ================= */
+
+        .weather-output {
+            max-width: 900px;
+            margin: 35px auto;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 14px;
         }
 
         .weather-card {
-            background: rgba(255,255,255,0.08);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 20px 15px;
+            border-radius: 18px;
+            background: rgba(6, 24, 42, 0.70);
+            border: 1px solid rgba(255,255,255,0.13);
+            backdrop-filter: blur(15px);
+            text-align: center;
+            transition: 0.3s;
         }
 
-        .weather-card h3 {
-            color: #a9bbc7;
-            font-size: 14px;
+        .weather-card:hover {
+            transform: translateY(-5px);
+            border-color: #24baff;
+            box-shadow: 0 12px 30px rgba(0, 174, 255, 0.15);
+        }
+
+        .weather-card i {
+            color: #38c8ff;
+            font-size: 22px;
             margin-bottom: 10px;
         }
 
-        .weather-value {
-            font-size: 26px;
-            font-weight: bold;
+        .weather-card h3 {
+            font-size: 23px;
+            margin-bottom: 5px;
         }
 
-        /* BUTTONS */
+        .weather-card p {
+            color: #8faac2;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        .actions {
+        /* ================= BUTTONS ================= */
+
+        .buttons {
             display: flex;
+            justify-content: center;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
-        .actions a {
+        .btn {
+            padding: 15px 25px;
+            border-radius: 12px;
             text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            background: #00bfff;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .primary {
+            background: linear-gradient(135deg, #00a8ff, #0072ff);
             color: white;
-            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0, 132, 255, 0.3);
         }
 
-        .actions a:hover {
-            background: #009acd;
+        .primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 132, 255, 0.45);
         }
 
-        /* LOADING */
-
-        #loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
+        .secondary {
+            background: rgba(8, 25, 42, 0.75);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(10px);
         }
 
-        #error {
-            display: none;
-            background: rgba(255,0,0,0.2);
-            border: 1px solid #ff4d4d;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .secondary:hover {
+            background: rgba(0, 135, 255, 0.18);
+            border-color: #1ab6ff;
         }
 
-        /* MOBILE */
+        /* ================= RESPONSIVE ================= */
 
-        @media(max-width: 800px) {
+        @media (max-width: 900px) {
 
-            .weather-grid {
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+                padding: 25px;
+            }
+
+            .weather-output {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .risk-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
+            .hero h1 {
+                font-size: 50px;
             }
         }
 
-        @media(max-width: 500px) {
+        @media (max-width: 650px) {
 
-            .weather-grid {
-                grid-template-columns: 1fr;
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
             }
 
-            .search-box {
+            .logo h2,
+            .logo p,
+            .version,
+            .risk-box,
+            .menu a span,
+            .system-status {
+                display: none;
+            }
+
+            .logo {
+                justify-content: center;
+            }
+
+            .logo-icon {
+                width: 42px;
+                height: 42px;
+            }
+
+            .menu a {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            .top-info {
+                margin-bottom: 25px;
+            }
+
+            .weather-output {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+                letter-spacing: -2px;
+            }
+
+            .hero-description {
+                font-size: 14px;
+            }
+
+            .buttons {
                 flex-direction: column;
-            }
-
-            .welcome h1 {
-                font-size: 28px;
             }
         }
     </style>
@@ -247,360 +489,222 @@
 
 <body>
 
-<div class="container">
+    <!-- ================= LEFT SIDEBAR ONLY ================= -->
 
-    <header>
+    <aside class="sidebar">
 
         <div class="logo">
-            Foresight<span>X</span>
-        </div>
-
-        <div class="status">
-            ● System Online
-        </div>
-
-    </header>
-
-
-    <div class="welcome">
-
-        <h1 id="greeting">
-            Welcome to ForesightX
-        </h1>
-
-        <p>
-            AI-powered flood risk prediction and early warning system
-        </p>
-
-    </div>
-
-
-    <!-- SEARCH -->
-
-    <div class="search-box">
-
-        <input
-            type="text"
-            id="location"
-            placeholder="Enter Maharashtra location e.g. Kolhapur"
-        >
-
-        <button onclick="getFloodRisk()">
-            Check Flood Risk
-        </button>
-
-    </div>
-
-
-    <div id="loading">
-        🌧️ Getting live weather data...
-    </div>
-
-
-    <div id="error"></div>
-
-
-    <!-- RESULT -->
-
-    <div class="risk-card">
-
-        <div class="risk-header">
+            <div class="logo-icon">
+                <i class="fa-solid fa-water"></i>
+            </div>
 
             <div>
-
-                <div class="risk-level" id="riskLevel">
-                    --
-                </div>
-
-                <div class="risk-location" id="riskLocation">
-                    Enter a location to check flood risk
-                </div>
-
+                <h2>MAHA FLOOD AI <span class="version">V2.4</span></h2>
+                <p>Maharashtra Early Warning</p>
             </div>
-
-
-            <div class="risk-indicator" id="riskIndicator">
-                --
-            </div>
-
         </div>
 
+        <!-- Risk -->
 
-        <!-- WEATHER -->
+        <div class="risk-box">
+            <div class="risk-title">
+                <span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                    &nbsp; CATCHMENT RISK
+                </span>
 
-        <div class="weather-grid">
-
-            <div class="weather-card">
-
-                <h3>🌧️ Rainfall</h3>
-
-                <div class="weather-value">
-                    <span id="rainfall">--</span>
-                    mm
-                </div>
-
+                <span class="risk-status">LOW</span>
             </div>
 
-
-            <div class="weather-card">
-
-                <h3>🌡️ Temperature</h3>
-
-                <div class="weather-value">
-                    <span id="temperature">--</span>
-                    °C
-                </div>
-
+            <div class="risk-normal">
+                <span class="risk-dot"></span>
+                Normal Baseline
             </div>
-
-
-            <div class="weather-card">
-
-                <h3>💧 Humidity</h3>
-
-                <div class="weather-value">
-                    <span id="humidity">--</span>
-                    %
-                </div>
-
-            </div>
-
-
-            <div class="weather-card">
-
-                <h3>💨 Wind Speed</h3>
-
-                <div class="weather-value">
-                    <span id="windSpeed">--</span>
-                    km/h
-                </div>
-
-            </div>
-
         </div>
 
+        <!-- Sidebar Menu -->
 
-        <div class="actions">
+        <nav class="menu">
 
-            <a
-                id="downloadBtn"
-                href="#"
-                style="display:none;"
-            >
-                Download CSV
+            <a href="#" class="active">
+                <i class="fa-solid fa-table-columns"></i>
+                <span>Dashboard</span>
             </a>
 
+            <a href="#">
+                <i class="fa-solid fa-map"></i>
+                <span>Flood GIS Map</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-cloud-rain"></i>
+                <span>Live Weather</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-brain"></i>
+                <span>AI Prediction & ML</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-flask"></i>
+                <span>What-if Simulator</span>
+                <span class="test">TEST</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Early Warnings</span>
+                <span class="badge">2</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-life-ring"></i>
+                <span>Safety Precautions</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Historical Weather</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-water"></i>
+                <span>Previous Floods</span>
+            </a>
+
+            <a href="#">
+                <i class="fa-solid fa-gear"></i>
+                <span>System & Diagnostics</span>
+            </a>
+
+        </nav>
+
+        <!-- System Status -->
+
+        <div class="system-status">
+
+            <div class="system-header">
+                <span>SDMA / IMD GRID</span>
+                <span class="online">
+                    ● ONLINE
+                </span>
+            </div>
+
+            <p>
+                Integrated with Open-Meteo &
+                Central Water Commission Hydrology Rules.
+            </p>
+
         </div>
 
-    </div>
+    </aside>
 
-</div>
 
+    <!-- ================= MAIN CONTENT ================= -->
 
-<script>
+    <main class="main">
 
-    // ==========================================
-    // GREETING
-    // ==========================================
+        <!-- Location / Live -->
 
-    function setGreeting() {
+        <div class="top-info">
 
-        const hour = new Date().getHours();
+            <div class="location">
+                <i class="fa-solid fa-location-dot"></i>
+                Ratnagiri, Maharashtra
+            </div>
 
-        let greeting;
+            <div class="live">
+                ● LIVE
+            </div>
 
-        if (hour < 12) {
-            greeting = "Good Morning 🌅";
-        }
-        else if (hour < 17) {
-            greeting = "Good Afternoon ☀️";
-        }
-        else {
-            greeting = "Good Evening 🌙";
-        }
+        </div>
 
-        document.getElementById("greeting").innerText =
-            greeting + ", Welcome to ForesightX";
-    }
 
+        <!-- Hero -->
 
-    // ==========================================
-    // FLOOD RISK
-    // ==========================================
+        <section class="hero">
 
-    async function getFloodRisk() {
+            <div class="weather-pill">
 
-        const location =
-            document.getElementById("location").value.trim();
+                <span class="weather-dot"></span>
 
-        const loading =
-            document.getElementById("loading");
+                <span>IMD & Open-Meteo Real-Time Telemetry</span>
 
-        const error =
-            document.getElementById("error");
+                <span>•</span>
 
-        if (!location) {
+                <span class="weather-condition">
+                    🌧️ Rainy Conditions
+                </span>
 
-            error.style.display = "block";
+            </div>
 
-            error.innerText =
-                "Please enter a Maharashtra location.";
 
-            return;
-        }
+            <h1>
+                Flood &<br>
+                <span>Weather Intelligence</span>
+            </h1>
 
 
-        loading.style.display = "block";
-        error.style.display = "none";
+            <p class="hero-description">
 
+                Monitor real-time weather conditions, rainfall,
+                temperature, humidity and flood risk across
+                Maharashtra using AI-powered early warning technology.
 
-        try {
+            </p>
 
-            const response = await fetch(
-                `/api/flood-risk?location=${encodeURIComponent(location)}`
-            );
 
+            <!-- WEATHER OUTPUT -->
 
-            const data = await response.json();
+            <div class="weather-output">
 
+                <div class="weather-card">
+                    <i class="fa-solid fa-temperature-half"></i>
+                    <h3>27°C</h3>
+                    <p>Temperature</p>
+                </div>
 
-            if (!data.success) {
+                <div class="weather-card">
+                    <i class="fa-solid fa-cloud-rain"></i>
+                    <h3>18 mm</h3>
+                    <p>Rainfall</p>
+                </div>
 
-                throw new Error(data.error);
-            }
+                <div class="weather-card">
+                    <i class="fa-solid fa-droplet"></i>
+                    <h3>82%</h3>
+                    <p>Humidity</p>
+                </div>
 
+                <div class="weather-card">
+                    <i class="fa-solid fa-wind"></i>
+                    <h3>14 km/h</h3>
+                    <p>Wind Speed</p>
+                </div>
 
-            // ==================================
-            // DISPLAY LOCATION
-            // ==================================
+            </div>
 
-            document.getElementById(
-                "riskLocation"
-            ).innerText =
-                data.location;
 
+            <!-- BUTTONS -->
 
-            // ==================================
-            // WEATHER
-            // ==================================
+            <div class="buttons">
 
-            document.getElementById(
-                "rainfall"
-            ).innerText =
-                data.weather.rainfall;
+                <a href="#" class="btn primary">
+                    <i class="fa-solid fa-bolt"></i>
+                    Run Flood Prediction
+                </a>
 
+                <a href="#" class="btn secondary">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    Open Flood GIS Map
+                </a>
 
-            document.getElementById(
-                "temperature"
-            ).innerText =
-                data.weather.temperature;
+            </div>
 
+        </section>
 
-            document.getElementById(
-                "humidity"
-            ).innerText =
-                data.weather.humidity;
-
-
-            document.getElementById(
-                "windSpeed"
-            ).innerText =
-                data.weather.wind_speed;
-
-
-            // ==================================
-            // RISK
-            // ==================================
-
-            let risk;
-
-            if (typeof data.prediction === "object") {
-
-                risk =
-                    data.prediction.risk_level ||
-                    data.prediction.Risk_Level ||
-                    data.prediction.risk ||
-                    "Unknown";
-
-            }
-            else {
-
-                risk = data.prediction;
-            }
-
-
-            document.getElementById(
-                "riskLevel"
-            ).innerText =
-                risk;
-
-
-            document.getElementById(
-                "riskIndicator"
-            ).innerText =
-                risk;
-
-
-            // ==================================
-            // DOWNLOAD
-            // ==================================
-
-            const downloadBtn =
-                document.getElementById("downloadBtn");
-
-            downloadBtn.href =
-                `/download/flood-risk?location=${encodeURIComponent(location)}`;
-
-            downloadBtn.style.display =
-                "inline-block";
-
-
-        }
-
-        catch (err) {
-
-            error.style.display =
-                "block";
-
-            error.innerText =
-                err.message ||
-                "Unable to get flood prediction.";
-
-        }
-
-        finally {
-
-            loading.style.display =
-                "none";
-
-        }
-
-    }
-
-
-    // ==========================================
-    // ENTER KEY
-    // ==========================================
-
-    document.getElementById("location")
-        .addEventListener("keydown", function(event) {
-
-            if (event.key === "Enter") {
-
-                getFloodRisk();
-
-            }
-
-        });
-
-
-    // ==========================================
-    // START
-    // ==========================================
-
-    setGreeting();
-
-</script>
+    </main>
 
 </body>
 </html>
