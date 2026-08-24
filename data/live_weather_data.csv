@@ -1,2 +1,2 @@
 location,state,country,latitude,longitude,time,temperature_c,humidity_percent,rainfall_mm,rain_mm,showers_mm,wind_speed_kmh,risk_score,risk_level
-Pune,Maharashtra,India,18.51957,73.85535,2026-08-23T22:15,23.3,90,0.0,0.0,0.0,11.3,20,LOW
+Ambavli,Maharashtra,India,17.73224,73.53703,2026-08-24T11:15,27.9,84,0.1,0.1,0.0,9.4,15,LOW
