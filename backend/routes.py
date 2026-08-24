@@ -1,141 +1,94 @@
-from flask import Blueprint, request, send_file
+from flask import Blueprint, request, jsonify, send_file
 
 from api_service import (
     get_location_weather,
     save_weather_to_csv
 )
 
-from prediction import (
-    predict_flood_risk
-)
+from prediction import predict_flood_risk
+
+routes = Blueprint("routes", __name__)
 
 
-# =========================================================
-# CREATE BLUEPRINT
-# =========================================================
-
-routes = Blueprint(
-    "routes",
-    __name__
-)
-
-
-# =========================================================
-# FLOOD RISK API
-# =========================================================
-
-@routes.route(
-    "/api/flood-risk",
-    methods=["GET"]
-)
+@routes.route("/api/flood-risk", methods=["GET"])
 def get_flood_risk():
 
-    # -----------------------------------------------------
-    # 1. GET LOCATION FROM USER
-    # -----------------------------------------------------
-
-    location = request.args.get(
-        "location"
-    )
+    location = request.args.get("location")
 
     if not location:
+        return jsonify({
+            "success": False,
+            "error": "Please enter a Maharashtra location."
+        }), 400
 
-        return (
-            "Please enter a Maharashtra location.",
-            400
-        )
-
-    location = location.strip()
-
-    if not location:
-
-        return (
-            "Location cannot be empty.",
-            400
-        )
-
-
-    # -----------------------------------------------------
-    # 2. GET LIVE WEATHER
-    # -----------------------------------------------------
-
-    weather = get_location_weather(
-        location
-    )
+    weather = get_location_weather(location)
 
     if not weather["success"]:
+        return jsonify({
+            "success": False,
+            "error": weather["error"]
+        }), 400
 
-        return (
-            weather["error"],
-            400
-        )
-
-
-    # -----------------------------------------------------
-    # 3. GET CURRENT WEATHER VALUES
-    # -----------------------------------------------------
-
-    current = weather[
-        "current"
-    ]
-
-
-    rainfall = current[
-        "precipitation"
-    ]
-
-    temperature = current[
-        "temperature"
-    ]
-
-    humidity = current[
-        "humidity"
-    ]
-
-    wind_speed = current[
-        "wind_speed"
-    ]
-
-
-    # -----------------------------------------------------
-    # 4. PREDICT FLOOD RISK
-    # -----------------------------------------------------
+    current = weather["current"]
 
     prediction = predict_flood_risk(
-
-        rainfall=rainfall,
-
-        temperature=temperature,
-
-        humidity=humidity,
-
-        wind_speed=wind_speed
+        rainfall=current["precipitation"],
+        temperature=current["temperature"],
+        humidity=current["humidity"],
+        wind_speed=current["wind_speed"]
     )
 
+    save_weather_to_csv(weather, prediction)
 
-    # -----------------------------------------------------
-    # 5. SAVE WEATHER + RISK TO CSV
-    # -----------------------------------------------------
+    return jsonify({
+        "success": True,
+        "location": location,
+        "weather": {
+            "rainfall": current["precipitation"],
+            "temperature": current["temperature"],
+            "humidity": current["humidity"],
+            "wind_speed": current["wind_speed"]
+        },
+        "prediction": prediction
+    })
+
+
+@routes.route("/download/flood-risk", methods=["GET"])
+def download_flood_risk():
+
+    location = request.args.get("location")
+
+    if not location:
+        return jsonify({
+            "success": False,
+            "error": "Please provide a location."
+        }), 400
+
+    weather = get_location_weather(location)
+
+    if not weather["success"]:
+        return jsonify({
+            "success": False,
+            "error": weather["error"]
+        }), 400
+
+    current = weather["current"]
+
+    prediction = predict_flood_risk(
+        rainfall=current["precipitation"],
+        temperature=current["temperature"],
+        humidity=current["humidity"],
+        wind_speed=current["wind_speed"]
+    )
 
     csv_file = save_weather_to_csv(
-
         weather,
-
         prediction
     )
 
-
-    # -----------------------------------------------------
-    # 6. DOWNLOAD CSV
-    # -----------------------------------------------------
-
     return send_file(
-
         csv_file,
-
         mimetype="text/csv",
-
         as_attachment=True,
-
         download_name="flood_risk_data.csv"
     )

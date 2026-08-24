@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ForesightX | Flood Prediction</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            color: white;
+
+            background:
+                linear-gradient(
+                    rgba(4, 20, 35, 0.75),
+                    rgba(4, 20, 35, 0.85)
+                ),
+                url("https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=2000&q=80");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px 0;
+        }
+
+        /* HEADER */
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #39d9ff;
+        }
+
+        .status {
+            background: rgba(0, 255, 170, 0.15);
+            border: 1px solid #00ffaa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        /* TITLE */
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #c5d5df;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            background: #00bfff;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #009acd;
+        }
+
+        /* RISK CARD */
+
+        .risk-card {
+            background: rgba(5, 25, 42, 0.85);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .risk-level {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .risk-location {
+            color: #b8cad5;
+            margin-top: 5px;
+        }
+
+        .risk-indicator {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            background: rgba(255, 0, 0, 0.25);
+            border: 5px solid #ff4d4d;
+        }
+
+        /* WEATHER CARDS */
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .weather-card {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .weather-card h3 {
+            color: #a9bbc7;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .weather-value {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        /* BUTTONS */
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .actions a {
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #00bfff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .actions a:hover {
+            background: #009acd;
+        }
+
+        /* LOADING */
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #error {
+            display: none;
+            background: rgba(255,0,0,0.2);
+            border: 1px solid #ff4d4d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* MOBILE */
+
+        @media(max-width: 800px) {
+
+            .weather-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .risk-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+
+        @media(max-width: 500px) {
+
+            .weather-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .welcome h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+
+        <div class="logo">
+            Foresight<span>X</span>
+        </div>
+
+        <div class="status">
+            ● System Online
+        </div>
+
+    </header>
+
+
+    <div class="welcome">
+
+        <h1 id="greeting">
+            Welcome to ForesightX
+        </h1>
+
+        <p>
+            AI-powered flood risk prediction and early warning system
+        </p>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="location"
+            placeholder="Enter Maharashtra location e.g. Kolhapur"
+        >
+
+        <button onclick="getFloodRisk()">
+            Check Flood Risk
+        </button>
+
+    </div>
+
+
+    <div id="loading">
+        🌧️ Getting live weather data...
+    </div>
+
+
+    <div id="error"></div>
+
+
+    <!-- RESULT -->
+
+    <div class="risk-card">
+
+        <div class="risk-header">
+
+            <div>
+
+                <div class="risk-level" id="riskLevel">
+                    --
+                </div>
+
+                <div class="risk-location" id="riskLocation">
+                    Enter a location to check flood risk
+                </div>
+
+            </div>
+
+
+            <div class="risk-indicator" id="riskIndicator">
+                --
+            </div>
+
+        </div>
+
+
+        <!-- WEATHER -->
+
+        <div class="weather-grid">
+
+            <div class="weather-card">
+
+                <h3>🌧️ Rainfall</h3>
+
+                <div class="weather-value">
+                    <span id="rainfall">--</span>
+                    mm
+                </div>
+
+            </div>
+
+
+            <div class="weather-card">
+
+                <h3>🌡️ Temperature</h3>
+
+                <div class="weather-value">
+                    <span id="temperature">--</span>
+                    °C
+                </div>
+
+            </div>
+
+
+            <div class="weather-card">
+
+                <h3>💧 Humidity</h3>
+
+                <div class="weather-value">
+                    <span id="humidity">--</span>
+                    %
+                </div>
+
+            </div>
+
+
+            <div class="weather-card">
+
+                <h3>💨 Wind Speed</h3>
+
+                <div class="weather-value">
+                    <span id="windSpeed">--</span>
+                    km/h
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a
+                id="downloadBtn"
+                href="#"
+                style="display:none;"
+            >
+                Download CSV
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==========================================
+    // GREETING
+    // ==========================================
+
+    function setGreeting() {
+
+        const hour = new Date().getHours();
+
+        let greeting;
+
+        if (hour < 12) {
+            greeting = "Good Morning 🌅";
+        }
+        else if (hour < 17) {
+            greeting = "Good Afternoon ☀️";
+        }
+        else {
+            greeting = "Good Evening 🌙";
+        }
+
+        document.getElementById("greeting").innerText =
+            greeting + ", Welcome to ForesightX";
+    }
+
+
+    // ==========================================
+    // FLOOD RISK
+    // ==========================================
+
+    async function getFloodRisk() {
+
+        const location =
+            document.getElementById("location").value.trim();
+
+        const loading =
+            document.getElementById("loading");
+
+        const error =
+            document.getElementById("error");
+
+        if (!location) {
+
+            error.style.display = "block";
+
+            error.innerText =
+                "Please enter a Maharashtra location.";
+
+            return;
+        }
+
+
+        loading.style.display = "block";
+        error.style.display = "none";
+
+
+        try {
+
+            const response = await fetch(
+                `/api/flood-risk?location=${encodeURIComponent(location)}`
+            );
+
+
+            const data = await response.json();
+
+
+            if (!data.success) {
+
+                throw new Error(data.error);
+            }
+
+
+            // ==================================
+            // DISPLAY LOCATION
+            // ==================================
+
+            document.getElementById(
+                "riskLocation"
+            ).innerText =
+                data.location;
+
+
+            // ==================================
+            // WEATHER
+            // ==================================
+
+            document.getElementById(
+                "rainfall"
+            ).innerText =
+                data.weather.rainfall;
+
+
+            document.getElementById(
+                "temperature"
+            ).innerText =
+                data.weather.temperature;
+
+
+            document.getElementById(
+                "humidity"
+            ).innerText =
+                data.weather.humidity;
+
+
+            document.getElementById(
+                "windSpeed"
+            ).innerText =
+                data.weather.wind_speed;
+
+
+            // ==================================
+            // RISK
+            // ==================================
+
+            let risk;
+
+            if (typeof data.prediction === "object") {
+
+                risk =
+                    data.prediction.risk_level ||
+                    data.prediction.Risk_Level ||
+                    data.prediction.risk ||
+                    "Unknown";
+
+            }
+            else {
+
+                risk = data.prediction;
+            }
+
+
+            document.getElementById(
+                "riskLevel"
+            ).innerText =
+                risk;
+
+
+            document.getElementById(
+                "riskIndicator"
+            ).innerText =
+                risk;
+
+
+            // ==================================
+            // DOWNLOAD
+            // ==================================
+
+            const downloadBtn =
+                document.getElementById("downloadBtn");
+
+            downloadBtn.href =
+                `/download/flood-risk?location=${encodeURIComponent(location)}`;
+
+            downloadBtn.style.display =
+                "inline-block";
+
+
+        }
+
+        catch (err) {
+
+            error.style.display =
+                "block";
+
+            error.innerText =
+                err.message ||
+                "Unable to get flood prediction.";
+
+        }
+
+        finally {
+
+            loading.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    // ==========================================
+    // ENTER KEY
+    // ==========================================
+
+    document.getElementById("location")
+        .addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+
+                getFloodRisk();
+
+            }
+
+        });
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    setGreeting();
+
+</script>
+
+</body>
+</html>
