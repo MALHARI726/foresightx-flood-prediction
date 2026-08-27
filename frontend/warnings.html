@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Early Warnings &amp; Safety Guidelines - Maha Flood AI</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300d2ff'><path d='M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z'/></svg>">
+</head>
+<body>
+
+  <div class="weather-bg-container">
+    <div id="weather-bg-layer" class="weather-bg-image"></div>
+  </div>
+  <div class="weather-overlay"></div>
+
+  <div class="app-layout">
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-brand">
+        <a href="/" class="brand-section">
+          <div class="brand-icon-wrapper">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+              <path d="M2 18h20"/>
+              <path d="M4 22h16"/>
+            </svg>
+          </div>
+          <div class="brand-title">
+            MAHA FLOOD AI
+            <span class="sub">Maharashtra Early Warning</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/gis" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <span>Flood GIS Map</span>
+        </a>
+        <a href="/weather" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+          <span>Live Weather</span>
+        </a>
+        <a href="/simulator" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L4 18h16l-6-8.69V2h-4Z"/><path d="M8.5 2h7"/></svg>
+          <span>What-If Simulator</span>
+        </a>
+        <a href="/warnings" class="sidebar-nav-item active">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Early Warnings & Safety</span>
+          <span class="sidebar-nav-badge">2</span>
+          <span class="nav-chevron">&rsaquo;</span>
+        </a>
+        <a href="/history" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>
+          <span>Previous Floods</span>
+        </a>
+        <a href="/settings" class="sidebar-nav-item">
+          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0 2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="app-main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          
+          <div class="topbar-location-box">
+            <span style="font-weight:700; color:#ffffff; font-size:0.875rem;">State Early Warning Bulletin</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="telemetry-pill-btn">
+            <div class="telemetry-dot"></div>
+            <span>LIVE TELEMETRY</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="app-main">
+        <div class="dashboard-grid">
+          <!-- Active Warning Bulletins -->
+          <div class="glass-card col-12">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-icon" style="background:rgba(239,68,68,0.2); color:#ef4444;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div>
+                  <h1 class="card-title" style="font-size:1.3rem;">Active District Flood Warnings &amp; Advisories</h1>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Real-time IMD &amp; SDMA Early Warnings by District</span>
+                </div>
+              </div>
+              <span class="card-badge badge-high">REAL-TIME TELEMETRY</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1rem;">
+              {% for d in districts_data %}
+              <div class="glass-card" style="border-left: 4px solid {% if d.risk_percentage >= 80 %}#ef4444{% elif d.risk_percentage >= 60 %}#f97316{% elif d.risk_percentage >= 30 %}#f59e0b{% else %}#10b981{% endif %};">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+                  <div>
+                    <h3 style="font-size:1.15rem; font-weight:800; color:#ffffff; margin-bottom:2px;">{{ d.district }}</h3>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">Rainfall: {{ d.rainfall }} mm • River: {{ d.river_level }} m</span>
+                  </div>
+                  <span class="card-badge {% if d.risk_percentage >= 80 %}badge-critical{% elif d.risk_percentage >= 60 %}badge-high{% elif d.risk_percentage >= 30 %}badge-medium{% else %}badge-low{% endif %}">
+                    {{ d.risk_level }} ({{ d.risk_percentage }}%)
+                  </span>
+                </div>
+                <p style="font-size:0.85rem; color:#cbd5e1; line-height:1.45; margin-bottom:0.75rem;">
+                  {{ d.warning_message }}
+                </p>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-glass); padding-top:0.65rem;">
+                  <span style="font-size:0.75rem; color:var(--text-muted);">Guideline: {{ d.action_guideline }}</span>
+                  <a href="/?location={{ d.district }}" class="btn-primary" style="padding:0.25rem 0.65rem; font-size:0.75rem;">Monitor</a>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <div class="status-dot-pulse"></div>
+          <span>MAHA_WARNINGS // REAL-TIME ALERT PROTOCOLS</span>
+        </div>
+        <div>MAHARASHTRA STATE DISASTER MANAGEMENT AUTHORITY</div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
