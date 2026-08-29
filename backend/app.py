@@ -4,6 +4,7 @@ import time
 from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from config import DISTRICT_COORDINATES
 
 
 # Initialize Flask app
