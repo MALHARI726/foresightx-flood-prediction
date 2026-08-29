@@ -5,7 +5,10 @@ from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from config import DISTRICT_COORDINATES
+<<<<<<< HEAD
+=======
 
+>>>>>>> 9e0c8ef4271ae5ec1428eb1d38a74e757f797ff6
 
 
 # Initialize Flask app
