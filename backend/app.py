@@ -14,6 +14,42 @@ app.config['SECRET_KEY'] = 'maha-flood-ai-secret-2026'
 
 DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
 
+DISTRICT_COORDINATES = {
+    "Mumbai": {"lat": 19.0760, "lon": 72.8777},
+    "Pune": {"lat": 18.5204, "lon": 73.8567},
+    "Nagpur": {"lat": 21.1458, "lon": 79.0882},
+    "Nashik": {"lat": 19.9975, "lon": 73.7898},
+    "Thane": {"lat": 19.2183, "lon": 72.9781},
+    "Raigad": {"lat": 18.5158, "lon": 73.1822},
+    "Ratnagiri": {"lat": 16.9902, "lon": 73.3120},
+    "Sindhudurg": {"lat": 16.3492, "lon": 73.5594},
+    "Kolhapur": {"lat": 16.7050, "lon": 74.2433},
+    "Satara": {"lat": 17.6805, "lon": 73.9933},
+    "Sangli": {"lat": 16.8524, "lon": 74.5815},
+    "Solapur": {"lat": 17.6599, "lon": 75.9064},
+    "Ahmednagar": {"lat": 19.0948, "lon": 74.7480},
+    "Aurangabad": {"lat": 19.8762, "lon": 75.3433},
+    "Jalgaon": {"lat": 21.0077, "lon": 75.5626},
+    "Dhule": {"lat": 20.9042, "lon": 74.7749},
+    "Nandurbar": {"lat": 21.3667, "lon": 74.2333},
+    "Beed": {"lat": 18.9891, "lon": 75.7601},
+    "Latur": {"lat": 18.4088, "lon": 76.5604},
+    "Osmanabad": {"lat": 18.1860, "lon": 76.0419},
+    "Parbhani": {"lat": 19.2608, "lon": 76.7748},
+    "Hingoli": {"lat": 19.7176, "lon": 77.1490},
+    "Nanded": {"lat": 19.1383, "lon": 77.3210},
+    "Akola": {"lat": 20.7002, "lon": 77.0082},
+    "Amravati": {"lat": 20.9374, "lon": 77.7796},
+    "Buldhana": {"lat": 20.5293, "lon": 76.1840},
+    "Washim": {"lat": 20.1110, "lon": 77.1330},
+    "Yavatmal": {"lat": 20.3899, "lon": 78.1307},
+    "Wardha": {"lat": 20.7453, "lon": 78.6022},
+    "Chandrapur": {"lat": 19.9615, "lon": 79.2961},
+    "Gadchiroli": {"lat": 20.1809, "lon": 80.0030},
+    "Gondia": {"lat": 21.4602, "lon": 80.1984},
+    "Bhandara": {"lat": 21.1702, "lon": 79.6486},
+    "Palghar": {"lat": 19.6967, "lon": 72.7699}
+}
 HISTORICAL_FLOOD_EVENTS = [
     {
         "year": "2005",
