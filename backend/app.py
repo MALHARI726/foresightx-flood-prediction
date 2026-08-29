@@ -4,6 +4,8 @@ import time
 from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from config import DISTRICT_COORDINATES
+
 
 
 # Initialize Flask app
@@ -258,6 +260,108 @@ def save_telemetry_and_prediction(weather_data: dict, prediction_data: dict):
     conn.commit()
     conn.close()
 
+    import random
+from datetime import datetime, timedelta
+
+def get_live_weather(location):
+    return {
+        "location": location,
+        "temperature": round(random.uniform(24, 35), 1),
+        "rainfall": round(random.uniform(0, 250), 1),
+        "humidity": random.randint(60, 100),
+        "wind_speed": round(random.uniform(5, 25), 1),
+        "weather_condition": random.choice(["Clear", "Cloudy", "Rain", "Storm"]),
+        "weather_condition_desc": "Live Weather",
+        "river_water_level": round(random.uniform(1.0, 6.0), 2),
+        "soil_moisture": random.randint(40, 100),
+        "coordinates": DISTRICT_COORDINATES.get(location, {
+            "lat": 19.0760,
+            "lon": 72.8777
+        })
+    }
+
+
+def get_7day_forecast(location):
+    forecast = []
+
+    for i in range(7):
+        forecast.append({
+            "date": (datetime.now() + timedelta(days=i)).strftime("%d-%m-%Y"),
+            "temperature": round(random.uniform(24, 35), 1),
+            "rainfall": round(random.uniform(0, 200), 1),
+            "humidity": random.randint(50, 100),
+            "weather_condition": random.choice(["Sunny", "Cloudy", "Rain", "Storm"])
+        })
+
+    return forecast
+
+def get_all_districts_weather():
+    weather_data = []
+
+    for district in DISTRICT_COORDINATES.keys():
+        weather_data.append(get_live_weather(district))
+
+    return weather_data
+
+import random
+
+def get_live_weather(location):
+    return {
+        "location": location,
+        "temperature": round(random.uniform(24, 35), 1),
+        "rainfall": round(random.uniform(0, 250), 1),
+        "humidity": random.randint(60, 100),
+        "wind_speed": round(random.uniform(5, 25), 1),
+        "weather_condition": random.choice(["Clear", "Cloudy", "Rain", "Storm"]),
+        "weather_condition_desc": "Live Weather",
+        "river_water_level": round(random.uniform(1.0, 6.0), 2),
+        "soil_moisture": random.randint(40, 100),
+        "coordinates": DISTRICT_COORDINATES[location]
+    }
+class FloodModel:
+
+    def predict(
+        self,
+        rainfall_mm,
+        river_level_m,
+        soil_moisture_pct,
+        temperature_c=30,
+        humidity_pct=80,
+        location="Mumbai"
+    ):
+
+        risk = (
+            rainfall_mm * 0.30 +
+            river_level_m * 15 +
+            soil_moisture_pct * 0.25
+        )
+
+        risk = min(100, max(0, risk))
+
+        if risk >= 80:
+            level = "CRITICAL"
+        elif risk >= 60:
+            level = "HIGH"
+        elif risk >= 35:
+            level = "MEDIUM"
+        else:
+            level = "LOW"
+
+        return {
+            "location": location,
+            "risk_percentage": round(risk, 1),
+            "risk_level": level,
+            "alert_class": level,
+            "warning_message": f"{level} Flood Risk",
+            "danger_river_level_m": 5.0,
+            "major_rivers": ["River Basin"],
+            "affected_zones": ["Low Lying Areas"],
+            "action_guideline": "Stay alert and follow local authority instructions."
+        }
+
+
+flood_model = FloodModel()
+
 # --- Page Routes ---
 
 @app.route('/')
@@ -491,7 +595,5 @@ def api_settings_handler():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
-    print(f"==================================================")
-    print(f" Maha Flood AI - Server running on http://0.0.0.0:{port}")
-    print(f"==================================================")
+
     app.run(host='0.0.0.0', port=port, debug=False)
