@@ -3,402 +3,1703 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maha Flood AI - Maharashtra Flood Early Warning System</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <title>MAHA FLOOD AI – Flood & Weather Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300d2ff'><path d='M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z'/></svg>">
+  <style>
+    :root {
+      --bg-dark: #060c18;
+      --bg-card: rgba(13, 24, 44, 0.86);
+      --bg-card-hover: rgba(18, 34, 60, 0.95);
+      --border-glass: rgba(0, 210, 255, 0.22);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #00d2ff;
+      --neon-blue: #0088ff;
+      --neon-green: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.88) 0%, rgba(6, 12, 24, 0.96) 80%), url('https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2000&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      transition: background-image 0.8s ease-in-out;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(5, 11, 20, 0.96);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand-logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #00d2ff, #0066cc);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; }
+
+    .brand-text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 0.95rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .nav-item.active a {
+      background: rgba(0, 210, 255, 0.14);
+      border-left: 3px solid var(--neon-cyan);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .nav-item svg { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
+
+    .sidebar-footer {
+      background: rgba(8, 16, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem;
+    }
+
+    .sidebar-footer-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.4px;
+    }
+
+    .sidebar-footer-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 1.75rem 2.5rem 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      min-height: 100vh;
+    }
+
+    /* Topbar Search */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .greeting-pill {
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      color: #e0f2fe;
+      padding: 0.45rem 1.1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .search-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(10, 22, 40, 0.9);
+      border: 1px solid var(--border-glass);
+      padding: 0.4rem 0.5rem 0.4rem 1.1rem;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      width: 420px;
+      max-width: 100%;
+      transition: all 0.2s ease;
+    }
+
+    .search-bar-wrapper:focus-within {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.25);
+    }
+
+    .search-bar-wrapper svg { color: var(--neon-cyan); width: 18px; height: 18px; flex-shrink: 0; }
+
+    .search-bar-wrapper input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+    }
+
+    .search-bar-wrapper input::placeholder {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #00d2ff, #0077ff);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .live-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: var(--neon-green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.45rem 1.1rem;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.6px;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .live-indicator-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+    }
+
+    /* Hero Section */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 900px;
+      margin: 0.25rem auto 0.5rem auto;
+      width: 100%;
+    }
+
+    .telemetry-chip {
+      background: rgba(8, 18, 34, 0.9);
+      border: 1px solid var(--border-glass);
+      padding: 0.45rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+    }
+
+    .hero-greeting-sub {
+      font-size: 1.15rem;
+      color: var(--neon-cyan);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.35rem;
+      font-family: var(--font-heading);
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 3.4rem;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.85rem;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+    }
+
+    .hero-title-cyan {
+      color: #00d2ff;
+      display: block;
+      text-shadow: 0 0 35px rgba(0, 210, 255, 0.5);
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      max-width: 680px;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Stat Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.2rem 1rem;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0, 210, 255, 0.6);
+      background: var(--bg-card-hover);
+    }
+
+    .stat-icon {
+      color: var(--neon-cyan);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .stat-icon svg { width: 24px; height: 24px; }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Action Buttons */
+    .actions-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 30px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d2ff 0%, #0077ff 100%);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(0, 210, 255, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 210, 255, 0.7);
+    }
+
+    .btn-secondary {
+      background: rgba(10, 22, 40, 0.88);
+      border: 1px solid var(--border-glass);
+      color: #f1f5f9;
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 32, 58, 0.95);
+      border-color: rgba(0, 210, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard Graph Section (Added as requested) */
+    .dashboard-graph-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      width: 100%;
+    }
+
+    .graph-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .graph-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .graph-canvas-container {
+      position: relative;
+      height: 280px;
+      width: 100%;
+    }
+
+    /* Dashboard Live Weather & Emergency Contacts Dual Grid */
+    .dashboard-lower-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .dash-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.4rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .dash-box-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-box-title-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .weather-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .weather-mini-card {
+      background: rgba(6, 14, 28, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .weather-mini-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .weather-mini-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-heading);
+    }
+
+    /* Dashboard Live Weather Component Styles */
+    .weather-component-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .weather-component-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00d2ff, #0088ff, #10b981);
+    }
+
+    .weather-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .weather-location-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .weather-location-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .weather-theme-pill {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      color: #e0f2fe;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      letter-spacing: 0.3px;
+    }
+
+    .weather-theme-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00d2ff;
+      box-shadow: 0 0 8px #00d2ff;
+    }
+
+    .weather-actions-top {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .detect-loc-btn {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 0.4rem 0.95rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .detect-loc-btn:hover {
+      background: rgba(16, 185, 129, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Quick Region Selector Bar */
+    .quick-regions-scroll {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+      scrollbar-width: thin;
+    }
+
+    .quick-region-chip {
+      background: rgba(8, 18, 36, 0.85);
+      border: 1px solid var(--border-subtle);
+      color: #94a3b8;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .quick-region-chip:hover {
+      background: rgba(0, 210, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .quick-region-chip.active {
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(0, 119, 255, 0.25));
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+    }
+
+    /* Weather Main Grid Layout */
+    .weather-main-panel {
+      display: grid;
+      grid-template-columns: 310px 1fr 280px;
+      gap: 1.15rem;
+      align-items: stretch;
+    }
+
+    .weather-primary-box {
+      background: linear-gradient(145deg, rgba(8, 20, 42, 0.9), rgba(5, 12, 26, 0.95));
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .weather-primary-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .weather-big-icon {
+      font-size: 3.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 16px rgba(0, 210, 255, 0.4));
+    }
+
+    .weather-temp-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .weather-temp-huge {
+      font-family: var(--font-heading);
+      font-size: 2.75rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .weather-feels-like {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .weather-condition-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #00d2ff;
+      font-family: var(--font-heading);
+    }
+
+    .weather-condition-desc {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    /* 6 Metrics Grid */
+    .weather-metrics-6grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .weather-metric-item {
+      background: rgba(6, 14, 28, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.35rem;
+    }
+
+    .metric-item-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-item-val {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .metric-item-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+
+    /* Weather Catchment Status Box */
+    .weather-catchment-box {
+      background: linear-gradient(145deg, rgba(8, 20, 42, 0.9), rgba(5, 12, 26, 0.95));
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+    }
+
+    .catchment-box-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .catchment-basin-name {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .catchment-risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      width: fit-content;
+    }
+
+    .catchment-advisory-text {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border-left: 2px solid var(--neon-cyan);
+    }
+
+    @media (max-width: 1100px) {
+      .weather-main-panel { grid-template-columns: 1fr 1fr; }
+      .weather-catchment-box { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 750px) {
+      .weather-main-panel { grid-template-columns: 1fr; }
+      .weather-metrics-6grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Emergency Contact Cards */
+    .emergency-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .emergency-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(6, 14, 28, 0.75);
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.84rem;
+    }
+
+    .emergency-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .emergency-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      background: rgba(0, 210, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 210, 255, 0.25);
+    }
+
+    /* Prediction Result Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-card {
+      background: #0b1526;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 18px;
+      max-width: 540px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 0 40px rgba(0, 210, 255, 0.3);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+
+    .modal-score {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .score-pct {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+    }
+
+    .risk-tag {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    .risk-tag.safe { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+    .risk-tag.warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+    .risk-tag.critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+    @media (max-width: 950px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-lower-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2.8rem; }
+    }
+
+    @media (max-width: 650px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; padding: 1.2rem; }
+      .hero-title { font-size: 2.2rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .search-bar-wrapper { width: 100%; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Dynamic Subtle Weather Background Layer -->
-  <div class="weather-bg-container">
-    <div id="weather-bg-layer" class="weather-bg-image"></div>
-  </div>
-  <div class="weather-overlay"></div>
-
-  <div class="app-layout">
-    <!-- SIDE NAVIGATION BAR -->
-    <aside class="app-sidebar" id="app-sidebar">
-      <div class="sidebar-brand">
-        <a href="/" class="brand-section">
-          <div class="brand-icon-wrapper">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-              <path d="M2 18h20"/>
-              <path d="M4 22h16"/>
-            </svg>
-          </div>
-          <div class="brand-title">
-            MAHA FLOOD AI
-            <span class="sub">Maharashtra Early Warning</span>
-          </div>
-        </a>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-title">MAHA FLOOD AI</span>
+          <span class="brand-subtitle">State Telemetry System</span>
+        </div>
       </div>
 
-      <!-- Navigation Links -->
-      <nav class="sidebar-nav">
-        <a href="/" class="sidebar-nav-item active">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Dashboard</span>
-          <span class="nav-chevron">&rsaquo;</span>
-        </a>
-        <a href="/gis" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-          <span>Flood GIS Map</span>
-        </a>
-        <a href="/weather" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-          <span>Live Weather</span>
-        </a>
-        <a href="/simulator" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31L4 18h16l-6-8.69V2h-4Z"/><path d="M8.5 2h7"/></svg>
-          <span>What-If Simulator</span>
-        </a>
-        <a href="/warnings" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span>Early Warnings & Safety</span>
-          <span class="sidebar-nav-badge">2</span>
-        </a>
-        <a href="/history" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>
-          <span>Previous Floods</span>
-        </a>
-        <a href="/settings" class="sidebar-nav-item">
-          <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0 2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </aside>
+      <ul class="nav-list">
+        <li class="nav-item active"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</a></li>
+        <li class="nav-item"><a href="/gis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>Flood GIS Map</a></li>
+        <li class="nav-item"><a href="/weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>Live Weather</a></li>
+        <li class="nav-item"><a href="/simulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg>What-if Simulator</a></li>
+        <li class="nav-item"><a href="/warnings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>Early Warnings</a></li>
+        <li class="nav-item"><a href="/previous_floods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Previous Floods</a></li>
+        <li class="nav-item"><a href="/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a></li>
+      </ul>
+    </div>
 
-    <!-- Mobile Drawer Backdrop -->
-    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <!-- Sidebar footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-title">
+        <span>STATE TELEMETRY</span>
+        <span style="color: var(--neon-green); font-size: 0.65rem;">• ONLINE</span>
+      </div>
+      <div class="sidebar-footer-desc">
+        Integrated with Open-Meteo & Central Water Commission Hydrology Rules.
+      </div>
+    </div>
+  </aside>
 
-    <!-- MAIN CONTENT WRAPPER -->
-    <div class="app-main-wrapper">
-      <!-- Top Command Bar (Exact match to Image 2) -->
-      <header class="app-topbar">
-        <div class="topbar-left">
-          <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <!-- Main Content Area -->
+  <main class="main-wrapper">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="greeting-pill" id="timeGreetingBadge">
+        <span>☀️</span>
+        <span id="timeGreetingText">Good Morning, Welcome</span>
+      </div>
+
+      <div class="search-bar-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="regionSearchInput" placeholder="Search any region in Maharashtra (e.g. Pune, Kolhapur, Chiplun, Mumbai)..." onkeydown="if(event.key==='Enter') executeSearch()" value="Ratnagiri" />
+        <button class="search-btn" onclick="executeSearch()">Search</button>
+      </div>
+
+      <div class="weather-theme-pill" id="topbarAtmosphereTheme">
+        <span class="weather-theme-dot"></span>
+        <span id="topbarThemeText">🌧️ Rain Atmosphere</span>
+      </div>
+
+      <div class="live-pill">
+        <span class="live-indicator-dot"></span>
+        <span id="activeRegionBadge">RATNAGIRI • LIVE</span>
+      </div>
+    </div>
+
+    <!-- Center Hero Section -->
+    <div class="hero-container">
+      <div class="telemetry-chip">
+        <span class="live-indicator-dot"></span>
+        <span id="telemetryLocationLabel">Ratnagiri Hydrological Station</span>
+        <span>•</span>
+        <span style="color: #fde047; font-weight: 700;" id="telemetryCondition">🌧️ Rainy Conditions</span>
+      </div>
+
+      <div class="hero-greeting-sub" id="heroGreetingBanner">Good Morning, Welcome to State Flood Watch</div>
+
+      <h1 class="hero-title">
+        Flood &amp;
+        <span class="hero-title-cyan">Weather Intelligence</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Monitor real-time weather conditions, rainfall, temperature, humidity and flood risk across Maharashtra using AI-powered early warning technology.
+      </p>
+
+      <!-- 4 Stat Cards Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          </div>
+          <div class="stat-value" id="valTemp">27°C</div>
+          <div class="stat-label">TEMPERATURE</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
+          </div>
+          <div class="stat-value" id="valRain">22 mm</div>
+          <div class="stat-label">RAINFALL</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+          <div class="stat-value" id="valHum">84%</div>
+          <div class="stat-label">HUMIDITY</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+          </div>
+          <div class="stat-value" id="valWind">14.5 km/h</div>
+          <div class="stat-label">WIND SPEED</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions-row">
+        <button class="btn btn-primary" onclick="runPredictionModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Run Flood Prediction
+        </button>
+
+        <a href="/gis" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
+          Open Flood GIS Map
+        </a>
+      </div>
+    </div>
+
+    <!-- Live Weather Component (Dynamic Weather & Background Intelligence) -->
+    <div class="weather-component-card">
+      <div class="weather-card-top">
+        <div class="weather-location-wrap">
+          <div class="weather-location-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>
+            <span id="weatherCardLocTitle">Ratnagiri Live Weather</span>
+          </div>
+          <div class="weather-theme-pill">
+            <span class="weather-theme-dot"></span>
+            <span id="weatherCardThemeText">🌧️ Rain Atmosphere Active</span>
+          </div>
+        </div>
+
+        <div class="weather-actions-top">
+          <button class="detect-loc-btn" onclick="detectUserLocation()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+            <span>Detect My Weather</span>
           </button>
-          
-          <!-- District Selector Pill Box with Pin & Arrow -->
-          <form class="topbar-location-box location-search-form" id="search-form">
-            <div class="location-pin-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+      </div>
+
+      <!-- Quick Maharashtra Region Selectors -->
+      <div class="quick-regions-scroll" id="quickRegionsBar">
+        <button class="quick-region-chip active" onclick="selectQuickRegion('Ratnagiri')">🌊 Ratnagiri</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Mumbai')">🌧️ Mumbai</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Mahabaleshwar')">🏔️ Mahabaleshwar</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Chiplun')">🌊 Chiplun</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Kolhapur')">🌧️ Kolhapur</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Pune')">⛅ Pune</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Nashik')">⛅ Nashik</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Raigad')">🌊 Raigad</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Nagpur')">☀️ Nagpur</button>
+        <button class="quick-region-chip" onclick="selectQuickRegion('Solapur')">☀️ Solapur</button>
+      </div>
+
+      <!-- Weather Main Display Grid -->
+      <div class="weather-main-panel">
+        <!-- Primary Highlight Box -->
+        <div class="weather-primary-box">
+          <div class="weather-primary-top">
+            <div class="weather-big-icon" id="wCardIcon">🌧️</div>
+            <div class="weather-temp-wrap">
+              <div class="weather-temp-huge" id="wCardTemp">27.0°C</div>
+              <div class="weather-feels-like" id="wCardFeels">Feels like 29.5°C</div>
             </div>
-            <select class="location-dropdown-select" id="district-quick-select" aria-label="Select Maharashtra District">
-              {% for d in districts %}
-              <option value="{{ d }}" {% if d == initial_location %}selected{% endif %}>{{ d }}</option>
-              {% endfor %}
-            </select>
-            <button type="submit" class="location-submit-btn" aria-label="Navigate to selected location">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </form>
+          </div>
+          <div>
+            <div class="weather-condition-title" id="wCardCondTitle">Continuous Rain Showers</div>
+            <div class="weather-condition-desc" id="wCardCondDesc">Active monsoon precipitation stream observed over coastal catchment zone.</div>
+          </div>
         </div>
 
-        <div class="topbar-right">
-          <div class="telemetry-pill-btn">
-            <div class="telemetry-dot"></div>
-            <span>LIVE TELEMETRY</span>
+        <!-- 6 Metrics Grid -->
+        <div class="weather-metrics-6grid">
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <span>Rainfall</span>
+            </div>
+            <div class="metric-item-val" id="wCardRainVal">22.0 mm</div>
+            <div class="metric-item-sub">24h Cumulative</div>
           </div>
 
-          <button class="topbar-icon-btn" aria-label="Alerts Notification" onclick="window.location.href='/warnings'">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-            <span class="notification-badge">1</span>
-          </button>
-
-          <button class="topbar-icon-btn" id="refresh-dashboard-btn" aria-label="Refresh Data" onclick="loadDashboardData(currentDistrict)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-          </button>
-        </div>
-      </header>
-
-      <!-- MAIN DASHBOARD CONTENT -->
-      <main class="app-main">
-        
-        <!-- ==========================================
-             HERO SECTION (Exact visual from Image 2)
-             ========================================== -->
-        <section class="dashboard-hero-section">
-          <!-- Floating Pill Badge -->
-          <div class="hero-pill-badge">
-            <span>IMD &amp; Open-Meteo Real-Time Telemetry</span>
-            <span style="color:var(--text-muted);">•</span>
-            <span class="highlight-tag">🌧️ Active Monsoon Rainfall</span>
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <span>Humidity</span>
+            </div>
+            <div class="metric-item-val" id="wCardHumVal">84%</div>
+            <div class="metric-item-sub">Relative Saturation</div>
           </div>
 
-          <!-- Giant Headline -->
-          <h1 class="hero-main-headline">
-            <span class="hero-title-white">Flood &amp;</span>
-            <span class="hero-title-cyan">Weather Intelligence</span>
-          </h1>
-
-          <!-- Subtitle Description -->
-          <p class="hero-subtitle-desc">
-            Monitor real-time weather conditions, rainfall, temperature, humidity and flood risk across Maharashtra using early warning telemetry.
-          </p>
-
-          <!-- 4 Metrics Rounded Hero Cards -->
-          <div class="hero-metrics-grid">
-            <div class="hero-stat-card">
-              <div class="stat-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
-              </div>
-              <div class="stat-value" id="hero-temp">29°C</div>
-              <div class="stat-label">TEMPERATURE</div>
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/></svg>
+              <span>Wind Flow</span>
             </div>
-
-            <div class="hero-stat-card">
-              <div class="stat-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
-              </div>
-              <div class="stat-value" id="hero-rainfall">5.8 <small>mm</small></div>
-              <div class="stat-label">RAINFALL</div>
-            </div>
-
-            <div class="hero-stat-card">
-              <div class="stat-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-              </div>
-              <div class="stat-value" id="hero-humidity">76<small>%</small></div>
-              <div class="stat-label">HUMIDITY</div>
-            </div>
-
-            <div class="hero-stat-card">
-              <div class="stat-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
-              </div>
-              <div class="stat-value" id="hero-wind">13 <small>km/h</small></div>
-              <div class="stat-label">WIND SPEED</div>
-            </div>
+            <div class="metric-item-val" id="wCardWindVal">14.5 km/h</div>
+            <div class="metric-item-sub" id="wCardWindDir">WSW Gusts</div>
           </div>
 
-          <!-- Hero Action Buttons -->
-          <div class="hero-actions-row">
-            <a href="/simulator" class="btn-cyan-action">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-              <span>Run Flood Simulator</span>
-            </a>
-            <a href="/gis" class="btn-dark-action">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-              <span>Open Flood GIS Map</span>
-            </a>
-          </div>
-        </section>
-
-        <!-- ==========================================
-             SECTION 1: LIVE WEATHER & 7-DAY FORECAST
-             ========================================== -->
-        <div class="dashboard-grid">
-          
-          <!-- LIVE WEATHER CONDITIONS -->
-          <div class="glass-card col-6">
-            <div class="card-header">
-              <div class="card-title-group">
-                <div class="card-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-                </div>
-                <div>
-                  <h2 class="card-title">Live Weather Telemetry</h2>
-                  <span style="font-size:0.75rem; color:var(--text-muted);">District: <strong class="current-location-text" style="color:#ffffff;">{{ initial_location }}</strong></span>
-                </div>
-              </div>
-              <span class="card-badge badge-low" id="weather-badge-status">LIVE SENSOR</span>
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Pressure</span>
             </div>
-
-            <!-- Weather Main Overview -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
-              <div>
-                <div style="font-size:2.5rem; font-weight:800; color:#ffffff;" id="weather-temp">--°C</div>
-                <div style="font-size:0.95rem; font-weight:600; color:var(--neon-cyan);" id="weather-condition-desc">Loading telemetry...</div>
-                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
-                  Atmospheric Saturation • Barometric Gauge
-                </div>
-              </div>
-              <div style="text-align:right;">
-                <span class="district-chip" id="last-updated-time">Updating...</span>
-              </div>
-            </div>
-
-            <!-- Weather Metrics Row -->
-            <div class="metrics-row">
-              <div class="metric-pill">
-                <span class="label">Live Rainfall</span>
-                <span class="value" id="metric-rainfall">-- <small style="font-size:0.7rem;">mm</small></span>
-                <span class="subtext">Precipitation Accumulation</span>
-              </div>
-              <div class="metric-pill">
-                <span class="label">Humidity</span>
-                <span class="value" id="metric-humidity">--%</span>
-                <span class="subtext">Relative Saturation</span>
-              </div>
-              <div class="metric-pill">
-                <span class="label">Wind Speed</span>
-                <span class="value" id="metric-wind">-- <small style="font-size:0.7rem;">km/h</small></span>
-                <span class="subtext">Surface Velocity</span>
-              </div>
-              <div class="metric-pill">
-                <span class="label">Pressure</span>
-                <span class="value" id="metric-pressure">-- <small style="font-size:0.7rem;">hPa</small></span>
-                <span class="subtext">Barometric Level</span>
-              </div>
-            </div>
+            <div class="metric-item-val" id="wCardPressVal">1008 hPa</div>
+            <div class="metric-item-sub">Barometric Sea-Level</div>
           </div>
 
-          <!-- AI FLOOD RISK PREDICTION GAUGE -->
-          <div class="glass-card col-6">
-            <div class="card-header">
-              <div class="card-title-group">
-                <div class="card-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div>
-                  <h2 class="card-title">AI Flood Risk Prediction</h2>
-                  <span style="font-size:0.75rem; color:var(--text-muted);">Hydrological Neural Network Assessment</span>
-                </div>
-              </div>
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span>Visibility</span>
             </div>
-
-            <div class="ai-prediction-box">
-              <!-- Circular Animated SVG Gauge -->
-              <div class="gauge-wrapper">
-                <svg class="gauge-svg" viewBox="0 0 120 120">
-                  <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
-                  <circle class="gauge-progress" id="gauge-progress-circle" cx="60" cy="60" r="50" style="stroke-dasharray: 314.159; stroke-dashoffset: 314.159; stroke: #10b981;"></circle>
-                </svg>
-                <div class="gauge-center-text">
-                  <span class="gauge-percentage" id="gauge-percentage-value">0%</span>
-                  <span class="gauge-label">FLOOD RISK</span>
-                </div>
-              </div>
-
-              <!-- Risk Level Banner -->
-              <div class="risk-title-banner badge-low" id="risk-level-banner">LOW RISK</div>
-
-              <p id="prediction-summary-text" style="font-size:0.85rem; color:var(--text-secondary); text-align:center; max-width:420px; line-height:1.4;">
-                Calculating environmental variables and basin saturation indices...
-              </p>
-            </div>
+            <div class="metric-item-val" id="wCardVisVal">9.5 km</div>
+            <div class="metric-item-sub">Clear Sightline</div>
           </div>
 
-          <!-- TELEMETRY & FLOOD RISK TREND GRAPH (Requested in Dashboard) -->
-          <div class="glass-card col-12">
-            <div class="card-header">
-              <div class="card-title-group">
-                <div class="card-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                </div>
-                <div>
-                  <h2 class="card-title">24-Hour Rainfall &amp; Flood Probability Trend</h2>
-                  <span style="font-size:0.75rem; color:var(--text-muted);">Hourly Telemetry Timeline &amp; Risk Projection for <span class="current-location-text" style="color:#ffffff; font-weight:700;">{{ initial_location }}</span></span>
-                </div>
-              </div>
-              <div style="display:flex; gap:0.5rem;">
-                <span class="district-chip" style="background:rgba(0,210,255,0.15); color:var(--neon-cyan); border-color:var(--neon-cyan);">Rainfall (mm)</span>
-                <span class="district-chip" style="background:rgba(239,68,68,0.15); color:#ef4444; border-color:#ef4444;">Risk Probability (%)</span>
-              </div>
+          <div class="weather-metric-item">
+            <div class="metric-item-head">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              <span>Cloud Cover</span>
             </div>
-
-            <!-- Canvas Chart -->
-            <div class="telemetry-chart-wrapper">
-              <canvas id="dashboard-telemetry-chart"></canvas>
-            </div>
+            <div class="metric-item-val" id="wCardCloudVal">88%</div>
+            <div class="metric-item-sub">Overcast Density</div>
           </div>
-
         </div>
 
-        <!-- ==========================================
-             SECTION 2: EARLY WARNING STATUS & SAFETY ACTION
-             ========================================== -->
-        <div class="dashboard-grid">
-          
-          <!-- EARLY WARNING STATUS (Clearly Prominent) -->
-          <div class="glass-card early-warning-banner col-7" id="emergency-alert-card">
-            <div class="card-header">
-              <div class="card-title-group">
-                <div class="card-icon" style="background:rgba(239,68,68,0.2); color:#ef4444;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                </div>
-                <div>
-                  <h2 class="card-title" style="color:#ffffff; font-size:1.15rem;">State Early Warning Status</h2>
-                  <span style="font-size:0.75rem; color:#fca5a5;">Real-Time Civil Defense &amp; Flood Advisory</span>
-                </div>
-              </div>
-              <span class="card-badge badge-low" id="alert-status-badge" style="font-size:0.85rem; padding:0.35rem 0.9rem;">LOW</span>
+        <!-- Catchment & River Status Box -->
+        <div class="weather-catchment-box">
+          <div>
+            <div class="catchment-box-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              <span>Catchment Basin</span>
             </div>
+            <div class="catchment-basin-name" id="wCardRiverBasin">Kajali / Vashishti River</div>
+          </div>
 
-            <div>
-              <div style="font-size:1.05rem; font-weight:700; color:#ffffff; margin-bottom:0.4rem;" id="alert-message-content">
-                Monitoring active flood sensors across Maharashtra...
-              </div>
-              <p id="alert-action-guideline" style="font-size:0.85rem; color:#cbd5e1; line-height:1.5; margin-bottom:1rem;">
-                No immediate evacuation required. River channels and stormwater drains are functioning within safe operational thresholds.
-              </p>
-
-              <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-bottom:0.4rem;">
-                High Vulnerability Zones Monitored:
-              </div>
-              <div id="affected-zones-pills" style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-                <span class="district-chip">Scanning zones...</span>
-              </div>
+          <div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">Hydro Risk Status</div>
+            <div class="catchment-risk-badge safe" id="wCardRiskBadge" style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">
+              <span>🛡️</span>
+              <span id="wCardRiskText">LOW RISK • 18.4%</span>
             </div>
           </div>
 
-          <!-- EMERGENCY HELPLINES (24/7 Response) -->
-          <div class="glass-card col-5">
-            <div class="card-header">
-              <div class="card-title-group">
-                <div class="card-icon" style="background:rgba(0,210,255,0.15); color:var(--neon-cyan);">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                </div>
-                <div>
-                  <h2 class="card-title">Emergency Toll-Free Helplines</h2>
-                  <span style="font-size:0.75rem; color:var(--text-muted);">24/7 State Emergency Response Units</span>
-                </div>
-              </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
-              <div class="metric-pill" style="border-left: 3px solid #00d2ff;">
-                <span class="label">State Disaster Control</span>
-                <span class="value" style="font-size:1.1rem; color:#00d2ff;">1077 / 1070</span>
-                <span class="subtext">Mantralaya, Mumbai</span>
-              </div>
-              <div class="metric-pill" style="border-left: 3px solid #ef4444;">
-                <span class="label">NDRF Emergency</span>
-                <span class="value" style="font-size:1.1rem; color:#ff6b6b;">011-24363260</span>
-                <span class="subtext">National Response</span>
-              </div>
-              <div class="metric-pill" style="border-left: 3px solid #f59e0b;">
-                <span class="label">SDRF Maharashtra</span>
-                <span class="value" style="font-size:1.1rem; color:#f59e0b;">022-22027990</span>
-                <span class="subtext">State Battalion</span>
-              </div>
-              <div class="metric-pill" style="border-left: 3px solid #10b981;">
-                <span class="label">All Emergency</span>
-                <span class="value" style="font-size:1.1rem; color:#10b981;">112</span>
-                <span class="subtext">Police, Fire, Ambulance</span>
-              </div>
-            </div>
+          <div class="catchment-advisory-text" id="wCardAdvisory">
+            Normal weather conditions. Standard drainage and reservoir operations in progress.
           </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Dashboard Graph Card (Added as requested) -->
+    <div class="dashboard-graph-card">
+      <div class="graph-card-header">
+        <div class="graph-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span id="dashGraphTitle">Hydrological Telemetry &amp; Rainfall Trend – Ratnagiri</span>
+        </div>
+        <span style="font-size: 0.72rem; color: var(--neon-cyan); font-weight: 700; background: rgba(0,210,255,0.15); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(0,210,255,0.3);">Real-Time Sensor Stream</span>
+      </div>
+      <div class="graph-canvas-container">
+        <canvas id="dashboardTelemetryChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Lower Section: Live Weather & Emergency Contacts -->
+    <div class="dashboard-lower-grid">
+      <!-- Live Weather Telemetry -->
+      <div class="dash-box">
+        <div class="dash-box-title">
+          <div class="dash-box-title-left">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>
+            <span>Live Weather &amp; Basin Telemetry</span>
+          </div>
+          <span style="font-size: 0.78rem; color: var(--neon-green); font-weight: 700;" id="liveWeatherRegion">Ratnagiri</span>
         </div>
 
-      </main>
-
-      <!-- Clean Footer -->
-      <footer class="app-footer">
-        <div style="display:flex; align-items:center; gap:0.5rem;">
-          <div class="status-dot-pulse"></div>
-          <span>MAHA_FLOOD_AI_TELEMETRY // LIVE SENSORS ACTIVE</span>
+        <div class="weather-detail-grid">
+          <div class="weather-mini-card">
+            <span class="weather-mini-label">Atmospheric Condition</span>
+            <span class="weather-mini-val" id="weatherCondMini">Rain Showers</span>
+          </div>
+          <div class="weather-mini-card">
+            <span class="weather-mini-label">River / Catchment Basin</span>
+            <span class="weather-mini-val" style="font-size: 0.92rem; color: var(--neon-cyan);" id="weatherRiverMini">Kajali / Vashishti River</span>
+          </div>
+          <div class="weather-mini-card">
+            <span class="weather-mini-label">24h Precipitation Trend</span>
+            <span class="weather-mini-val" id="weatherRainMini">22.0 mm</span>
+          </div>
+          <div class="weather-mini-card">
+            <span class="weather-mini-label">Wind Gust Vector</span>
+            <span class="weather-mini-val" id="weatherWindMini">14.5 km/h WNW</span>
+          </div>
         </div>
-        <div>MAHARASHTRA STATE DISASTER MANAGEMENT AUTHORITY</div>
-      </footer>
+      </div>
+
+      <!-- Emergency Contacts -->
+      <div class="dash-box">
+        <div class="dash-box-title">
+          <div class="dash-box-title-left">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Emergency Hotlines &amp; Control Cells</span>
+          </div>
+          <span style="font-size: 0.72rem; color: #ef4444; font-weight: 800; background: rgba(239,68,68,0.2); padding: 2px 8px; border-radius: 4px;">24x7 ACTIVE</span>
+        </div>
+
+        <div class="emergency-list">
+          <div class="emergency-item">
+            <span class="emergency-name">🚨 State Emergency Control (SEOC)</span>
+            <span class="emergency-num">1077 / 112</span>
+          </div>
+          <div class="emergency-item">
+            <span class="emergency-name">🛡️ NDRF 5th Battalion Pune HQ</span>
+            <span class="emergency-num">020-27103250</span>
+          </div>
+          <div class="emergency-item">
+            <span class="emergency-name">🌊 Brihanmumbai Disaster Mgmt Cell</span>
+            <span class="emergency-num">1916</span>
+          </div>
+          <div class="emergency-item">
+            <span class="emergency-name">🚑 Emergency Medical Ambulance</span>
+            <span class="emergency-num">108</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Prediction Modal -->
+  <div class="modal-overlay" id="predictionModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">AI Hydrological Prediction</div>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;" id="modalStationDesc">Evaluation based on real-time sensor catchment data</p>
+
+      <div class="modal-score">
+        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Probability of Flooding</div>
+        <div class="score-pct" id="modalProb">18.4%</div>
+        <div class="risk-tag safe" id="modalBadge">LOW RISK</div>
+      </div>
+
+      <div style="background: rgba(6, 12, 24, 0.8); padding: 1rem; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 1.5rem;">
+        <div style="font-size: 0.85rem; color: #fff; font-weight: 700; margin-bottom: 0.4rem;">Safety Advisory:</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.45;" id="modalAdvisory">No immediate evacuation required. River flows remain within baseline capacity.</div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <a href="/simulator" class="btn btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">What-If Simulator</a>
+        <button class="btn btn-primary" onclick="closeModal()" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">Close</button>
+      </div>
     </div>
   </div>
 
-  <script src="/static/js/script.js"></script>
+  <script>
+    let currentRegion = 'Ratnagiri';
+    let dashChart = null;
+
+    // Atmospheric Weather Backgrounds mapping
+    const WEATHER_BACKGROUNDS = {
+      rain: 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2000&auto=format&fit=crop',
+      thunderstorm: 'https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?q=80&w=2000&auto=format&fit=crop',
+      sun: 'https://images.unsplash.com/photo-1601297183305-6df142704ea2?q=80&w=2000&auto=format&fit=crop',
+      clouds: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=2000&auto=format&fit=crop',
+      mist: 'https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=2000&auto=format&fit=crop'
+    };
+
+    // Dynamic Weather Background Switcher
+    function updateDashboardWeatherBackground(condType, condText, rainVal) {
+      let category = 'clouds';
+      const text = (condText || '').toLowerCase();
+      const type = (condType || '').toLowerCase();
+      const rain = parseFloat(rainVal) || 0;
+
+      if (type === 'thunderstorm' || text.includes('thunder') || text.includes('storm') || text.includes('lightning') || rain >= 30) {
+        category = 'thunderstorm';
+      } else if (type === 'rain' || text.includes('rain') || text.includes('drizzle') || text.includes('shower') || text.includes('monsoon') || rain >= 3) {
+        category = 'rain';
+      } else if (type === 'mist' || text.includes('fog') || text.includes('mist') || text.includes('haze')) {
+        category = 'mist';
+      } else if (type === 'sun' || text.includes('sun') || text.includes('clear') || text.includes('hot')) {
+        category = 'sun';
+      } else {
+        category = 'clouds';
+      }
+
+      const bgUrl = WEATHER_BACKGROUNDS[category] || WEATHER_BACKGROUNDS.clouds;
+      document.body.style.backgroundImage = `radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.88) 0%, rgba(6, 12, 24, 0.96) 80%), url('${bgUrl}')`;
+
+      // Update atmosphere pill labels
+      const themeLabels = {
+        rain: '🌧️ Rain Atmosphere',
+        thunderstorm: '⚡ Storm Atmosphere',
+        sun: '☀️ Sunny Atmosphere',
+        clouds: '⛅ Cloud Atmosphere',
+        mist: '🌫️ Mist Atmosphere'
+      };
+      const label = themeLabels[category] || '⛅ Cloud Atmosphere';
+      const topbarTheme = document.getElementById('topbarThemeText');
+      const cardTheme = document.getElementById('weatherCardThemeText');
+      if (topbarTheme) topbarTheme.innerText = label;
+      if (cardTheme) cardTheme.innerText = `${label} Active`;
+    }
+
+    // Dynamic Time-Based Greeting
+    function updateTimeGreeting() {
+      const now = new Date();
+      const hour = now.getHours();
+      let greeting = 'Good Morning';
+      let icon = '🌅';
+
+      if (hour >= 12 && hour < 17) {
+        greeting = 'Good Afternoon';
+        icon = '☀️';
+      } else if (hour >= 17 && hour < 21) {
+        greeting = 'Good Evening';
+        icon = '🌆';
+      } else if (hour >= 21 || hour < 5) {
+        greeting = 'Good Night';
+        icon = '🌙';
+      }
+
+      const greetingText = `${greeting}, Welcome`;
+      const badgeElem = document.getElementById('timeGreetingText');
+      const badgeIcon = document.querySelector('#timeGreetingBadge span:first-child');
+      const bannerElem = document.getElementById('heroGreetingBanner');
+
+      if (badgeElem) badgeElem.innerText = greetingText;
+      if (badgeIcon) badgeIcon.innerText = icon;
+      if (bannerElem) bannerElem.innerText = `${greetingText} to State Flood Watch`;
+    }
+
+    // Dashboard Telemetry Graph Renderer
+    function renderDashboardGraph(location, baseRain, baseTemp) {
+      const titleElem = document.getElementById('dashGraphTitle');
+      if (titleElem) {
+        titleElem.innerText = `Hydrological Telemetry & Rainfall Trend – ${location}`;
+      }
+
+      const hours = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', 'Now'];
+      const rainMultiplier = (baseRain || 20) / 20;
+      const rainData = [
+        Math.max(0, (4 * rainMultiplier).toFixed(1)),
+        Math.max(0, (7 * rainMultiplier).toFixed(1)),
+        Math.max(0, (12 * rainMultiplier).toFixed(1)),
+        Math.max(0, (18 * rainMultiplier).toFixed(1)),
+        Math.max(0, (25 * rainMultiplier).toFixed(1)),
+        Math.max(0, (22 * rainMultiplier).toFixed(1)),
+        Math.max(0, (19 * rainMultiplier).toFixed(1)),
+        Math.max(0, (16 * rainMultiplier).toFixed(1)),
+        (baseRain || 22).toFixed(1)
+      ];
+
+      const riskData = rainData.map(r => Math.min(98, Math.round(parseFloat(r) * 2.8 + 12)));
+
+      const ctx = document.getElementById('dashboardTelemetryChart').getContext('2d');
+      if (dashChart) {
+        dashChart.destroy();
+      }
+
+      dashChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: hours,
+          datasets: [
+            {
+              label: 'Precipitation Trend (mm)',
+              data: rainData,
+              borderColor: '#00d2ff',
+              backgroundColor: 'rgba(0, 210, 255, 0.15)',
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: true,
+              pointBackgroundColor: '#00d2ff',
+              pointRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Inundation Risk Probability (%)',
+              data: riskData,
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+              borderWidth: 2,
+              borderDash: [5, 5],
+              tension: 0.35,
+              fill: false,
+              pointBackgroundColor: '#ef4444',
+              pointRadius: 3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(6, 14, 28, 0.95)',
+              titleColor: '#00d2ff',
+              bodyColor: '#f8fafc',
+              borderColor: 'rgba(0, 210, 255, 0.3)',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', font: { size: 11 } },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            },
+            y: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'Rainfall (mm)', color: '#00d2ff', font: { size: 11, weight: 'bold' } },
+              ticks: { color: '#94a3b8' },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: 'Risk Probability (%)', color: '#ef4444', font: { size: 11, weight: 'bold' } },
+              ticks: { color: '#ef4444' },
+              grid: { display: false },
+              min: 0,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    async function fetchDistrictWeather(district) {
+      const target = (district || '').trim() || 'Ratnagiri';
+      try {
+        const res = await fetch(`/api/weather/live?location=${encodeURIComponent(target)}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          currentRegion = data.location;
+          
+          // Hero Stat Values
+          document.getElementById('valTemp').innerText = `${data.temperature}°C`;
+          document.getElementById('valRain').innerText = `${data.rainfall} mm`;
+          document.getElementById('valHum').innerText = `${data.humidity}%`;
+          document.getElementById('valWind').innerText = `${data.wind_speed} km/h`;
+          document.getElementById('telemetryCondition').innerText = `${data.icon || '🌧️'} ${data.condition || 'Rainy Conditions'}`;
+          document.getElementById('telemetryLocationLabel').innerText = `${data.location} Hydrological Station`;
+          document.getElementById('activeRegionBadge').innerText = `${data.location.toUpperCase()} • LIVE`;
+
+          // Dedicated Weather Component Updates
+          const locTitle = document.getElementById('weatherCardLocTitle');
+          if (locTitle) locTitle.innerText = `${data.location} Live Weather`;
+
+          const cardIcon = document.getElementById('wCardIcon');
+          if (cardIcon) cardIcon.innerText = data.icon || '🌧️';
+
+          const cardTemp = document.getElementById('wCardTemp');
+          if (cardTemp) cardTemp.innerText = `${data.temperature}°C`;
+
+          const cardFeels = document.getElementById('wCardFeels');
+          if (cardFeels) cardFeels.innerText = `Feels like ${data.feels_like || data.temperature}°C`;
+
+          const cardCondTitle = document.getElementById('wCardCondTitle');
+          if (cardCondTitle) cardCondTitle.innerText = data.condition || 'Live Conditions';
+
+          const cardCondDesc = document.getElementById('wCardCondDesc');
+          if (cardCondDesc) {
+            cardCondDesc.innerText = data.rainfall > 15 
+              ? `Active monsoon precipitation stream observed over ${data.river_name || 'catchment basin'}.`
+              : (data.rainfall > 5 
+                ? `Scattered rainfall showers and steady atmospheric flow in ${data.location}.`
+                : `Stable meteorological conditions with calm catchment baseline levels.`);
+          }
+
+          const cardRain = document.getElementById('wCardRainVal');
+          if (cardRain) cardRain.innerText = `${data.rainfall} mm`;
+
+          const cardHum = document.getElementById('wCardHumVal');
+          if (cardHum) cardHum.innerText = `${data.humidity}%`;
+
+          const cardWind = document.getElementById('wCardWindVal');
+          if (cardWind) cardWind.innerText = `${data.wind_speed} km/h`;
+
+          const cardWindDir = document.getElementById('wCardWindDir');
+          if (cardWindDir) cardWindDir.innerText = `${data.wind_direction || 'WSW'} Vector`;
+
+          const cardPress = document.getElementById('wCardPressVal');
+          if (cardPress) cardPress.innerText = `${data.pressure || 1008} hPa`;
+
+          const cardVis = document.getElementById('wCardVisVal');
+          if (cardVis) cardVis.innerText = `${data.visibility_km || 10.0} km`;
+
+          const cardCloud = document.getElementById('wCardCloudVal');
+          if (cardCloud) cardCloud.innerText = `${data.cloud_cover_percent || 75}%`;
+
+          const cardRiver = document.getElementById('wCardRiverBasin');
+          if (cardRiver) cardRiver.innerText = data.river_name || 'Catchment River';
+
+          const cardRiskBadge = document.getElementById('wCardRiskBadge');
+          const cardRiskText = document.getElementById('wCardRiskText');
+          if (cardRiskBadge && cardRiskText) {
+            cardRiskText.innerText = `${data.risk_level} • ${data.risk_percentage}%`;
+            cardRiskBadge.className = `catchment-risk-badge ${data.alert_class || 'safe'}`;
+            if (data.alert_class === 'critical') {
+              cardRiskBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+              cardRiskBadge.style.color = '#f87171';
+              cardRiskBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            } else if (data.alert_class === 'warning') {
+              cardRiskBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+              cardRiskBadge.style.color = '#fbbf24';
+              cardRiskBadge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+            } else {
+              cardRiskBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+              cardRiskBadge.style.color = '#34d399';
+              cardRiskBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            }
+          }
+
+          const cardAdvisory = document.getElementById('wCardAdvisory');
+          if (cardAdvisory) cardAdvisory.innerText = data.action_guideline || 'Normal weather conditions. Standard drainage active.';
+
+          // Update lower live weather box
+          document.getElementById('liveWeatherRegion').innerText = data.location;
+          document.getElementById('weatherCondMini').innerText = data.condition || 'Active Telemetry';
+          document.getElementById('weatherRiverMini').innerText = data.river_name || 'Catchment Basin';
+          document.getElementById('weatherRainMini').innerText = `${data.rainfall} mm (Today)`;
+          document.getElementById('weatherWindMini').innerText = `${data.wind_speed} km/h Active Flow`;
+
+          // Dynamically Update Dashboard Background Image
+          updateDashboardWeatherBackground(data.condition_type, data.condition, data.rainfall);
+
+          // Update Quick Region Chips Active State
+          const chips = document.querySelectorAll('.quick-region-chip');
+          chips.forEach(chip => {
+            if (chip.innerText.toLowerCase().includes(data.location.toLowerCase())) {
+              chip.classList.add('active');
+            } else {
+              chip.classList.remove('active');
+            }
+          });
+
+          // Re-render Graph for the location
+          renderDashboardGraph(data.location, data.rainfall, data.temperature);
+        }
+      } catch (err) {
+        console.error('Error fetching live data:', err);
+      }
+    }
+
+    function selectQuickRegion(regionName) {
+      const searchInput = document.getElementById('regionSearchInput');
+      if (searchInput) searchInput.value = regionName;
+      fetchDistrictWeather(regionName);
+    }
+
+    function detectUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            // Check approximate coordinates or default to closest Maharashtra station
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            // Detect if around Mumbai/Pune or fetch
+            if (lat >= 18.7 && lat <= 19.3 && lon >= 72.7 && lon <= 73.2) {
+              fetchDistrictWeather('Mumbai');
+            } else if (lat >= 18.3 && lat <= 18.7 && lon >= 73.6 && lon <= 74.1) {
+              fetchDistrictWeather('Pune');
+            } else if (lat >= 16.5 && lat <= 17.5) {
+              fetchDistrictWeather('Ratnagiri');
+            } else {
+              fetchDistrictWeather('Mumbai');
+            }
+          },
+          (err) => {
+            const loc = prompt('Enter your city or district in Maharashtra:', 'Pune');
+            if (loc) {
+              selectQuickRegion(loc);
+            }
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        const loc = prompt('Enter your city or district in Maharashtra:', 'Pune');
+        if (loc) {
+          selectQuickRegion(loc);
+        }
+      }
+    }
+
+    function executeSearch() {
+      const input = document.getElementById('regionSearchInput');
+      const q = input.value.trim();
+      if (q) {
+        fetchDistrictWeather(q);
+      }
+    }
+
+    async function runPredictionModal() {
+      const modal = document.getElementById('predictionModal');
+      try {
+        const res = await fetch(`/api/predict?location=${encodeURIComponent(currentRegion)}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          const p = data.prediction;
+          document.getElementById('modalStationDesc').innerText = `Sensor catchment assessment for ${currentRegion}, Maharashtra`;
+          document.getElementById('modalProb').innerText = `${p.risk_percentage}%`;
+          const badge = document.getElementById('modalBadge');
+          badge.innerText = p.risk_level;
+          badge.className = `risk-tag ${p.alert_class}`;
+          document.getElementById('modalAdvisory').innerText = p.action_guideline || 'Monitor standard local meteorological updates.';
+          modal.classList.add('active');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('predictionModal').classList.remove('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateTimeGreeting();
+      fetchDistrictWeather('Ratnagiri');
+    });
+  </script>
 </body>
 </html>
