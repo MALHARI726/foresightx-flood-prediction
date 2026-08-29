@@ -8,8 +8,17 @@ from config import DISTRICT_COORDINATES
 
 
 
-# Initialize Flask app
-app = Flask(__name__, template_folder='frontend', static_folder='static')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+FRONTEND_FOLDER = os.path.join(BASE_DIR, 'frontend')
+STATIC_FOLDER = os.path.join(BASE_DIR, 'static')
+
+app = Flask(
+    __name__,
+    template_folder=FRONTEND_FOLDER,
+    static_folder=STATIC_FOLDER
+)
+
 app.config['SECRET_KEY'] = 'maha-flood-ai-secret-2026'
 
 DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
@@ -630,6 +639,6 @@ def api_settings_handler():
         return jsonify({"status": "success", "settings": settings})
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 3000))
+    port = int(os.environ.get('PORT', 5001))
 
     app.run(host='0.0.0.0', port=port, debug=False)
