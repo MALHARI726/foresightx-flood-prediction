@@ -37,12 +37,6 @@ app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "frontend"), static
 app.config["SECRET_KEY"] = "maha-flood-ai-2026"
 
 
-<<<<<<< HEAD
-
-
-
-HISTORICAL_FLOOD_EVENTS = [
-=======
 def clean_text(value):
     if pd.isna(value):
         return ""
@@ -50,7 +44,6 @@ def clean_text(value):
 
 
 HISTORICAL_FLOOD_EVENTS=[
->>>>>>> d3689bc6189636978fc610f6b13e1ff77de5bb37
     {
         "year": "2005",
         "event_name": "Maharashtra & Mumbai Cloudburst Deluge",
@@ -102,10 +95,6 @@ def load_flood_history():
     df["End Date Parsed"] = pd.to_datetime(df["End Date"], dayfirst=True, errors="coerce")
     df["Year"] = df["Start Date Parsed"].dt.year
     return df
-<<<<<<< HEAD
-
-=======
->>>>>>> d3689bc6189636978fc610f6b13e1ff77de5bb37
 
 
 HISTORY_DF = load_flood_history()
