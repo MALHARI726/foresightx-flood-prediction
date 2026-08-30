@@ -8,7 +8,11 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
+<<<<<<< HEAD
+set "VIRTUAL_ENV=C:\Users\Malhari Gaikwad\Desktop\foresightx-flood-prediction\foresightx-flood-prediction\venv"
+=======
 set "VIRTUAL_ENV=C:\Users\Palak\OneDrive\Documents\github\foresightx-flood-prediction\venv"
+>>>>>>> d3689bc6189636978fc610f6b13e1ff77de5bb37
 
 if not defined PROMPT set PROMPT=$P$G
 
