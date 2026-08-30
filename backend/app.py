@@ -4,7 +4,6 @@ import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
-<<<<<<< HEAD
 import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from config import DISTRICT_COORDINATES
@@ -17,7 +16,6 @@ app = Flask(
     static_folder='../frontend/static'
 )
 app.config['SECRET_KEY'] = 'maha-flood-ai-secret-2026'
-=======
 from functools import lru_cache
 
 import pandas as pd
@@ -39,19 +37,14 @@ app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "frontend"), static
 app.config["SECRET_KEY"] = "maha-flood-ai-2026"
 
 
-def clean_text(value):
-    if pd.isna(value):
-        return ""
-    return str(value).strip()
->>>>>>> 2e171ce77bcef24de55fef0d6910628d59449dc7
 
 
-<<<<<<< HEAD
+
 HISTORICAL_FLOOD_EVENTS = [
     {
         "year": "2005",
         "event_name": "Maharashtra & Mumbai Cloudburst Deluge",
-        "affected_districts": "Mumbai, Thane, Raigad, Ratnagiri"
+        "affected_districts": "Mumbai, Thane, Raigad, Ratnagiri",
         "rainfall_mm": 944.0,
         "severity": "CRITICAL CATASTROPHIC",
         "summary": "Historic cloudburst dropped 944mm in 24 hours over Santacruz. Mithi River overflowed, paralyzing suburban transport and causing widespread urban inundation."
@@ -89,7 +82,6 @@ HISTORICAL_FLOOD_EVENTS = [
         "summary": "Intense spells caused Khadakwasla dam discharge leading to Mutha river overflow in Pune, alongside severe urban low-lying waterlogging in Thane and Ulhasnagar."
     }
 ]
-=======
 def load_flood_history():
     """Historical events come ONLY from data/raw/flood_history.csv."""
     if not os.path.exists(FLOOD_HISTORY_FILE):
@@ -100,7 +92,7 @@ def load_flood_history():
     df["End Date Parsed"] = pd.to_datetime(df["End Date"], dayfirst=True, errors="coerce")
     df["Year"] = df["Start Date Parsed"].dt.year
     return df
->>>>>>> 2e171ce77bcef24de55fef0d6910628d59449dc7
+
 
 
 HISTORY_DF = load_flood_history()
