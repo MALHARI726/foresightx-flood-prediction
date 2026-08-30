@@ -162,7 +162,7 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      background: rgba(255, 255, 255, 0.95);
+      background: #ffffff;
       border: 1px solid #cbd5e1;
       padding: 6px 14px;
       border-radius: 20px;
@@ -312,7 +312,12 @@
       .sidebar { display: none; }
       .main-wrapper { margin-left: 0; padding: 1rem; }
     }
-  </style>
+  
+    .route-panel{background:rgba(8,16,32,.92);border:1px solid rgba(0,210,255,.25);border-radius:14px;padding:1rem;margin-top:1rem}.route-panel h3{margin-bottom:.6rem}.route-controls{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}.route-controls select,.route-controls button{padding:.65rem .8rem;border-radius:8px;border:1px solid rgba(0,210,255,.3);background:#0b1728;color:#fff;font-weight:700}.route-controls button{cursor:pointer}.route-item{padding:.7rem;margin-top:.55rem;border-radius:9px;background:rgba(0,210,255,.06);border-left:3px solid #10b981}.route-note{font-size:.72rem;color:#94a3b8;margin-top:.65rem;line-height:1.4}
+
+.flood-hover-tooltip { padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: 0 8px 24px rgba(0,0,0,.22) !important; }
+.flood-hover-tooltip::before { display:none !important; }
+</style>
 </head>
 <body>
 
@@ -325,7 +330,6 @@
         </div>
         <div class="brand-text-wrap">
           <span class="brand-title">MAHA FLOOD AI</span>
-          <span class="brand-subtitle">State Telemetry System</span>
         </div>
       </div>
 
@@ -352,20 +356,10 @@
       <div class="controls-row">
         <div class="year-filter-box">
           <label for="yearSelect" style="color: var(--text-muted);">Filter Incidents:</label>
-          <select id="yearSelect" onchange="loadGisData(this.value)">
-            <option value="2015_plus" selected>All Floods (2015 – 2026)</option>
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
+          <select id="yearSelect" onchange="loadGisData(this.value)" style="min-width:180px;">
+            <option value="live" selected>LIVE WEATHER MAP</option>
+            <option value="all">All Recorded Floods</option>
+            {% for year in years %}<option value="{{ year }}">{{ year }}</option>{% endfor %}
           </select>
         </div>
       </div>
@@ -378,6 +372,12 @@
         <span style="width: 8px; height: 8px; border-radius: 50%; background: #dc2626; display: inline-block;"></span>
         <span>Maharashtra Inundation Coordinates (From 2015)</span>
       </div>
+    </div>
+
+    <div class="route-panel">
+      <h3>🛡️ Safe Evacuation Corridors</h3>
+      <div class="route-controls"><select id="routeDistrict">{% for d in districts %}<option value="{{ d }}">{{ d }}</option>{% endfor %}</select><button onclick="loadSafeRoutes()">Find Safer Corridors</button><span id="routeStatus" style="font-size:.78rem;color:#94a3b8"></span></div>
+      <div id="routeList"></div><div class="route-note">Corridors are district-level guidance calculated only from the project's supplied coordinates and live risk. They are not turn-by-turn road directions; confirm road closures and official evacuation instructions before travel.</div>
     </div>
 
     <!-- Recorded Incidents Section DOWN/BELOW the map -->
@@ -397,107 +397,55 @@
   </main>
 
   <script>
-    let map = null;
-    let markersLayer = null;
-
-    function initMap() {
-      // Initialize map with clean White / Light Positron theme
-      map = L.map('mapContainer', {
-        center: [19.1, 75.6],
-        zoom: 7,
-        zoomControl: true
-      });
-
-      // White / Light CartoDB map tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-      }).addTo(map);
-
-      markersLayer = L.layerGroup().addTo(map);
+    let map=null, markersLayer=null, routeLayer=null;
+    function initMap(){
+      map=L.map('mapContainer',{center:[19.1,75.6],zoom:7,zoomControl:true});
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+      markersLayer=L.layerGroup().addTo(map); routeLayer=L.layerGroup().addTo(map);
     }
-
-    async function loadGisData(year = '2015_plus') {
-      try {
-        const res = await fetch(`/api/gis/historical-floods?year=${year}`);
-        const data = await res.json();
-
-        markersLayer.clearLayers();
-        const listContainer = document.getElementById('incidentsList');
-        listContainer.innerHTML = '';
-
-        if (!data.has_data || data.flood_incidents.length === 0) {
-          document.getElementById('incidentCount').innerText = '0 Found';
-          listContainer.innerHTML = `
-            <div class="no-data-notice">
-              <p>⚠️ <strong>No data available for this selection.</strong></p>
-              <p style="font-size: 0.8rem; margin-top: 0.4rem; color: #cbd5e1;">
-                No historical flood disasters recorded in the dataset for year ${year}.
-              </p>
-            </div>
-          `;
-          return;
+    function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+    async function loadGisData(mode='live'){
+      markersLayer.clearLayers(); const list=document.getElementById('incidentsList'); list.innerHTML='<div class="no-data-notice">Loading map data…</div>';
+      try{
+        if(mode==='live'){
+          const res=await fetch('/api/gis/data'); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'Live map unavailable');
+          document.getElementById('incidentCount').innerText=`${data.districts.length} Live Points`;
+          list.innerHTML=''; const bounds=[];
+          data.districts.forEach(item=>{
+            const marker=L.circleMarker([item.lat,item.lon],{radius:8,fillColor:item.risk_level==='HIGH'?'#dc2626':item.risk_level==='MEDIUM'?'#f59e0b':'#16a34a',color:'#fff',weight:2,fillOpacity:.9}).addTo(markersLayer);
+            marker.bindPopup(`<div style="min-width:220px"><strong>📍 ${esc(item.district)}</strong><br>🌡️ ${item.temperature} °C<br>🌧️ ${item.rainfall} mm<br>💧 ${item.humidity}%<br>💨 ${item.wind_speed} km/h<br><b>Flood risk: ${item.risk_level} • ${item.risk_percentage}%</b><p style="margin-top:6px">Live weather point. Values refresh from the live weather service.</p></div>`);
+            bounds.push([item.lat,item.lon]);
+            const card=document.createElement('div'); card.className='incident-item'; card.innerHTML=`<div class="incident-district"><span>📍 ${esc(item.district)}</span><span class="incident-date">LIVE</span></div><div class="incident-cause">${esc(item.risk_level)} flood risk • ${item.risk_percentage}%</div><div class="incident-meta-row"><span>🌧️ ${item.rainfall} mm</span><span>🌡️ ${item.temperature} °C</span></div>`; card.onclick=()=>{map.flyTo([item.lat,item.lon],9);marker.openPopup()}; list.appendChild(card);
+          }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20]}); return;
         }
-
-        document.getElementById('incidentCount').innerText = `${data.flood_incidents.length} Records Found (2015+)`;
-
-        data.flood_incidents.forEach((item) => {
-          // Add high-visibility circle marker on White Map
-          const circle = L.circleMarker([item.lat, item.lon], {
-            radius: 9,
-            fillColor: '#dc2626',
-            color: '#ffffff',
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.9
-          }).addTo(markersLayer);
-
-          const popupContent = `
-            <div style="font-size: 0.88rem; line-height: 1.45; min-width: 220px;">
-              <strong style="color: #0284c7; font-size: 1rem;">📍 ${item.district} (${item.year})</strong><br>
-              <span style="color: #64748b;">📅 Date:</span> <strong>${item.start_date}</strong><br>
-              <span style="color: #64748b;">🌊 River/Basin:</span> <strong>${item.river || 'Regional Basin'}</strong><br>
-              <span style="color: #64748b;">⚠️ Primary Cause:</span> ${item.main_cause}<br>
-              <span style="color: #dc2626; font-weight: 700;">🚨 Fatalities:</span> <strong>${item.fatalities || '0'}</strong><br>
-              <p style="font-size: 0.78rem; color: #334155; margin-top: 6px; border-top: 1px solid #e2e8f0; padding-top: 6px;">
-                ${item.description || item.damage || 'Severe inundation reported across low-lying areas.'}
-              </p>
-            </div>
-          `;
-          circle.bindPopup(popupContent);
-
-          // Add card to bottom incidents grid
-          const card = document.createElement('div');
-          card.className = 'incident-item';
-          card.innerHTML = `
-            <div class="incident-district">
-              <span>📍 ${item.district}</span>
-              <span class="incident-date">${item.year}</span>
-            </div>
-            <div class="incident-cause">${item.main_cause}</div>
-            <div class="incident-meta-row">
-              <span class="incident-river">🌊 ${item.river || 'Basin Catchment'}</span>
-              <span class="incident-fatalities">Fatalities: ${item.fatalities || '0'}</span>
-            </div>
-          `;
-          card.onclick = () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            map.flyTo([item.lat, item.lon], 9, { duration: 1.2 });
-            setTimeout(() => circle.openPopup(), 1200);
-          };
-          listContainer.appendChild(card);
+        const res=await fetch(`/api/gis/historical-floods?year=${encodeURIComponent(mode)}`); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'History unavailable');
+        document.getElementById('incidentCount').innerText=`${data.flood_incidents.length} Records Found`; list.innerHTML='';
+        if(!data.flood_incidents.length){list.innerHTML='<div class="no-data-notice">No flood events are recorded in the supplied dataset for this year.</div>';return;}
+        const bounds=[];
+        data.flood_incidents.forEach(item=>{
+          const marker=L.circleMarker([item.lat,item.lon],{radius:9,fillColor:'#dc2626',color:'#fff',weight:2,fillOpacity:.9}).addTo(markersLayer); bounds.push([item.lat,item.lon]);
+          const details=`<div style="font-size:.88rem;line-height:1.45;min-width:230px"><strong style="color:#0284c7">📍 ${esc(item.district)} (${item.year})</strong><br>📅 ${esc(item.start_date)}${item.end_date?' – '+esc(item.end_date):''}<br>⚠️ Cause: ${esc(item.main_cause)}<br>🚨 Fatalities: ${esc(item.fatalities)}<p style="margin-top:6px;border-top:1px solid #ddd;padding-top:6px">${esc(item.description||item.damage||'Historical flood event recorded in the supplied dataset.')}</p></div>`;
+          marker.bindTooltip(details,{direction:'top',sticky:true,opacity:.98,className:'flood-hover-tooltip'});
+          const card=document.createElement('div');card.className='incident-item';card.innerHTML=`<div class="incident-district"><span>📍 ${esc(item.district)}</span><span class="incident-date">${item.year}</span></div><div class="incident-cause">${esc(item.main_cause)}</div><div class="incident-meta-row"><span>🚨 Fatalities: ${esc(item.fatalities)}</span><span>📅 ${esc(item.start_date)}</span></div>`;card.onclick=()=>{map.flyTo([item.lat,item.lon],9);marker.openPopup()};list.appendChild(card);
+        }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20]});
+      }catch(e){console.error(e);document.getElementById('incidentCount').innerText='Error';list.innerHTML=`<div class="no-data-notice">${esc(e.message)}</div>`}
+    }
+    async function loadSafeRoutes(){
+      const district=document.getElementById('routeDistrict').value; const list=document.getElementById('routeList'); const status=document.getElementById('routeStatus');
+      list.innerHTML='<div style="padding:.7rem;color:#94a3b8">Calculating live safer corridors…</div>'; status.textContent=''; if(routeLayer)routeLayer.clearLayers();
+      try{
+        const res=await fetch(`/api/gis/safe-routes?location=${encodeURIComponent(district)}`); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'Safe route service unavailable');
+        list.innerHTML=''; status.textContent=`Origin risk: ${data.origin_risk.risk_level} • ${data.origin_risk.risk_percentage}%`;
+        data.routes.forEach((r,i)=>{
+          const line=L.polyline(r.points,{color:i===0?'#10b981':'#00d2ff',weight:i===0?6:4,dashArray:i===0?'':'8 8',opacity:.9}).addTo(routeLayer);
+          line.bindPopup(`<strong>🛡️ Safer Corridor ${i+1}</strong><br>${esc(r.from)} → ${esc(r.to)}<br>Distance: ${r.distance_km} km<br>Destination risk: ${r.destination_risk}% (${esc(r.destination_risk_level)})<br>${esc(r.advisory)}`);
+          const el=document.createElement('div'); el.className='route-item'; el.innerHTML=`<strong>Route ${i+1}: ${esc(r.from)} → ${esc(r.to)}</strong><br><span style="font-size:.78rem">${r.distance_km} km • destination ${esc(r.destination_risk_level)} risk (${r.destination_risk}%) • ${esc(r.destination_weather)}</span>`; el.onclick=()=>{map.fitBounds(line.getBounds(),{padding:[40,40]});line.openPopup()}; list.appendChild(el);
         });
-
-      } catch (err) {
-        console.error('Error loading GIS data:', err);
-      }
+        if(data.routes.length===0) list.innerHTML='<div style="padding:.7rem;color:#fbbf24">No lower-risk destination corridor could be resolved from the supplied project coordinates right now.</div>';
+      }catch(e){list.innerHTML=`<div style="padding:.7rem;color:#fca5a5">${esc(e.message)}</div>`;}
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initMap();
-      loadGisData('2015_plus');
-    });
+    document.addEventListener('DOMContentLoaded',()=>{initMap();loadGisData('live');loadSafeRoutes();});
   </script>
 </body>
 </html>

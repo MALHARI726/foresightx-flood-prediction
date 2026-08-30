@@ -232,7 +232,7 @@
         </div>
         <div class="brand-text-wrap">
           <span class="brand-title">MAHA FLOOD AI</span>
-          <span class="brand-subtitle">State Telemetry System</span>
+
         </div>
       </div>
 
@@ -247,16 +247,7 @@
       </ul>
     </div>
 
-    <!-- Sidebar footer -->
-    <div class="sidebar-footer">
-      <div class="sidebar-footer-title">
-        <span>STATE TELEMETRY</span>
-        <span style="color: var(--neon-green); font-size: 0.65rem;">• ONLINE</span>
-      </div>
-      <div class="sidebar-footer-desc">
-        Integrated with Open-Meteo & Central Water Commission Hydrology Rules.
-      </div>
-    </div>
+    
   </aside>
 
   <!-- Main Wrapper -->
@@ -307,11 +298,13 @@
     async function loadHistory() {
       try {
         const res = await fetch('/api/history/records');
+        if (!res.ok) throw new Error(`History API returned ${res.status}`);
         const data = await res.json();
         historicalRecords = data.records || [];
         renderTable(historicalRecords);
       } catch (err) {
-        console.error(err);
+        console.error('Previous floods load error:', err);
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#f87171;padding:2rem;">Unable to load historical flood records. Please restart Flask and refresh the page.</td></tr>`;
       }
     }
 
@@ -336,7 +329,7 @@
           </td>
           <td><strong style="color: var(--neon-cyan);">${(r.districts || '').replace(/"/g, '')}</strong></td>
           <td><span class="cause-tag">${r.main_cause || 'Heavy Monsoon Deluge'}</span></td>
-          <td style="text-align: center;"><span class="fatality-pill">${r.human_fatality || '0'} Reported</span></td>
+          <td style="text-align: center;"><span class="fatality-pill">${r.human_fatality || r.fatalities || '0'} Reported</span></td>
           <td style="font-size: 0.84rem; color: #cbd5e1;">${r.description || r.damage_extent || 'Inundation recorded across low-lying river basins.'}</td>
         `;
         tbody.appendChild(tr);

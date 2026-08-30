@@ -253,7 +253,7 @@
         </div>
         <div class="brand-text-wrap">
           <span class="brand-title">MAHA FLOOD AI</span>
-          <span class="brand-subtitle">State Telemetry System</span>
+
         </div>
       </div>
 
@@ -268,16 +268,6 @@
       </ul>
     </div>
 
-    <!-- Sidebar footer -->
-    <div class="sidebar-footer">
-      <div class="sidebar-footer-title">
-        <span>STATE TELEMETRY</span>
-        <span style="color: var(--neon-green); font-size: 0.65rem;">• ONLINE</span>
-      </div>
-      <div class="sidebar-footer-desc">
-        Integrated with Open-Meteo & Central Water Commission Hydrology Rules.
-      </div>
-    </div>
   </aside>
 
   <!-- Main Wrapper -->
@@ -293,6 +283,7 @@
       <div class="header-search">
         <input type="text" id="weatherSearchInput" placeholder="Search any region in Maharashtra..." onkeydown="if(event.key==='Enter') executeWeatherSearch()" value="Ratnagiri" />
         <button class="search-btn" onclick="executeWeatherSearch()">Search</button>
+        
       </div>
     </div>
 
@@ -351,181 +342,14 @@
   </main>
 
   <script>
-    let weatherChart = null;
-
-    // Background Image Map according to weather condition
-    const WEATHER_BACKGROUNDS = {
-      rain: "https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2000&auto=format&fit=crop",
-      thunderstorm: "https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?q=80&w=2000&auto=format&fit=crop",
-      clouds: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=2000&auto=format&fit=crop",
-      clear: "https://images.unsplash.com/photo-1601297183305-6df142704ea2?q=80&w=2000&auto=format&fit=crop",
-      mist: "https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=2000&auto=format&fit=crop"
-    };
-
-    function updateWeatherBackground(conditionText, rainVal) {
-      const cond = (conditionText || '').toLowerCase();
-      let selectedBg = WEATHER_BACKGROUNDS.rain;
-
-      if (cond.includes('thunder') || cond.includes('storm') || cond.includes('heavy')) {
-        selectedBg = WEATHER_BACKGROUNDS.thunderstorm;
-      } else if (cond.includes('rain') || cond.includes('drizzle') || cond.includes('shower') || rainVal > 5) {
-        selectedBg = WEATHER_BACKGROUNDS.rain;
-      } else if (cond.includes('cloud') || cond.includes('overcast')) {
-        selectedBg = WEATHER_BACKGROUNDS.clouds;
-      } else if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) {
-        selectedBg = WEATHER_BACKGROUNDS.mist;
-      } else {
-        selectedBg = WEATHER_BACKGROUNDS.clear;
-      }
-
-      document.body.style.backgroundImage = `radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.88) 0%, rgba(6, 12, 24, 0.96) 80%), url('${selectedBg}')`;
-    }
-
-    function renderWeatherRainfallChart(location, rain, temp, hum) {
-      const titleElem = document.getElementById('weatherGraphTitle');
-      if (titleElem) {
-        titleElem.innerText = `Weather & Rainfall Forecast & Sensor Telemetry – ${location}`;
-      }
-
-      const hours = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', 'Now'];
-      const rainBase = rain || 20;
-      const tempBase = temp || 27;
-
-      const rainCurve = [
-        Math.max(0, (rainBase * 0.3).toFixed(1)),
-        Math.max(0, (rainBase * 0.5).toFixed(1)),
-        Math.max(0, (rainBase * 0.8).toFixed(1)),
-        Math.max(0, (rainBase * 1.1).toFixed(1)),
-        Math.max(0, (rainBase * 1.25).toFixed(1)),
-        Math.max(0, (rainBase * 1.05).toFixed(1)),
-        Math.max(0, (rainBase * 0.9).toFixed(1)),
-        Math.max(0, (rainBase * 0.85).toFixed(1)),
-        rainBase.toFixed(1)
-      ];
-
-      const tempCurve = [
-        (tempBase - 3).toFixed(1),
-        (tempBase - 3.5).toFixed(1),
-        (tempBase - 2).toFixed(1),
-        (tempBase + 1).toFixed(1),
-        (tempBase + 2.5).toFixed(1),
-        (tempBase + 2).toFixed(1),
-        (tempBase + 0.5).toFixed(1),
-        (tempBase - 1).toFixed(1),
-        tempBase.toFixed(1)
-      ];
-
-      const ctx = document.getElementById('weatherRainfallChart').getContext('2d');
-      if (weatherChart) {
-        weatherChart.destroy();
-      }
-
-      weatherChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: hours,
-          datasets: [
-            {
-              label: 'Hourly Rainfall (mm)',
-              data: rainCurve,
-              borderColor: '#00d2ff',
-              backgroundColor: 'rgba(0, 210, 255, 0.2)',
-              borderWidth: 2.5,
-              tension: 0.35,
-              fill: true,
-              pointBackgroundColor: '#00d2ff',
-              pointRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              label: 'Temperature (°C)',
-              data: tempCurve,
-              borderColor: '#f59e0b',
-              backgroundColor: 'transparent',
-              borderWidth: 2.5,
-              tension: 0.35,
-              pointBackgroundColor: '#f59e0b',
-              pointRadius: 4,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: {
-              labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' } }
-            },
-            tooltip: {
-              backgroundColor: 'rgba(6, 14, 28, 0.95)',
-              titleColor: '#00d2ff',
-              bodyColor: '#f8fafc',
-              borderColor: 'rgba(0, 210, 255, 0.3)',
-              borderWidth: 1
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#94a3b8', font: { size: 11 } },
-              grid: { color: 'rgba(255, 255, 255, 0.05)' }
-            },
-            y: {
-              type: 'linear',
-              position: 'left',
-              title: { display: true, text: 'Rainfall (mm)', color: '#00d2ff', font: { size: 11, weight: 'bold' } },
-              ticks: { color: '#94a3b8' },
-              grid: { color: 'rgba(255, 255, 255, 0.08)' }
-            },
-            y1: {
-              type: 'linear',
-              position: 'right',
-              title: { display: true, text: 'Temperature (°C)', color: '#f59e0b', font: { size: 11, weight: 'bold' } },
-              ticks: { color: '#f59e0b' },
-              grid: { display: false }
-            }
-          }
-        }
-      });
-    }
-
-    async function loadStationWeather(district) {
-      const q = (district || '').trim() || 'Ratnagiri';
-      try {
-        const res = await fetch(`/api/weather/live?location=${encodeURIComponent(q)}`);
-        const data = await res.json();
-        if (data.status === 'success') {
-          document.getElementById('pageHeading').innerText = `${data.location} Live Weather`;
-          document.getElementById('stationSubtitle').innerText = `${data.river_name || 'Catchment Basin'} • Real-time telemetry feed`;
-          document.getElementById('cardTemp').innerText = `${data.temperature}°C`;
-          document.getElementById('cardRain').innerText = `${data.rainfall} mm`;
-          document.getElementById('cardHum').innerText = `${data.humidity}%`;
-          document.getElementById('cardWind').innerText = `${data.wind_speed} km/h`;
-          document.getElementById('cardCondition').innerText = `${data.icon || '🌧️'} ${data.condition || 'Rainy Conditions'}`;
-          document.getElementById('cardRiver').innerText = data.river_name || 'Catchment Basin';
-
-          // Update Dynamic Background Image based on weather condition
-          updateWeatherBackground(data.condition, data.rainfall);
-
-          // Render Weather & Rainfall Graph
-          renderWeatherRainfallChart(data.location, data.rainfall, data.temperature, data.humidity);
-        }
-      } catch (err) {
-        console.error('Error loading station weather:', err);
-      }
-    }
-
-    function executeWeatherSearch() {
-      const q = document.getElementById('weatherSearchInput').value.trim();
-      if (q) {
-        loadStationWeather(q);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadStationWeather('Ratnagiri');
-    });
+    let weatherChart=null;
+    const bg={rain:'/static/images/weather/rainy.jpg',thunderstorm:'/static/images/weather/storm.jpg',clouds:'/static/images/weather/cloudy.jpg',clear:'/static/images/weather/sunny.jpg',mist:'/static/images/weather/fog.jpg'};
+    function updateWeatherBackground(c,r){const t=(c||'').toLowerCase();let k=t.includes('thunder')?'thunderstorm':t.includes('rain')||Number(r)>0?'rain':t.includes('fog')||t.includes('mist')?'mist':t.includes('clear')?'clear':'clouds';document.body.style.backgroundImage=`radial-gradient(circle at 50% 15%,rgba(6,14,28,.88),rgba(6,12,24,.96) 80%),url('${bg[k]}')`}
+    function setv(id,v){const e=document.getElementById(id);if(e)e.innerText=v}
+    function renderWeatherRainfallChart(location,series){const c=document.getElementById('weatherRainfallChart');if(!c||!series)return;if(weatherChart)weatherChart.destroy();setv('weatherGraphTitle',`Last 7 Days – ${location}`);weatherChart=new Chart(c.getContext('2d'),{type:'line',data:{labels:series.dates,datasets:[{label:'Temperature (°C)',data:series.temperature,borderColor:'#00d2ff',backgroundColor:'rgba(0,210,255,.12)',fill:true,tension:.35,yAxisID:'temp'},{label:'Rainfall (mm)',data:series.rainfall,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',fill:false,tension:.35,yAxisID:'rain'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#cbd5e1'}}},scales:{x:{ticks:{color:'#94a3b8'}},temp:{position:'left',title:{display:true,text:'Temperature °C',color:'#00d2ff'},ticks:{color:'#94a3b8'}},rain:{position:'right',title:{display:true,text:'Rainfall mm',color:'#f59e0b'},ticks:{color:'#f59e0b'},grid:{display:false}}}}})}
+    async function loadStationWeather(district){const q=(district||'').trim()||'{{ initial_location }}';try{const r=await fetch(`/api/dashboard-data?location=${encodeURIComponent(q)}`),d=await r.json();if(d.status!=='success')throw new Error(d.error);const w=d.weather;setv('pageHeading',`${w.location} Live Weather`);setv('stationSubtitle',`${w.source} • updated ${w.time||'now'}`);setv('cardTemp',`${w.temperature}°C`);setv('cardRain',`${w.rainfall} mm`);setv('cardHum',`${w.humidity}%`);setv('cardWind',`${w.wind_speed} km/h`);setv('cardCondition',`${w.condition}`);setv('cardRiver','Live meteorological indicator');updateWeatherBackground(w.condition,w.rainfall);renderWeatherRainfallChart(w.location,d.series);const sel=document.getElementById('weatherDistrictSelect');if(sel){const o=[...sel.options].find(x=>x.value.toLowerCase()===w.location.toLowerCase());if(o)sel.value=o.value}}catch(e){console.error(e);alert(e.message)}}
+    function executeWeatherSearch(){const q=document.getElementById('weatherSearchInput').value.trim();if(q)loadStationWeather(q)}
+    document.addEventListener('DOMContentLoaded',()=>{loadStationWeather('{{ initial_location }}');setInterval(()=>loadStationWeather(document.getElementById('weatherDistrictSelect')?.value||'{{ initial_location }}'),60000)});
   </script>
 </body>
 </html>

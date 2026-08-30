@@ -234,7 +234,7 @@
         </div>
         <div class="brand-text-wrap">
           <span class="brand-title">MAHA FLOOD AI</span>
-          <span class="brand-subtitle">State Telemetry System</span>
+   
         </div>
       </div>
 
@@ -249,16 +249,7 @@
       </ul>
     </div>
 
-    <!-- Sidebar footer -->
-    <div class="sidebar-footer">
-      <div class="sidebar-footer-title">
-        <span>STATE TELEMETRY</span>
-        <span style="color: var(--neon-green); font-size: 0.65rem;">• ONLINE</span>
-      </div>
-      <div class="sidebar-footer-desc">
-        Integrated with Open-Meteo & Central Water Commission Hydrology Rules.
-      </div>
-    </div>
+
   </aside>
 
   <!-- Main Wrapper -->
@@ -274,6 +265,14 @@
         <div class="sim-card-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
           Scenario Parameters
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row"><span class="control-name">📍 District</span></div>
+          <select id="simDistrict" style="width:100%;padding:.75rem;border-radius:10px;background:#0b1728;color:#fff;border:1px solid rgba(0,210,255,.25);">
+            {% for d in districts %}<option value="{{ d }}" {% if d == initial_location %}selected{% endif %}>{{ d }}</option>{% endfor %}
+          </select>
+          <div id="liveBaseline" style="font-size:.75rem;color:#94a3b8;margin-top:.45rem;">Loading current live values…</div>
         </div>
 
         <div class="control-group">
@@ -347,55 +346,25 @@
   </main>
 
   <script>
-    async function runSimulation() {
-      const rain = document.getElementById('simRain').value;
-      const temp = document.getElementById('simTemp').value;
-      const hum = document.getElementById('simHum').value;
-      const wind = document.getElementById('simWind').value;
-
-      document.getElementById('lblRain').innerText = `${rain} mm`;
-      document.getElementById('lblTemp').innerText = `${temp} °C`;
-      document.getElementById('lblHum').innerText = `${hum} %`;
-      document.getElementById('lblWind').innerText = `${wind} km/h`;
-
-      try {
-        const res = await fetch('/api/simulate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ rainfall: rain, temperature: temp, humidity: hum, wind_speed: wind })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          const sim = data.simulation;
-          document.getElementById('simGaugePct').innerText = `${sim.risk_percentage}%`;
-          const badge = document.getElementById('simGaugeBadge');
-          badge.innerText = sim.risk_level;
-          badge.className = `gauge-label ${sim.alert_class}`;
-
-          // Update Safety Guides and Early Warnings based on risk level
-          if (sim.risk_percentage > 70) {
-            document.getElementById('safetyGuidesText').innerText =
-              'Immediate preparation for evacuation. Move vulnerable family members and livestock to designated storm shelters. Switch off main electrical power and gas valves before leaving premises.';
-            document.getElementById('earlyWarningsText').innerText =
-              '🔴 RED ALERT: Severe basin overflow and flash flood risk imminent. Inflow surpasses discharge limits across nearby river channels.';
-          } else if (sim.risk_percentage > 40) {
-            document.getElementById('safetyGuidesText').innerText =
-              'Stay tuned to local radio / SDMA broadcasts. Avoid low-lying underpasses and river bridges. Secure outdoor belongings and ensure phone charge reserves.';
-            document.getElementById('earlyWarningsText').innerText =
-              '🟠 ORANGE WATCH: Moderate inundation expected in low-lying catchment belts. Catchment soils approaching saturation point.';
-          } else {
-            document.getElementById('safetyGuidesText').innerText =
-              'Normal monsoon precautions advised. Clear local drainage gratings of debris. Regular monitoring of local weather bulletins.';
-            document.getElementById('earlyWarningsText').innerText =
-              '🟢 GREEN STATUS: Baseline river capacity maintained. No flash flood threat indicated for simulated parameters.';
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
+    let liveValues=null;
+    const $=id=>document.getElementById(id);
+    async function loadLiveValues(){
+      const loc=$('simDistrict').value;
+      try{const r=await fetch(`/api/weather/live?location=${encodeURIComponent(loc)}`),d=await r.json();if(d.status!=='success')throw new Error(d.error);liveValues=d.data;['simRain','simTemp','simHum','simWind'].forEach((id,i)=>{});
+        $('simRain').value=Math.min(100,Math.max(0,liveValues.rainfall));$('simTemp').value=Math.min(42,Math.max(15,liveValues.temperature));$('simHum').value=Math.min(100,Math.max(40,liveValues.humidity));$('simWind').value=Math.min(50,Math.max(0,liveValues.wind_speed));
+        $('liveBaseline').innerText=`Live baseline: ${liveValues.temperature}°C • ${liveValues.rainfall} mm rain • ${liveValues.humidity}% humidity • ${liveValues.wind_speed} km/h wind`;
+        runSimulation();
+      }catch(e){$('liveBaseline').innerText=e.message}}
+    async function runSimulation(){
+      const loc=$('simDistrict').value,rain=+$('simRain').value,temp=+$('simTemp').value,hum=+$('simHum').value,wind=+$('simWind').value;
+      $('lblRain').innerText=`${rain} mm`;$('lblTemp').innerText=`${temp} °C`;$('lblHum').innerText=`${hum} %`;$('lblWind').innerText=`${wind} km/h`;
+      try{const r=await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:loc,rainfall:rain,temperature:temp,humidity:hum,wind_speed:wind})});const d=await r.json();if(d.status!=='success')throw new Error(d.error);const sim=d.simulation;
+        $('simGaugePct').innerText=`${sim.risk_percentage}%`;$('simGaugeBadge').innerText=sim.risk_level;$('simGaugeBadge').className=`gauge-label ${sim.alert_class}`;
+        $('safetyGuidesText').innerText=sim.risk_percentage>=70?'High-risk scenario. Prepare emergency supplies, avoid low-lying roads and follow official evacuation instructions if issued.':sim.risk_percentage>=40?'Moderate-risk scenario. Monitor rainfall, drainage and official alerts; avoid unnecessary travel through waterlogged areas.':'Low-risk scenario. Continue normal monsoon precautions and monitor changes.';
+        $('earlyWarningsText').innerText=`LIVE ${loc}: ${sim.risk_level} • ${sim.risk_percentage}%. ${d.sensitivity_insight}`;
+      }catch(e){console.error(e)}
     }
-
-    document.addEventListener('DOMContentLoaded', runSimulation);
+    document.addEventListener('DOMContentLoaded',()=>{$('simDistrict').addEventListener('change',loadLiveValues);['simRain','simTemp','simHum','simWind'].forEach(id=>$(id).addEventListener('input',runSimulation));loadLiveValues()});
   </script>
 </body>
 </html>

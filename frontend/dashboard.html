@@ -952,6 +952,7 @@
       .stats-grid { grid-template-columns: 1fr; }
       .search-bar-wrapper { width: 100%; }
     }
+  body{transition:background-image .8s ease,background-color .8s ease;} body.weather-dynamic:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(0,210,255,.10),transparent 45%);z-index:-1;}
   </style>
 </head>
 <body>
@@ -965,7 +966,6 @@
         </div>
         <div class="brand-text-wrap">
           <span class="brand-title">MAHA FLOOD AI</span>
-          <span class="brand-subtitle">State Telemetry System</span>
         </div>
       </div>
 
@@ -979,57 +979,28 @@
         <li class="nav-item"><a href="/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a></li>
       </ul>
     </div>
-
-    <!-- Sidebar footer -->
-    <div class="sidebar-footer">
-      <div class="sidebar-footer-title">
-        <span>STATE TELEMETRY</span>
-        <span style="color: var(--neon-green); font-size: 0.65rem;">• ONLINE</span>
-      </div>
-      <div class="sidebar-footer-desc">
-        Integrated with Open-Meteo & Central Water Commission Hydrology Rules.
-      </div>
-    </div>
   </aside>
 
   <!-- Main Content Area -->
   <main class="main-wrapper">
     <!-- Topbar -->
     <div class="topbar">
-      <div class="greeting-pill" id="timeGreetingBadge">
-        <span>☀️</span>
-        <span id="timeGreetingText">Good Morning, Welcome</span>
-      </div>
-
-      <div class="search-bar-wrapper">
+<div class="search-bar-wrapper">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="regionSearchInput" placeholder="Search any region in Maharashtra (e.g. Pune, Kolhapur, Chiplun, Mumbai)..." onkeydown="if(event.key==='Enter') executeSearch()" value="Ratnagiri" />
         <button class="search-btn" onclick="executeSearch()">Search</button>
       </div>
 
-      <div class="weather-theme-pill" id="topbarAtmosphereTheme">
-        <span class="weather-theme-dot"></span>
-        <span id="topbarThemeText">🌧️ Rain Atmosphere</span>
-      </div>
-
-      <div class="live-pill">
+      
+<div class="live-pill">
         <span class="live-indicator-dot"></span>
-        <span id="activeRegionBadge">RATNAGIRI • LIVE</span>
+        <span id="activeRegionBadge"> LIVE</span>
       </div>
     </div>
 
     <!-- Center Hero Section -->
     <div class="hero-container">
-      <div class="telemetry-chip">
-        <span class="live-indicator-dot"></span>
-        <span id="telemetryLocationLabel">Ratnagiri Hydrological Station</span>
-        <span>•</span>
-        <span style="color: #fde047; font-weight: 700;" id="telemetryCondition">🌧️ Rainy Conditions</span>
-      </div>
-
-      <div class="hero-greeting-sub" id="heroGreetingBanner">Good Morning, Welcome to State Flood Watch</div>
-
-      <h1 class="hero-title">
+<h1 class="hero-title">
         Flood &amp;
         <span class="hero-title-cyan">Weather Intelligence</span>
       </h1>
@@ -1101,27 +1072,10 @@
           </div>
         </div>
 
-        <div class="weather-actions-top">
-          <button class="detect-loc-btn" onclick="detectUserLocation()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
-            <span>Detect My Weather</span>
-          </button>
-        </div>
+        
       </div>
 
-      <!-- Quick Maharashtra Region Selectors -->
-      <div class="quick-regions-scroll" id="quickRegionsBar">
-        <button class="quick-region-chip active" onclick="selectQuickRegion('Ratnagiri')">🌊 Ratnagiri</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Mumbai')">🌧️ Mumbai</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Mahabaleshwar')">🏔️ Mahabaleshwar</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Chiplun')">🌊 Chiplun</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Kolhapur')">🌧️ Kolhapur</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Pune')">⛅ Pune</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Nashik')">⛅ Nashik</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Raigad')">🌊 Raigad</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Nagpur')">☀️ Nagpur</button>
-        <button class="quick-region-chip" onclick="selectQuickRegion('Solapur')">☀️ Solapur</button>
-      </div>
+    
 
       <!-- Weather Main Display Grid -->
       <div class="weather-main-panel">
@@ -1238,36 +1192,6 @@
 
     <!-- Lower Section: Live Weather & Emergency Contacts -->
     <div class="dashboard-lower-grid">
-      <!-- Live Weather Telemetry -->
-      <div class="dash-box">
-        <div class="dash-box-title">
-          <div class="dash-box-title-left">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>
-            <span>Live Weather &amp; Basin Telemetry</span>
-          </div>
-          <span style="font-size: 0.78rem; color: var(--neon-green); font-weight: 700;" id="liveWeatherRegion">Ratnagiri</span>
-        </div>
-
-        <div class="weather-detail-grid">
-          <div class="weather-mini-card">
-            <span class="weather-mini-label">Atmospheric Condition</span>
-            <span class="weather-mini-val" id="weatherCondMini">Rain Showers</span>
-          </div>
-          <div class="weather-mini-card">
-            <span class="weather-mini-label">River / Catchment Basin</span>
-            <span class="weather-mini-val" style="font-size: 0.92rem; color: var(--neon-cyan);" id="weatherRiverMini">Kajali / Vashishti River</span>
-          </div>
-          <div class="weather-mini-card">
-            <span class="weather-mini-label">24h Precipitation Trend</span>
-            <span class="weather-mini-val" id="weatherRainMini">22.0 mm</span>
-          </div>
-          <div class="weather-mini-card">
-            <span class="weather-mini-label">Wind Gust Vector</span>
-            <span class="weather-mini-val" id="weatherWindMini">14.5 km/h WNW</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Emergency Contacts -->
       <div class="dash-box">
         <div class="dash-box-title">
@@ -1327,379 +1251,557 @@
     </div>
   </div>
 
-  <script>
-    let currentRegion = 'Ratnagiri';
+  <<script>
+    // Safely receive the location from Flask/Jinja
+    let currentRegion = {{ initial_location | default("Ratnagiri") | tojson }};
     let dashChart = null;
 
-    // Atmospheric Weather Backgrounds mapping
     const WEATHER_BACKGROUNDS = {
-      rain: 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2000&auto=format&fit=crop',
-      thunderstorm: 'https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?q=80&w=2000&auto=format&fit=crop',
-      sun: 'https://images.unsplash.com/photo-1601297183305-6df142704ea2?q=80&w=2000&auto=format&fit=crop',
-      clouds: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=2000&auto=format&fit=crop',
-      mist: 'https://images.unsplash.com/photo-1487621167305-5d248087c724?q=80&w=2000&auto=format&fit=crop'
+        rain: '/static/images/weather/rainy.jpg',
+        thunderstorm: '/static/images/weather/storm.jpg',
+        sun: '/static/images/weather/sunny.jpg',
+        clouds: '/static/images/weather/cloudy.jpg',
+        mist: '/static/images/weather/fog.jpg'
     };
 
-    // Dynamic Weather Background Switcher
-    function updateDashboardWeatherBackground(condType, condText, rainVal) {
-      let category = 'clouds';
-      const text = (condText || '').toLowerCase();
-      const type = (condType || '').toLowerCase();
-      const rain = parseFloat(rainVal) || 0;
+    function updateDashboardWeatherBackground(type, text, rain) {
+        const t = `${type || ''} ${text || ''}`.toLowerCase();
 
-      if (type === 'thunderstorm' || text.includes('thunder') || text.includes('storm') || text.includes('lightning') || rain >= 30) {
-        category = 'thunderstorm';
-      } else if (type === 'rain' || text.includes('rain') || text.includes('drizzle') || text.includes('shower') || text.includes('monsoon') || rain >= 3) {
-        category = 'rain';
-      } else if (type === 'mist' || text.includes('fog') || text.includes('mist') || text.includes('haze')) {
-        category = 'mist';
-      } else if (type === 'sun' || text.includes('sun') || text.includes('clear') || text.includes('hot')) {
-        category = 'sun';
-      } else {
-        category = 'clouds';
-      }
+        let category = 'clouds';
 
-      const bgUrl = WEATHER_BACKGROUNDS[category] || WEATHER_BACKGROUNDS.clouds;
-      document.body.style.backgroundImage = `radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.88) 0%, rgba(6, 12, 24, 0.96) 80%), url('${bgUrl}')`;
-
-      // Update atmosphere pill labels
-      const themeLabels = {
-        rain: '🌧️ Rain Atmosphere',
-        thunderstorm: '⚡ Storm Atmosphere',
-        sun: '☀️ Sunny Atmosphere',
-        clouds: '⛅ Cloud Atmosphere',
-        mist: '🌫️ Mist Atmosphere'
-      };
-      const label = themeLabels[category] || '⛅ Cloud Atmosphere';
-      const topbarTheme = document.getElementById('topbarThemeText');
-      const cardTheme = document.getElementById('weatherCardThemeText');
-      if (topbarTheme) topbarTheme.innerText = label;
-      if (cardTheme) cardTheme.innerText = `${label} Active`;
-    }
-
-    // Dynamic Time-Based Greeting
-    function updateTimeGreeting() {
-      const now = new Date();
-      const hour = now.getHours();
-      let greeting = 'Good Morning';
-      let icon = '🌅';
-
-      if (hour >= 12 && hour < 17) {
-        greeting = 'Good Afternoon';
-        icon = '☀️';
-      } else if (hour >= 17 && hour < 21) {
-        greeting = 'Good Evening';
-        icon = '🌆';
-      } else if (hour >= 21 || hour < 5) {
-        greeting = 'Good Night';
-        icon = '🌙';
-      }
-
-      const greetingText = `${greeting}, Welcome`;
-      const badgeElem = document.getElementById('timeGreetingText');
-      const badgeIcon = document.querySelector('#timeGreetingBadge span:first-child');
-      const bannerElem = document.getElementById('heroGreetingBanner');
-
-      if (badgeElem) badgeElem.innerText = greetingText;
-      if (badgeIcon) badgeIcon.innerText = icon;
-      if (bannerElem) bannerElem.innerText = `${greetingText} to State Flood Watch`;
-    }
-
-    // Dashboard Telemetry Graph Renderer
-    function renderDashboardGraph(location, baseRain, baseTemp) {
-      const titleElem = document.getElementById('dashGraphTitle');
-      if (titleElem) {
-        titleElem.innerText = `Hydrological Telemetry & Rainfall Trend – ${location}`;
-      }
-
-      const hours = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', 'Now'];
-      const rainMultiplier = (baseRain || 20) / 20;
-      const rainData = [
-        Math.max(0, (4 * rainMultiplier).toFixed(1)),
-        Math.max(0, (7 * rainMultiplier).toFixed(1)),
-        Math.max(0, (12 * rainMultiplier).toFixed(1)),
-        Math.max(0, (18 * rainMultiplier).toFixed(1)),
-        Math.max(0, (25 * rainMultiplier).toFixed(1)),
-        Math.max(0, (22 * rainMultiplier).toFixed(1)),
-        Math.max(0, (19 * rainMultiplier).toFixed(1)),
-        Math.max(0, (16 * rainMultiplier).toFixed(1)),
-        (baseRain || 22).toFixed(1)
-      ];
-
-      const riskData = rainData.map(r => Math.min(98, Math.round(parseFloat(r) * 2.8 + 12)));
-
-      const ctx = document.getElementById('dashboardTelemetryChart').getContext('2d');
-      if (dashChart) {
-        dashChart.destroy();
-      }
-
-      dashChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: hours,
-          datasets: [
-            {
-              label: 'Precipitation Trend (mm)',
-              data: rainData,
-              borderColor: '#00d2ff',
-              backgroundColor: 'rgba(0, 210, 255, 0.15)',
-              borderWidth: 2.5,
-              tension: 0.35,
-              fill: true,
-              pointBackgroundColor: '#00d2ff',
-              pointRadius: 4,
-              yAxisID: 'y'
-            },
-            {
-              label: 'Inundation Risk Probability (%)',
-              data: riskData,
-              borderColor: '#ef4444',
-              backgroundColor: 'rgba(239, 68, 68, 0.08)',
-              borderWidth: 2,
-              borderDash: [5, 5],
-              tension: 0.35,
-              fill: false,
-              pointBackgroundColor: '#ef4444',
-              pointRadius: 3,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: {
-              labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
-            },
-            tooltip: {
-              backgroundColor: 'rgba(6, 14, 28, 0.95)',
-              titleColor: '#00d2ff',
-              bodyColor: '#f8fafc',
-              borderColor: 'rgba(0, 210, 255, 0.3)',
-              borderWidth: 1
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#94a3b8', font: { size: 11 } },
-              grid: { color: 'rgba(255, 255, 255, 0.05)' }
-            },
-            y: {
-              type: 'linear',
-              position: 'left',
-              title: { display: true, text: 'Rainfall (mm)', color: '#00d2ff', font: { size: 11, weight: 'bold' } },
-              ticks: { color: '#94a3b8' },
-              grid: { color: 'rgba(255, 255, 255, 0.08)' }
-            },
-            y1: {
-              type: 'linear',
-              position: 'right',
-              title: { display: true, text: 'Risk Probability (%)', color: '#ef4444', font: { size: 11, weight: 'bold' } },
-              ticks: { color: '#ef4444' },
-              grid: { display: false },
-              min: 0,
-              max: 100
-            }
-          }
+        if (t.includes('thunder') || t.includes('storm')) {
+            category = 'thunderstorm';
+        } else if (
+            t.includes('rain') ||
+            t.includes('drizzle') ||
+            Number(rain) > 0
+        ) {
+            category = 'rain';
+        } else if (t.includes('fog') || t.includes('mist')) {
+            category = 'mist';
+        } else if (t.includes('clear') || t.includes('sun')) {
+            category = 'sun';
         }
-      });
+
+        document.body.classList.add('weather-dynamic');
+
+        document.body.style.backgroundImage =
+            `linear-gradient(rgba(4,10,20,.48), rgba(4,10,20,.72)),
+             url('${WEATHER_BACKGROUNDS[category]}')`;
+
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundAttachment = 'fixed';
     }
+
+    function renderDashboardGraph(location, series) {
+
+        const canvas = document.getElementById(
+            'dashboardTelemetryChart'
+        );
+
+        if (!canvas || typeof Chart === 'undefined' || !series) {
+            return;
+        }
+
+        const title = document.getElementById('dashGraphTitle');
+
+        if (title) {
+            title.innerText =
+                `Last 7 Days Temperature & Rainfall – ${location}`;
+        }
+
+        if (dashChart) {
+            dashChart.destroy();
+        }
+
+        dashChart = new Chart(
+            canvas.getContext('2d'),
+            {
+                type: 'line',
+
+                data: {
+                    labels: series.dates,
+
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: series.temperature,
+                            borderColor: '#00d2ff',
+                            backgroundColor: 'rgba(0,210,255,.12)',
+                            tension: 0.35,
+                            fill: true,
+                            yAxisID: 'temp'
+                        },
+                        {
+                            label: 'Rainfall (mm)',
+                            data: series.rainfall,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245,158,11,.08)',
+                            tension: 0.35,
+                            fill: false,
+                            yAxisID: 'rain'
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#cbd5e1'
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255,255,255,.05)'
+                            }
+                        },
+
+                        temp: {
+                            position: 'left',
+
+                            title: {
+                                display: true,
+                                text: 'Temperature °C',
+                                color: '#00d2ff'
+                            },
+
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+
+                            grid: {
+                                color: 'rgba(255,255,255,.06)'
+                            }
+                        },
+
+                        rain: {
+                            position: 'right',
+
+                            title: {
+                                display: true,
+                                text: 'Rainfall mm',
+                                color: '#f59e0b'
+                            },
+
+                            ticks: {
+                                color: '#f59e0b'
+                            },
+
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    }
+
+    function setText(id, value) {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.innerText = value;
+        }
+    }
+
 
     async function fetchDistrictWeather(district) {
-      const target = (district || '').trim() || 'Ratnagiri';
-      try {
-        const res = await fetch(`/api/weather/live?location=${encodeURIComponent(target)}`);
-        const data = await res.json();
-        if (data.status === 'success') {
-          currentRegion = data.location;
-          
-          // Hero Stat Values
-          document.getElementById('valTemp').innerText = `${data.temperature}°C`;
-          document.getElementById('valRain').innerText = `${data.rainfall} mm`;
-          document.getElementById('valHum').innerText = `${data.humidity}%`;
-          document.getElementById('valWind').innerText = `${data.wind_speed} km/h`;
-          document.getElementById('telemetryCondition').innerText = `${data.icon || '🌧️'} ${data.condition || 'Rainy Conditions'}`;
-          document.getElementById('telemetryLocationLabel').innerText = `${data.location} Hydrological Station`;
-          document.getElementById('activeRegionBadge').innerText = `${data.location.toUpperCase()} • LIVE`;
 
-          // Dedicated Weather Component Updates
-          const locTitle = document.getElementById('weatherCardLocTitle');
-          if (locTitle) locTitle.innerText = `${data.location} Live Weather`;
+        const target =
+            (district || '').trim() || currentRegion || 'Ratnagiri';
 
-          const cardIcon = document.getElementById('wCardIcon');
-          if (cardIcon) cardIcon.innerText = data.icon || '🌧️';
-
-          const cardTemp = document.getElementById('wCardTemp');
-          if (cardTemp) cardTemp.innerText = `${data.temperature}°C`;
-
-          const cardFeels = document.getElementById('wCardFeels');
-          if (cardFeels) cardFeels.innerText = `Feels like ${data.feels_like || data.temperature}°C`;
-
-          const cardCondTitle = document.getElementById('wCardCondTitle');
-          if (cardCondTitle) cardCondTitle.innerText = data.condition || 'Live Conditions';
-
-          const cardCondDesc = document.getElementById('wCardCondDesc');
-          if (cardCondDesc) {
-            cardCondDesc.innerText = data.rainfall > 15 
-              ? `Active monsoon precipitation stream observed over ${data.river_name || 'catchment basin'}.`
-              : (data.rainfall > 5 
-                ? `Scattered rainfall showers and steady atmospheric flow in ${data.location}.`
-                : `Stable meteorological conditions with calm catchment baseline levels.`);
-          }
-
-          const cardRain = document.getElementById('wCardRainVal');
-          if (cardRain) cardRain.innerText = `${data.rainfall} mm`;
-
-          const cardHum = document.getElementById('wCardHumVal');
-          if (cardHum) cardHum.innerText = `${data.humidity}%`;
-
-          const cardWind = document.getElementById('wCardWindVal');
-          if (cardWind) cardWind.innerText = `${data.wind_speed} km/h`;
-
-          const cardWindDir = document.getElementById('wCardWindDir');
-          if (cardWindDir) cardWindDir.innerText = `${data.wind_direction || 'WSW'} Vector`;
-
-          const cardPress = document.getElementById('wCardPressVal');
-          if (cardPress) cardPress.innerText = `${data.pressure || 1008} hPa`;
-
-          const cardVis = document.getElementById('wCardVisVal');
-          if (cardVis) cardVis.innerText = `${data.visibility_km || 10.0} km`;
-
-          const cardCloud = document.getElementById('wCardCloudVal');
-          if (cardCloud) cardCloud.innerText = `${data.cloud_cover_percent || 75}%`;
-
-          const cardRiver = document.getElementById('wCardRiverBasin');
-          if (cardRiver) cardRiver.innerText = data.river_name || 'Catchment River';
-
-          const cardRiskBadge = document.getElementById('wCardRiskBadge');
-          const cardRiskText = document.getElementById('wCardRiskText');
-          if (cardRiskBadge && cardRiskText) {
-            cardRiskText.innerText = `${data.risk_level} • ${data.risk_percentage}%`;
-            cardRiskBadge.className = `catchment-risk-badge ${data.alert_class || 'safe'}`;
-            if (data.alert_class === 'critical') {
-              cardRiskBadge.style.background = 'rgba(239, 68, 68, 0.2)';
-              cardRiskBadge.style.color = '#f87171';
-              cardRiskBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-            } else if (data.alert_class === 'warning') {
-              cardRiskBadge.style.background = 'rgba(245, 158, 11, 0.2)';
-              cardRiskBadge.style.color = '#fbbf24';
-              cardRiskBadge.style.borderColor = 'rgba(245, 158, 11, 0.4)';
-            } else {
-              cardRiskBadge.style.background = 'rgba(16, 185, 129, 0.2)';
-              cardRiskBadge.style.color = '#34d399';
-              cardRiskBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-            }
-          }
-
-          const cardAdvisory = document.getElementById('wCardAdvisory');
-          if (cardAdvisory) cardAdvisory.innerText = data.action_guideline || 'Normal weather conditions. Standard drainage active.';
-
-          // Update lower live weather box
-          document.getElementById('liveWeatherRegion').innerText = data.location;
-          document.getElementById('weatherCondMini').innerText = data.condition || 'Active Telemetry';
-          document.getElementById('weatherRiverMini').innerText = data.river_name || 'Catchment Basin';
-          document.getElementById('weatherRainMini').innerText = `${data.rainfall} mm (Today)`;
-          document.getElementById('weatherWindMini').innerText = `${data.wind_speed} km/h Active Flow`;
-
-          // Dynamically Update Dashboard Background Image
-          updateDashboardWeatherBackground(data.condition_type, data.condition, data.rainfall);
-
-          // Update Quick Region Chips Active State
-          const chips = document.querySelectorAll('.quick-region-chip');
-          chips.forEach(chip => {
-            if (chip.innerText.toLowerCase().includes(data.location.toLowerCase())) {
-              chip.classList.add('active');
-            } else {
-              chip.classList.remove('active');
-            }
-          });
-
-          // Re-render Graph for the location
-          renderDashboardGraph(data.location, data.rainfall, data.temperature);
-        }
-      } catch (err) {
-        console.error('Error fetching live data:', err);
-      }
-    }
-
-    function selectQuickRegion(regionName) {
-      const searchInput = document.getElementById('regionSearchInput');
-      if (searchInput) searchInput.value = regionName;
-      fetchDistrictWeather(regionName);
-    }
-
-    function detectUserLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            // Check approximate coordinates or default to closest Maharashtra station
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            // Detect if around Mumbai/Pune or fetch
-            if (lat >= 18.7 && lat <= 19.3 && lon >= 72.7 && lon <= 73.2) {
-              fetchDistrictWeather('Mumbai');
-            } else if (lat >= 18.3 && lat <= 18.7 && lon >= 73.6 && lon <= 74.1) {
-              fetchDistrictWeather('Pune');
-            } else if (lat >= 16.5 && lat <= 17.5) {
-              fetchDistrictWeather('Ratnagiri');
-            } else {
-              fetchDistrictWeather('Mumbai');
-            }
-          },
-          (err) => {
-            const loc = prompt('Enter your city or district in Maharashtra:', 'Pune');
-            if (loc) {
-              selectQuickRegion(loc);
-            }
-          },
-          { timeout: 5000 }
+        setText(
+            'activeRegionBadge',
+            `${target.toUpperCase()} • LOADING`
         );
-      } else {
-        const loc = prompt('Enter your city or district in Maharashtra:', 'Pune');
-        if (loc) {
-          selectQuickRegion(loc);
+
+        try {
+
+            const res = await fetch(
+                `/api/dashboard-data?location=${encodeURIComponent(target)}`
+            );
+
+            if (!res.ok) {
+                throw new Error(`Server error: ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            if (data.status !== 'success') {
+                throw new Error(
+                    data.error || 'Weather unavailable'
+                );
+            }
+
+            currentRegion = data.weather.location;
+
+            const w = data.weather;
+            const p = data.prediction;
+
+
+            // Top statistics
+            setText('valTemp', `${w.temperature}°C`);
+            setText('valRain', `${w.rainfall} mm`);
+            setText('valHum', `${w.humidity}%`);
+            setText('valWind', `${w.wind_speed} km/h`);
+
+
+            // Live badge
+            setText(
+                'activeRegionBadge',
+                `${w.location.toUpperCase()} • LIVE`
+            );
+
+
+            // Weather location
+            setText(
+                'weatherCardLocTitle',
+                `${w.location} Live Weather`
+            );
+
+
+            // Weather icon
+            let icon = '☁️';
+
+            if (
+                w.condition &&
+                w.condition.toLowerCase().includes('thunder')
+            ) {
+                icon = '⛈️';
+            }
+            else if (
+                w.condition &&
+                w.condition.toLowerCase().includes('rain')
+            ) {
+                icon = '🌧️';
+            }
+            else if (
+                w.condition &&
+                w.condition.toLowerCase().includes('clear')
+            ) {
+                icon = '☀️';
+            }
+
+            setText('wCardIcon', icon);
+
+
+            // Main weather card
+            setText('wCardTemp', `${w.temperature}°C`);
+
+            setText(
+                'wCardFeels',
+                `Current observation • ${w.time || 'updated now'}`
+            );
+
+            setText(
+                'wCardCondTitle',
+                w.condition || 'Weather data available'
+            );
+
+            setText(
+                'wCardCondDesc',
+                `Live observation from ${w.source || 'weather service'}. Current precipitation: ${w.rainfall} mm.`
+            );
+
+
+            // Weather metrics
+            setText(
+                'wCardRainVal',
+                `${w.rainfall} mm`
+            );
+
+            setText(
+                'wCardHumVal',
+                `${w.humidity}%`
+            );
+
+            setText(
+                'wCardWindVal',
+                `${w.wind_speed} km/h`
+            );
+
+            setText(
+                'wCardWindDir',
+                'Live wind speed'
+            );
+
+            setText(
+                'wCardPressVal',
+                w.pressure
+                    ? `${w.pressure} hPa`
+                    : 'Not provided'
+            );
+
+            setText(
+                'wCardVisVal',
+                w.visibility
+                    ? `${w.visibility} km`
+                    : 'Not provided'
+            );
+
+            setText(
+                'wCardCloudVal',
+                w.cloud_cover
+                    ? `${w.cloud_cover}%`
+                    : 'Not provided'
+            );
+
+
+            // Basin
+            setText(
+                'wCardRiverBasin',
+                'Meteorological catchment indicator'
+            );
+
+
+            // Risk
+            setText(
+                'wCardRiskText',
+                `${p.risk_level} • ${p.risk_percentage}%`
+            );
+
+            setText(
+                'wCardAdvisory',
+                p.action_guideline
+            );
+
+
+            const badge =
+                document.getElementById('wCardRiskBadge');
+
+            if (badge) {
+
+                badge.className =
+                    `catchment-risk-badge ${p.alert_class || 'safe'}`;
+            }
+
+
+            // Search box
+            const search =
+                document.getElementById('regionSearchInput');
+
+            if (search) {
+                search.value = w.location;
+            }
+
+
+            // Dynamic background
+            updateDashboardWeatherBackground(
+                w.condition_type,
+                w.condition,
+                w.rainfall
+            );
+
+
+            // Graph
+            renderDashboardGraph(
+                w.location,
+                data.series
+            );
+
+
+            // Send risk event
+            window.dispatchEvent(
+                new CustomEvent(
+                    'foresightx:risk',
+                    {
+                        detail: p
+                    }
+                )
+            );
+
         }
-      }
+        catch (err) {
+
+            console.error(
+                'Weather fetch error:',
+                err
+            );
+
+            setText(
+                'activeRegionBadge',
+                'WEATHER ERROR'
+            );
+
+            alert(
+                err.message ||
+                'Unable to load weather data.'
+            );
+        }
     }
+
+
+    function selectQuickRegion(name) {
+
+        fetchDistrictWeather(name);
+    }
+
 
     function executeSearch() {
-      const input = document.getElementById('regionSearchInput');
-      const q = input.value.trim();
-      if (q) {
-        fetchDistrictWeather(q);
-      }
+
+        const input =
+            document.getElementById(
+                'regionSearchInput'
+            );
+
+        if (!input) {
+            return;
+        }
+
+        const query = input.value.trim();
+
+        if (query) {
+            fetchDistrictWeather(query);
+        }
     }
+
+
+    function detectUserLocation() {
+
+        if (navigator.geolocation) {
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+
+                    fetchDistrictWeather(currentRegion);
+                },
+
+                function() {
+
+                    fetchDistrictWeather(currentRegion);
+                }
+            );
+
+        }
+        else {
+
+            fetchDistrictWeather(currentRegion);
+        }
+    }
+
 
     async function runPredictionModal() {
-      const modal = document.getElementById('predictionModal');
-      try {
-        const res = await fetch(`/api/predict?location=${encodeURIComponent(currentRegion)}`);
-        const data = await res.json();
-        if (data.status === 'success') {
-          const p = data.prediction;
-          document.getElementById('modalStationDesc').innerText = `Sensor catchment assessment for ${currentRegion}, Maharashtra`;
-          document.getElementById('modalProb').innerText = `${p.risk_percentage}%`;
-          const badge = document.getElementById('modalBadge');
-          badge.innerText = p.risk_level;
-          badge.className = `risk-tag ${p.alert_class}`;
-          document.getElementById('modalAdvisory').innerText = p.action_guideline || 'Monitor standard local meteorological updates.';
-          modal.classList.add('active');
+
+        const modal =
+            document.getElementById(
+                'predictionModal'
+            );
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/predict?location=${encodeURIComponent(currentRegion)}`
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Prediction server error: ${response.status}`
+                );
+            }
+
+            const data =
+                await response.json();
+
+            if (data.status !== 'success') {
+                throw new Error(
+                    data.error ||
+                    'Prediction unavailable'
+                );
+            }
+
+            const p = data.prediction;
+
+
+            setText(
+                'modalStationDesc',
+                `Live weather assessment for ${currentRegion}`
+            );
+
+            setText(
+                'modalProb',
+                `${p.risk_percentage}%`
+            );
+
+            setText(
+                'modalBadge',
+                p.risk_level
+            );
+
+            setText(
+                'modalAdvisory',
+                p.action_guideline
+            );
+
+
+            modal.classList.add('active');
+
         }
-      } catch (err) {
-        console.error(err);
-      }
+        catch (error) {
+
+            console.error(
+                'Prediction error:',
+                error
+            );
+
+            alert(
+                error.message ||
+                'Unable to run flood prediction.'
+            );
+        }
     }
+
 
     function closeModal() {
-      document.getElementById('predictionModal').classList.remove('active');
+
+        const modal =
+            document.getElementById(
+                'predictionModal'
+            );
+
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      updateTimeGreeting();
-      fetchDistrictWeather('Ratnagiri');
-    });
-  </script>
+
+    // Start dashboard
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            fetchDistrictWeather(
+                currentRegion
+            );
+
+            setInterval(
+                function() {
+                    fetchDistrictWeather(
+                        currentRegion
+                    );
+                },
+                60000
+            );
+
+        }
+    );
+</script>
 </body>
 </html>
