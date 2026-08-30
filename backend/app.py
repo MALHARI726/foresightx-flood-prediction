@@ -5,14 +5,14 @@ from datetime import datetime, timedelta
 import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from config import DISTRICT_COORDINATES
-<<<<<<< HEAD
-=======
-
->>>>>>> 9e0c8ef4271ae5ec1428eb1d38a74e757f797ff6
 
 
 # Initialize Flask app
-app = Flask(__name__, template_folder='frontend', static_folder='static')
+app = Flask(
+    __name__,
+    template_folder='../frontend',
+    static_folder='../frontend/static'
+)
 app.config['SECRET_KEY'] = 'maha-flood-ai-secret-2026'
 
 DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
@@ -21,7 +21,7 @@ HISTORICAL_FLOOD_EVENTS = [
     {
         "year": "2005",
         "event_name": "Maharashtra & Mumbai Cloudburst Deluge",
-        "affected_districts": "Mumbai, Thane, Raigad, Ratnagiri",
+        "affected_districts": "Mumbai, Thane, Raigad, Ratnagiri"
         "rainfall_mm": 944.0,
         "severity": "CRITICAL CATASTROPHIC",
         "summary": "Historic cloudburst dropped 944mm in 24 hours over Santacruz. Mithi River overflowed, paralyzing suburban transport and causing widespread urban inundation."
