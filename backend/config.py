@@ -130,4 +130,41 @@ GEOCODING_API_URL = "https://geocoding-api.open-meteo.com/v1/search"
 
 API_TIMEOUT = 10
 
+<<<<<<< HEAD
 TIMEZONE = "Asia/Kolkata"
+
+
+# ==========================================
+# DATA FOLDER
+# ==========================================
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+DATA_DIR = os.path.join(
+    BASE_DIR,
+    "data"
+)
+
+LIVE_CSV_PATH = os.path.join(
+    DATA_DIR,
+    "live_weather_data.csv"
+)
+# ==========================================
+# DISTRICT COORDINATES
+# ==========================================
+
+DISTRICT_COORDINATES = {
+    "Sindhudurg": {
+        "latitude": 16.3492,
+        "longitude": 73.5178
+    }
+}
+TIMEZONE = "Asia/Kolkata"
+
+=======
+TIMEZONE = "Asia/Kolkata"
+>>>>>>> 2e171ce77bcef24de55fef0d6910628d59449dc7

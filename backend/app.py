@@ -4,6 +4,20 @@ import os
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+<<<<<<< HEAD
+import random
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from config import DISTRICT_COORDINATES
+
+
+# Initialize Flask app
+app = Flask(
+    __name__,
+    template_folder='../frontend',
+    static_folder='../frontend/static'
+)
+app.config['SECRET_KEY'] = 'maha-flood-ai-secret-2026'
+=======
 from functools import lru_cache
 
 import pandas as pd
@@ -29,8 +43,53 @@ def clean_text(value):
     if pd.isna(value):
         return ""
     return str(value).strip()
+>>>>>>> 2e171ce77bcef24de55fef0d6910628d59449dc7
 
 
+<<<<<<< HEAD
+HISTORICAL_FLOOD_EVENTS = [
+    {
+        "year": "2005",
+        "event_name": "Maharashtra & Mumbai Cloudburst Deluge",
+        "affected_districts": "Mumbai, Thane, Raigad, Ratnagiri"
+        "rainfall_mm": 944.0,
+        "severity": "CRITICAL CATASTROPHIC",
+        "summary": "Historic cloudburst dropped 944mm in 24 hours over Santacruz. Mithi River overflowed, paralyzing suburban transport and causing widespread urban inundation."
+    },
+    {
+        "year": "2019",
+        "event_name": "Krishna Basin Major Inundation",
+        "affected_districts": "Kolhapur, Sangli, Satara, Pune",
+        "rainfall_mm": 380.0,
+        "severity": "CRITICAL RED ALERT",
+        "summary": "Unprecedented continuous monsoon spells over Mahabaleshwar and Western Ghats caused Panchganga and Krishna rivers to surge 12+ meters above danger mark."
+    },
+    {
+        "year": "2021",
+        "event_name": "Konkan Chiplun-Mahad Flash Floods",
+        "affected_districts": "Ratnagiri, Raigad, Sindhudurg, Satara",
+        "rainfall_mm": 485.0,
+        "severity": "CRITICAL EMERGENCY",
+        "summary": "Vashishti and Savitri rivers overflowed within hours due to intense torrential downpour and high tide, submerging Chiplun town center and Mahad lowlands."
+    },
+    {
+        "year": "2023",
+        "event_name": "Vidarbha River Basin Surges",
+        "affected_districts": "Nagpur, Chandrapur, Gadchiroli, Bhandara",
+        "rainfall_mm": 210.0,
+        "severity": "HIGH SEVERITY",
+        "summary": "Heavy rainfall in catchment areas of Wainganga, Wardha, and Godavari tributaries triggered floodgate releases at Gosikhurd dam, submerging agricultural belts."
+    },
+    {
+        "year": "2024",
+        "event_name": "Pune & Thane Monsoon Waterlogging",
+        "affected_districts": "Pune, Thane, Raigad, Palghar",
+        "rainfall_mm": 240.0,
+        "severity": "HIGH SEVERITY",
+        "summary": "Intense spells caused Khadakwasla dam discharge leading to Mutha river overflow in Pune, alongside severe urban low-lying waterlogging in Thane and Ulhasnagar."
+    }
+]
+=======
 def load_flood_history():
     """Historical events come ONLY from data/raw/flood_history.csv."""
     if not os.path.exists(FLOOD_HISTORY_FILE):
@@ -41,6 +100,7 @@ def load_flood_history():
     df["End Date Parsed"] = pd.to_datetime(df["End Date"], dayfirst=True, errors="coerce")
     df["Year"] = df["Start Date Parsed"].dt.year
     return df
+>>>>>>> 2e171ce77bcef24de55fef0d6910628d59449dc7
 
 
 HISTORY_DF = load_flood_history()
