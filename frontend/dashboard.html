@@ -30,7 +30,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg-dark);
-      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.88) 0%, rgba(6, 12, 24, 0.96) 80%), url('https://images.unsplash.com/photo-1519692933481-e162a57d6721?q=80&w=2000&auto=format&fit=crop');
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -848,7 +848,7 @@
       font-size: 0.84rem;
     }
 
-    .emergency-name {
+    .emergency-name { display:none;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -952,8 +952,119 @@
       .stats-grid { grid-template-columns: 1fr; }
       .search-bar-wrapper { width: 100%; }
     }
-  body{transition:background-image .8s ease,background-color .8s ease;} body.weather-dynamic:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(0,210,255,.10),transparent 45%);z-index:-1;}
-  </style>
+
+  
+    /* Permanent cloud background lock */
+    body {
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Core dashboard layout: live weather, flood risk and 24-hour trend only */
+    .dashboard-core-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:1.25rem;margin:1.2rem 0;}
+    .core-card{background:rgba(13,24,44,.88);border:1px solid rgba(0,210,255,.20);border-radius:20px;padding:1.45rem;box-shadow:0 18px 50px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+    .core-card-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}.core-card-title{font-family:var(--font-heading);font-size:1.18rem;font-weight:800}.core-card-sub{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
+    .core-live{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .75rem;border-radius:999px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;font-size:.72rem;font-weight:900;letter-spacing:.08em}
+    .weather-metrics-four{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}.weather-metric-item{min-height:126px;background:rgba(6,14,28,.64);border:1px solid rgba(0,210,255,.18);border-radius:14px;padding:1rem}.metric-item-head{display:flex;align-items:center;gap:.45rem;color:#b9c7d9;font-size:.76rem;font-weight:700}.metric-item-val{font-family:var(--font-heading);font-size:1.35rem;font-weight:900;color:#f8fafc;margin-top:.75rem}.metric-item-sub{font-size:.68rem;color:var(--text-muted);margin-top:.28rem}
+    .risk-card{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.risk-gauge{width:148px;height:148px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#22c55e calc(var(--risk) * 1%),rgba(255,255,255,.09) 0);position:relative;margin:1rem 0}.risk-gauge:before{content:'';position:absolute;inset:12px;border-radius:50%;background:#0b1728}.risk-gauge-content{position:relative;z-index:1}.risk-value{font-family:var(--font-heading);font-size:2rem;font-weight:900}.risk-label{font-size:.72rem;color:var(--text-muted);font-weight:800;letter-spacing:.08em}.risk-status{padding:.55rem 1rem;border-radius:999px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:#6ee7b7;font-weight:900;letter-spacing:.08em}.risk-advisory{color:#b7c4d5;font-size:.82rem;line-height:1.5;margin-top:1rem;max-width:420px}
+    .dashboard-graph-card{margin:1.25rem 0 2rem;background:rgba(13,24,44,.88);border:1px solid rgba(0,210,255,.20);border-radius:20px;padding:1.35rem;backdrop-filter:blur(16px)}.graph-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}.graph-card-title{font-family:var(--font-heading);font-weight:800}.graph-canvas-container{height:320px;position:relative}
+    @media(max-width:900px){.dashboard-core-grid{grid-template-columns:1fr}.weather-metrics-four{grid-template-columns:repeat(2,1fr)}}
+
+
+    /* Reference-style glassmorphism applied consistently across every page */
+    :root {
+      --bg-card: rgba(8, 22, 40, 0.50) !important;
+      --bg-card-hover: rgba(12, 30, 52, 0.62) !important;
+      --border-glass: rgba(120, 190, 225, 0.16) !important;
+      --border-subtle: rgba(255, 255, 255, 0.08) !important;
+    }
+    body {
+      background-color: #06111f !important;
+      background-image:
+        linear-gradient(90deg, rgba(3, 12, 24, 0.64) 0%, rgba(4, 16, 30, 0.38) 46%, rgba(3, 12, 24, 0.54) 100%),
+        radial-gradient(circle at 53% 10%, rgba(10, 29, 50, 0.18) 0%, rgba(3, 12, 24, 0.46) 72%),
+        url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=90&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(1,8,18,.14), rgba(1,8,18,.28));
+    }
+    .sidebar {
+      background: rgba(4, 14, 28, 0.64) !important;
+      backdrop-filter: blur(18px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+    }
+    .main-wrapper { position: relative; }
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .graph-card,
+    .chart-container, .station-summary-grid, .settings-card, .sim-card, .guide-card,
+    .gauge-box, .guides-box, .warning-card, .emergency-directory-card, .map-card-full,
+    .incidents-section, .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .sidebar-footer {
+      background: rgba(7, 22, 40, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+      backdrop-filter: blur(14px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+    }
+    .core-card:hover, .metric-card:hover, .sim-card:hover, .guide-card:hover,
+    .warning-card:hover, .settings-card:hover {
+      background: rgba(10, 30, 52, 0.58) !important;
+    }
+    .emergency-alert-card { background: rgba(16, 12, 22, 0.82) !important; }
+
+  
+
+    /* FINAL GLOBAL GLASS TRANSPARENCY — applied to sidebar and cards on every page */
+    :root {
+      --bg-card: rgba(10, 24, 42, 0.30) !important;
+      --bg-card-hover: rgba(15, 35, 58, 0.42) !important;
+    }
+    .sidebar {
+      background: rgba(3, 13, 28, 0.32) !important;
+      border-right: 1px solid rgba(255,255,255,0.09) !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.12) !important;
+      backdrop-filter: blur(14px) saturate(125%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+    }
+    .sidebar-footer,
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .stat-card,
+    .graph-card, .chart-container, .station-summary-grid, .settings-card,
+    .sim-card, .guide-card, .gauge-box, .guides-box, .warning-card,
+    .emergency-directory-card, .map-card-full, .incidents-section,
+    .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .weather-card, .forecast-card,
+    .history-card, .map-panel, .content-card, .card, .panel {
+      background: rgba(8, 24, 43, 0.30) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16) !important;
+      backdrop-filter: blur(12px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    }
+    .weather-metric-item, .metric-item, .metric-box, .stat-item,
+    .mini-card, .info-card, .weather-stat, .data-tile {
+      background: rgba(4, 17, 32, 0.28) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .nav-item a:hover { background: rgba(255,255,255,0.08) !important; }
+    .nav-item.active a { background: rgba(27, 126, 219, 0.28) !important; }
+    .core-card:hover, .metric-card:hover, .stat-card:hover, .sim-card:hover,
+    .guide-card:hover, .warning-card:hover, .settings-card:hover, .card:hover {
+      background: rgba(12, 32, 54, 0.40) !important;
+    }
+</style>
 </head>
 <body>
 
@@ -965,7 +1076,7 @@
           <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
         </div>
         <div class="brand-text-wrap">
-          <span class="brand-title">MAHA FLOOD AI</span>
+          <span class="brand-title">MAHA FLOOD </span>
         </div>
       </div>
 
@@ -987,7 +1098,7 @@
     <div class="topbar">
 <div class="search-bar-wrapper">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="regionSearchInput" placeholder="Search any region in Maharashtra (e.g. Pune, Kolhapur, Chiplun, Mumbai)..." onkeydown="if(event.key==='Enter') executeSearch()" value="Ratnagiri" />
+        <input type="text" id="regionSearchInput" placeholder="Search any region in Maharashtra (e.g. Pune, Kolhapur, Chiplun, Mumbai)..." onkeydown="if(event.key==='Enter') executeSearch()" value="Mumbai" />
         <button class="search-btn" onclick="executeSearch()">Search</button>
       </div>
 
@@ -998,231 +1109,43 @@
       </div>
     </div>
 
-    <!-- Center Hero Section -->
-    <div class="hero-container">
-<h1 class="hero-title">
-        Flood &amp;
-        <span class="hero-title-cyan">Weather Intelligence</span>
-      </h1>
-
-      <p class="hero-subtitle">
-        Monitor real-time weather conditions, rainfall, temperature, humidity and flood risk across Maharashtra using AI-powered early warning technology.
-      </p>
-
-      <!-- 4 Stat Cards Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-          </div>
-          <div class="stat-value" id="valTemp">27°C</div>
-          <div class="stat-label">TEMPERATURE</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
-          </div>
-          <div class="stat-value" id="valRain">22 mm</div>
-          <div class="stat-label">RAINFALL</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-          </div>
-          <div class="stat-value" id="valHum">84%</div>
-          <div class="stat-label">HUMIDITY</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
-          </div>
-          <div class="stat-value" id="valWind">14.5 km/h</div>
-          <div class="stat-label">WIND SPEED</div>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="actions-row">
-        <button class="btn btn-primary" onclick="runPredictionModal()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Run Flood Prediction
-        </button>
-
-        <a href="/gis" class="btn btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
-          Open Flood GIS Map
-        </a>
+    <!-- Dashboard core -->
+    <div class="hero-container" style="padding-bottom:.2rem;">
+      <div id="timeGreeting" style="font-size:1.05rem;font-weight:800;color:var(--neon-cyan);margin-bottom:8px;letter-spacing:.02em;">Good Evening, Welcome</div>
+      <h1 class="hero-title">Flood &amp; <span class="hero-title-cyan">Weather Intelligence</span></h1>
+      <p class="hero-subtitle">Monitor live weather conditions and AI-based flood risk across Maharashtra.</p>
+      <div class="actions-row" style="margin-top:1rem;">
+        <button class="btn btn-primary" onclick="runPredictionModal()">Run Flood Prediction</button>
+        <a href="/gis" class="btn btn-secondary">Open Flood GIS Map</a>
       </div>
     </div>
 
-    <!-- Live Weather Component (Dynamic Weather & Background Intelligence) -->
-    <div class="weather-component-card">
-      <div class="weather-card-top">
-        <div class="weather-location-wrap">
-          <div class="weather-location-title">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>
-            <span id="weatherCardLocTitle">Ratnagiri Live Weather</span>
-          </div>
-          <div class="weather-theme-pill">
-            <span class="weather-theme-dot"></span>
-            <span id="weatherCardThemeText">🌧️ Rain Atmosphere Active</span>
-          </div>
+    <div class="dashboard-core-grid">
+      <section class="core-card">
+        <div class="core-card-head">
+          <div><div class="core-card-title">Live Weather</div><div class="core-card-sub" id="weatherCardLocTitle">District: Mumbai</div></div>
+          <span class="core-live">LIVE</span>
         </div>
-
-        
-      </div>
-
-    
-
-      <!-- Weather Main Display Grid -->
-      <div class="weather-main-panel">
-        <!-- Primary Highlight Box -->
-        <div class="weather-primary-box">
-          <div class="weather-primary-top">
-            <div class="weather-big-icon" id="wCardIcon">🌧️</div>
-            <div class="weather-temp-wrap">
-              <div class="weather-temp-huge" id="wCardTemp">27.0°C</div>
-              <div class="weather-feels-like" id="wCardFeels">Feels like 29.5°C</div>
-            </div>
-          </div>
-          <div>
-            <div class="weather-condition-title" id="wCardCondTitle">Continuous Rain Showers</div>
-            <div class="weather-condition-desc" id="wCardCondDesc">Active monsoon precipitation stream observed over coastal catchment zone.</div>
-          </div>
+        <div class="weather-metrics-four">
+          <div class="weather-metric-item"><div class="metric-item-head"><span>🌡️</span><span>Temperature</span></div><div class="metric-item-val" id="wCardTemp">--°C</div><div class="metric-item-sub">Current</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>🌧️</span><span>Rainfall</span></div><div class="metric-item-val" id="wCardRainVal">-- mm</div><div class="metric-item-sub">Live precipitation</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>💧</span><span>Humidity</span></div><div class="metric-item-val" id="wCardHumVal">--%</div><div class="metric-item-sub">Relative</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>💨</span><span>Wind Speed</span></div><div class="metric-item-val" id="wCardWindVal">-- km/h</div><div class="metric-item-sub">Current wind</div></div>
         </div>
+      </section>
 
-        <!-- 6 Metrics Grid -->
-        <div class="weather-metrics-6grid">
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-              <span>Rainfall</span>
-            </div>
-            <div class="metric-item-val" id="wCardRainVal">22.0 mm</div>
-            <div class="metric-item-sub">24h Cumulative</div>
-          </div>
-
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-              <span>Humidity</span>
-            </div>
-            <div class="metric-item-val" id="wCardHumVal">84%</div>
-            <div class="metric-item-sub">Relative Saturation</div>
-          </div>
-
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/></svg>
-              <span>Wind Flow</span>
-            </div>
-            <div class="metric-item-val" id="wCardWindVal">14.5 km/h</div>
-            <div class="metric-item-sub" id="wCardWindDir">WSW Gusts</div>
-          </div>
-
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>Pressure</span>
-            </div>
-            <div class="metric-item-val" id="wCardPressVal">1008 hPa</div>
-            <div class="metric-item-sub">Barometric Sea-Level</div>
-          </div>
-
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>Visibility</span>
-            </div>
-            <div class="metric-item-val" id="wCardVisVal">9.5 km</div>
-            <div class="metric-item-sub">Clear Sightline</div>
-          </div>
-
-          <div class="weather-metric-item">
-            <div class="metric-item-head">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-              <span>Cloud Cover</span>
-            </div>
-            <div class="metric-item-val" id="wCardCloudVal">88%</div>
-            <div class="metric-item-sub">Overcast Density</div>
-          </div>
-        </div>
-
-        <!-- Catchment & River Status Box -->
-        <div class="weather-catchment-box">
-          <div>
-            <div class="catchment-box-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-              <span>Catchment Basin</span>
-            </div>
-            <div class="catchment-basin-name" id="wCardRiverBasin">Kajali / Vashishti River</div>
-          </div>
-
-          <div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">Hydro Risk Status</div>
-            <div class="catchment-risk-badge safe" id="wCardRiskBadge" style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">
-              <span>🛡️</span>
-              <span id="wCardRiskText">LOW RISK • 18.4%</span>
-            </div>
-          </div>
-
-          <div class="catchment-advisory-text" id="wCardAdvisory">
-            Normal weather conditions. Standard drainage and reservoir operations in progress.
-          </div>
-        </div>
-      </div>
+      <section class="core-card risk-card">
+        <div class="core-card-head" style="width:100%;"><div><div class="core-card-title">AI Flood Risk Prediction</div><div class="core-card-sub">Live weather-based assessment</div></div></div>
+        <div class="risk-gauge" id="riskGauge" style="--risk:0"><div class="risk-gauge-content"><div class="risk-value" id="riskPercent">--%</div><div class="risk-label">FLOOD RISK</div></div></div>
+        <div class="risk-status" id="riskLevel">LOW RISK</div>
+        <div class="risk-advisory" id="riskAdvisory">Live assessment will appear after weather data is loaded.</div>
+      </section>
     </div>
 
-    <!-- Dashboard Graph Card (Added as requested) -->
     <div class="dashboard-graph-card">
-      <div class="graph-card-header">
-        <div class="graph-card-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span id="dashGraphTitle">Hydrological Telemetry &amp; Rainfall Trend – Ratnagiri</span>
-        </div>
-        <span style="font-size: 0.72rem; color: var(--neon-cyan); font-weight: 700; background: rgba(0,210,255,0.15); padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(0,210,255,0.3);">Real-Time Sensor Stream</span>
-      </div>
-      <div class="graph-canvas-container">
-        <canvas id="dashboardTelemetryChart"></canvas>
-      </div>
+      <div class="graph-card-header"><div><div class="graph-card-title">24-Hour Rainfall &amp; Flood Probability Trend</div><div class="core-card-sub" id="dashGraphTitle">Hourly live telemetry for Mumbai</div></div><span class="weather-theme-pill">LIVE TREND</span></div>
+      <div class="graph-canvas-container"><canvas id="dashboardTelemetryChart"></canvas></div>
     </div>
-
-    <!-- Lower Section: Live Weather & Emergency Contacts -->
-    <div class="dashboard-lower-grid">
-      <!-- Emergency Contacts -->
-      <div class="dash-box">
-        <div class="dash-box-title">
-          <div class="dash-box-title-left">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Emergency Hotlines &amp; Control Cells</span>
-          </div>
-          <span style="font-size: 0.72rem; color: #ef4444; font-weight: 800; background: rgba(239,68,68,0.2); padding: 2px 8px; border-radius: 4px;">24x7 ACTIVE</span>
-        </div>
-
-        <div class="emergency-list">
-          <div class="emergency-item">
-            <span class="emergency-name">🚨 State Emergency Control (SEOC)</span>
-            <span class="emergency-num">1077 / 112</span>
-          </div>
-          <div class="emergency-item">
-            <span class="emergency-name">🛡️ NDRF 5th Battalion Pune HQ</span>
-            <span class="emergency-num">020-27103250</span>
-          </div>
-          <div class="emergency-item">
-            <span class="emergency-name">🌊 Brihanmumbai Disaster Mgmt Cell</span>
-            <span class="emergency-num">1916</span>
-          </div>
-          <div class="emergency-item">
-            <span class="emergency-name">🚑 Emergency Medical Ambulance</span>
-            <span class="emergency-num">108</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
 
   <!-- Prediction Modal -->
   <div class="modal-overlay" id="predictionModal">
@@ -1251,165 +1174,32 @@
     </div>
   </div>
 
-  <<script>
+  <script>
     // Safely receive the location from Flask/Jinja
-    let currentRegion = {{ initial_location | default("Ratnagiri") | tojson }};
+    let currentRegion = "Mumbai";
     let dashChart = null;
-
-    const WEATHER_BACKGROUNDS = {
-        rain: '/static/images/weather/rainy.jpg',
-        thunderstorm: '/static/images/weather/storm.jpg',
-        sun: '/static/images/weather/sunny.jpg',
-        clouds: '/static/images/weather/cloudy.jpg',
-        mist: '/static/images/weather/fog.jpg'
-    };
-
-    function updateDashboardWeatherBackground(type, text, rain) {
-        const t = `${type || ''} ${text || ''}`.toLowerCase();
-
-        let category = 'clouds';
-
-        if (t.includes('thunder') || t.includes('storm')) {
-            category = 'thunderstorm';
-        } else if (
-            t.includes('rain') ||
-            t.includes('drizzle') ||
-            Number(rain) > 0
-        ) {
-            category = 'rain';
-        } else if (t.includes('fog') || t.includes('mist')) {
-            category = 'mist';
-        } else if (t.includes('clear') || t.includes('sun')) {
-            category = 'sun';
-        }
-
-        document.body.classList.add('weather-dynamic');
-
-        document.body.style.backgroundImage =
-            `linear-gradient(rgba(4,10,20,.48), rgba(4,10,20,.72)),
-             url('${WEATHER_BACKGROUNDS[category]}')`;
-
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundAttachment = 'fixed';
+    const DASH_CACHE_TTL = 60 * 1000;
+    function updateTimeGreeting(){
+      const h=new Date().getHours();
+      const g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+      const el=document.getElementById('timeGreeting'); if(el) el.textContent=`${g}, Welcome`;
     }
+    updateTimeGreeting();
 
     function renderDashboardGraph(location, series) {
-
-        const canvas = document.getElementById(
-            'dashboardTelemetryChart'
-        );
-
-        if (!canvas || typeof Chart === 'undefined' || !series) {
-            return;
-        }
-
+        const canvas = document.getElementById('dashboardTelemetryChart');
+        if (!canvas || typeof Chart === 'undefined' || !series) return;
         const title = document.getElementById('dashGraphTitle');
-
-        if (title) {
-            title.innerText =
-                `Last 7 Days Temperature & Rainfall – ${location}`;
-        }
-
-        if (dashChart) {
-            dashChart.destroy();
-        }
-
-        dashChart = new Chart(
-            canvas.getContext('2d'),
-            {
-                type: 'line',
-
-                data: {
-                    labels: series.dates,
-
-                    datasets: [
-                        {
-                            label: 'Temperature (°C)',
-                            data: series.temperature,
-                            borderColor: '#00d2ff',
-                            backgroundColor: 'rgba(0,210,255,.12)',
-                            tension: 0.35,
-                            fill: true,
-                            yAxisID: 'temp'
-                        },
-                        {
-                            label: 'Rainfall (mm)',
-                            data: series.rainfall,
-                            borderColor: '#f59e0b',
-                            backgroundColor: 'rgba(245,158,11,.08)',
-                            tension: 0.35,
-                            fill: false,
-                            yAxisID: 'rain'
-                        }
-                    ]
-                },
-
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#cbd5e1'
-                            }
-                        }
-                    },
-
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: '#94a3b8'
-                            },
-                            grid: {
-                                color: 'rgba(255,255,255,.05)'
-                            }
-                        },
-
-                        temp: {
-                            position: 'left',
-
-                            title: {
-                                display: true,
-                                text: 'Temperature °C',
-                                color: '#00d2ff'
-                            },
-
-                            ticks: {
-                                color: '#94a3b8'
-                            },
-
-                            grid: {
-                                color: 'rgba(255,255,255,.06)'
-                            }
-                        },
-
-                        rain: {
-                            position: 'right',
-
-                            title: {
-                                display: true,
-                                text: 'Rainfall mm',
-                                color: '#f59e0b'
-                            },
-
-                            ticks: {
-                                color: '#f59e0b'
-                            },
-
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            }
-        );
+        if (title) title.innerText = `Hourly live telemetry for ${location}`;
+        if (dashChart) dashChart.destroy();
+        dashChart = new Chart(canvas.getContext('2d'), {
+          type:'line',
+          data:{labels:series.hours||series.dates||[],datasets:[
+            {label:'Rainfall (mm)',data:series.rainfall||[],borderColor:'#35c9f5',backgroundColor:'rgba(53,201,245,.14)',tension:.35,fill:true,yAxisID:'rain'},
+            {label:'Flood Risk (%)',data:series.flood_risk||[],borderColor:'#ff6262',backgroundColor:'transparent',tension:.35,fill:false,yAxisID:'risk'}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#cbd5e1'}}},scales:{x:{ticks:{color:'#94a3b8',maxRotation:0,autoSkip:true,maxTicksLimit:12},grid:{color:'rgba(255,255,255,.05)'}},rain:{position:'left',title:{display:true,text:'Rainfall (mm)',color:'#35c9f5'},ticks:{color:'#35c9f5'},grid:{color:'rgba(255,255,255,.06)'}},risk:{position:'right',min:0,max:100,title:{display:true,text:'Flood Risk (%)',color:'#ff6262'},ticks:{color:'#ff6262'},grid:{drawOnChartArea:false}}}}
+        });
     }
 
     function setText(id, value) {
@@ -1425,18 +1215,21 @@
     async function fetchDistrictWeather(district) {
 
         const target =
-            (district || '').trim() || currentRegion || 'Ratnagiri';
-
+            (district || '').trim() || currentRegion || 'Mumbai';
         setText(
             'activeRegionBadge',
-            `${target.toUpperCase()} • LOADING`
+            'LOADING'
         );
 
         try {
 
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
             const res = await fetch(
-                `/api/dashboard-data?location=${encodeURIComponent(target)}`
+                `/api/dashboard-data?location=${encodeURIComponent(target)}`,
+                { signal: controller.signal, cache: 'force-cache' }
             );
+            clearTimeout(timeout);
 
             if (!res.ok) {
                 throw new Error(`Server error: ${res.status}`);
@@ -1456,17 +1249,10 @@
             const p = data.prediction;
 
 
-            // Top statistics
-            setText('valTemp', `${w.temperature}°C`);
-            setText('valRain', `${w.rainfall} mm`);
-            setText('valHum', `${w.humidity}%`);
-            setText('valWind', `${w.wind_speed} km/h`);
-
-
             // Live badge
             setText(
                 'activeRegionBadge',
-                `${w.location.toUpperCase()} • LIVE`
+                'LIVE'
             );
 
 
@@ -1477,51 +1263,8 @@
             );
 
 
-            // Weather icon
-            let icon = '☁️';
-
-            if (
-                w.condition &&
-                w.condition.toLowerCase().includes('thunder')
-            ) {
-                icon = '⛈️';
-            }
-            else if (
-                w.condition &&
-                w.condition.toLowerCase().includes('rain')
-            ) {
-                icon = '🌧️';
-            }
-            else if (
-                w.condition &&
-                w.condition.toLowerCase().includes('clear')
-            ) {
-                icon = '☀️';
-            }
-
-            setText('wCardIcon', icon);
-
-
-            // Main weather card
-            setText('wCardTemp', `${w.temperature}°C`);
-
-            setText(
-                'wCardFeels',
-                `Current observation • ${w.time || 'updated now'}`
-            );
-
-            setText(
-                'wCardCondTitle',
-                w.condition || 'Weather data available'
-            );
-
-            setText(
-                'wCardCondDesc',
-                `Live observation from ${w.source || 'weather service'}. Current precipitation: ${w.rainfall} mm.`
-            );
-
-
             // Weather metrics
+            setText('wCardTemp', `${w.temperature}°C`);
             setText(
                 'wCardRainVal',
                 `${w.rainfall} mm`
@@ -1537,61 +1280,12 @@
                 `${w.wind_speed} km/h`
             );
 
-            setText(
-                'wCardWindDir',
-                'Live wind speed'
-            );
-
-            setText(
-                'wCardPressVal',
-                w.pressure
-                    ? `${w.pressure} hPa`
-                    : 'Not provided'
-            );
-
-            setText(
-                'wCardVisVal',
-                w.visibility
-                    ? `${w.visibility} km`
-                    : 'Not provided'
-            );
-
-            setText(
-                'wCardCloudVal',
-                w.cloud_cover
-                    ? `${w.cloud_cover}%`
-                    : 'Not provided'
-            );
-
-
-            // Basin
-            setText(
-                'wCardRiverBasin',
-                'Meteorological catchment indicator'
-            );
-
-
-            // Risk
-            setText(
-                'wCardRiskText',
-                `${p.risk_level} • ${p.risk_percentage}%`
-            );
-
-            setText(
-                'wCardAdvisory',
-                p.action_guideline
-            );
-
-
-            const badge =
-                document.getElementById('wCardRiskBadge');
-
-            if (badge) {
-
-                badge.className =
-                    `catchment-risk-badge ${p.alert_class || 'safe'}`;
-            }
-
+            // Flood risk card
+            setText('riskPercent', `${p.risk_percentage}%`);
+            setText('riskLevel', `${p.risk_level} RISK`);
+            setText('riskAdvisory', p.action_guideline || 'Continue monitoring official advisories.');
+            const gauge = document.getElementById('riskGauge');
+            if (gauge) gauge.style.setProperty('--risk', Math.max(0, Math.min(100, Number(p.risk_percentage)||0)));
 
             // Search box
             const search =
@@ -1600,14 +1294,6 @@
             if (search) {
                 search.value = w.location;
             }
-
-
-            // Dynamic background
-            updateDashboardWeatherBackground(
-                w.condition_type,
-                w.condition,
-                w.rainfall
-            );
 
 
             // Graph
@@ -1797,7 +1483,7 @@
                         currentRegion
                     );
                 },
-                60000
+                300000
             );
 
         }

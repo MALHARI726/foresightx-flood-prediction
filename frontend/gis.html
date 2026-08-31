@@ -31,7 +31,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg-dark);
-      background-image: radial-gradient(circle at 50% 15%, rgba(14, 42, 71, 0.7) 0%, rgba(6, 12, 24, 0.98) 80%);
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop');
       color: var(--text-main);
       font-family: var(--font-body);
       min-height: 100vh;
@@ -305,6 +305,48 @@
     }
     .leaflet-popup-tip { background: #ffffff !important; }
 
+
+    /* Demo mode */
+    .demo-toggle {
+      display:flex; align-items:center; gap:.55rem; padding:.5rem .9rem;
+      border:1px solid rgba(245,158,11,.45); background:rgba(245,158,11,.10);
+      border-radius:30px; color:#fbbf24; font-size:.82rem; font-weight:800; cursor:pointer;
+    }
+    .demo-toggle input { accent-color:#f59e0b; width:16px; height:16px; }
+    .demo-panel {
+      display:none; background:linear-gradient(135deg,rgba(18,31,52,.96),rgba(8,18,34,.96));
+      border:1px solid rgba(245,158,11,.35); border-radius:16px; padding:1.25rem;
+      box-shadow:0 10px 30px rgba(0,0,0,.28);
+    }
+    .demo-panel.active { display:block; }
+    .demo-header { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap; }
+    .demo-title { font-family:var(--font-heading); font-size:1.2rem; font-weight:900; color:#fff; }
+    .demo-subtitle { color:var(--text-muted); font-size:.78rem; margin-top:.25rem; line-height:1.45; }
+    .demo-badge { padding:.35rem .65rem; border-radius:999px; background:rgba(245,158,11,.15); color:#fbbf24; font-size:.72rem; font-weight:900; border:1px solid rgba(245,158,11,.35); }
+    .demo-controls { display:grid; grid-template-columns:repeat(4,minmax(150px,1fr)); gap:.9rem; margin-top:1rem; }
+    .demo-field { background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07); border-radius:11px; padding:.8rem; }
+    .demo-field label { display:flex; justify-content:space-between; gap:.5rem; color:#cbd5e1; font-size:.74rem; font-weight:800; margin-bottom:.5rem; }
+    .demo-field select, .demo-field input[type=range] { width:100%; }
+    .demo-field select { padding:.55rem .6rem; border-radius:8px; border:1px solid rgba(0,210,255,.25); background:#0b1728; color:#fff; font-weight:700; }
+    .demo-field input[type=range] { accent-color:#00d2ff; }
+    .demo-actions { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin-top:1rem; }
+    .demo-btn { border:0; border-radius:9px; padding:.7rem 1rem; background:#10b981; color:#fff; font-weight:900; cursor:pointer; box-shadow:0 5px 15px rgba(16,185,129,.2); }
+    .demo-btn.secondary { background:#334155; }
+    .demo-result { margin-top:1rem; padding:1rem; border-radius:12px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.25); display:none; }
+    .demo-result.show { display:block; }
+    .demo-result strong { color:#6ee7b7; }
+    .demo-route-card { display:grid; grid-template-columns:repeat(4,1fr); gap:.65rem; margin-top:.75rem; }
+    .demo-stat { background:rgba(0,0,0,.16); padding:.65rem; border-radius:8px; }
+    .demo-stat span { display:block; color:#94a3b8; font-size:.68rem; }
+    .demo-stat b { display:block; color:#fff; margin-top:.15rem; font-size:.88rem; }
+    .demo-note { margin-top:.7rem; color:#94a3b8; font-size:.7rem; line-height:1.45; }
+    .demo-only { display:none; }
+    body.demo-active .demo-only { display:block; }
+    body.demo-active .normal-only { display:none; }
+    body.demo-active .map-badge-overlay { background:#0b1728; border-color:#f59e0b; color:#fff; }
+    @media (max-width: 900px) { .demo-controls{grid-template-columns:repeat(2,minmax(150px,1fr));} .demo-route-card{grid-template-columns:repeat(2,1fr);} }
+    @media (max-width: 550px) { .demo-controls{grid-template-columns:1fr;} .demo-route-card{grid-template-columns:1fr;} }
+
     @media (max-width: 950px) {
       .map-card-full { height: 420px; }
     }
@@ -317,6 +359,106 @@
 
 .flood-hover-tooltip { padding: 0 !important; border: 0 !important; background: transparent !important; box-shadow: 0 8px 24px rgba(0,0,0,.22) !important; }
 .flood-hover-tooltip::before { display:none !important; }
+
+    /* Permanent cloud background lock */
+    body {
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Reference-style glassmorphism applied consistently across every page */
+    :root {
+      --bg-card: rgba(8, 22, 40, 0.50) !important;
+      --bg-card-hover: rgba(12, 30, 52, 0.62) !important;
+      --border-glass: rgba(120, 190, 225, 0.16) !important;
+      --border-subtle: rgba(255, 255, 255, 0.08) !important;
+    }
+    body {
+      background-color: #06111f !important;
+      background-image:
+        linear-gradient(90deg, rgba(3, 12, 24, 0.64) 0%, rgba(4, 16, 30, 0.38) 46%, rgba(3, 12, 24, 0.54) 100%),
+        radial-gradient(circle at 53% 10%, rgba(10, 29, 50, 0.18) 0%, rgba(3, 12, 24, 0.46) 72%),
+        url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=90&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(1,8,18,.14), rgba(1,8,18,.28));
+    }
+    .sidebar {
+      background: rgba(4, 14, 28, 0.64) !important;
+      backdrop-filter: blur(18px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+    }
+    .main-wrapper { position: relative; }
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .graph-card,
+    .chart-container, .station-summary-grid, .settings-card, .sim-card, .guide-card,
+    .gauge-box, .guides-box, .warning-card, .emergency-directory-card, .map-card-full,
+    .incidents-section, .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .sidebar-footer {
+      background: rgba(7, 22, 40, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+      backdrop-filter: blur(14px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+    }
+    .core-card:hover, .metric-card:hover, .sim-card:hover, .guide-card:hover,
+    .warning-card:hover, .settings-card:hover {
+      background: rgba(10, 30, 52, 0.58) !important;
+    }
+    .emergency-alert-card { background: rgba(16, 12, 22, 0.82) !important; }
+
+  
+
+    /* FINAL GLOBAL GLASS TRANSPARENCY — applied to sidebar and cards on every page */
+    :root {
+      --bg-card: rgba(10, 24, 42, 0.30) !important;
+      --bg-card-hover: rgba(15, 35, 58, 0.42) !important;
+    }
+    .sidebar {
+      background: rgba(3, 13, 28, 0.32) !important;
+      border-right: 1px solid rgba(255,255,255,0.09) !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.12) !important;
+      backdrop-filter: blur(14px) saturate(125%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+    }
+    .sidebar-footer,
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .stat-card,
+    .graph-card, .chart-container, .station-summary-grid, .settings-card,
+    .sim-card, .guide-card, .gauge-box, .guides-box, .warning-card,
+    .emergency-directory-card, .map-card-full, .incidents-section,
+    .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .weather-card, .forecast-card,
+    .history-card, .map-panel, .content-card, .card, .panel {
+      background: rgba(8, 24, 43, 0.30) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16) !important;
+      backdrop-filter: blur(12px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    }
+    .weather-metric-item, .metric-item, .metric-box, .stat-item,
+    .mini-card, .info-card, .weather-stat, .data-tile {
+      background: rgba(4, 17, 32, 0.28) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .nav-item a:hover { background: rgba(255,255,255,0.08) !important; }
+    .nav-item.active a { background: rgba(27, 126, 219, 0.28) !important; }
+    .core-card:hover, .metric-card:hover, .stat-card:hover, .sim-card:hover,
+    .guide-card:hover, .warning-card:hover, .settings-card:hover, .card:hover {
+      background: rgba(12, 32, 54, 0.40) !important;
+    }
 </style>
 </head>
 <body>
@@ -329,7 +471,7 @@
           <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
         </div>
         <div class="brand-text-wrap">
-          <span class="brand-title">MAHA FLOOD AI</span>
+          <span class="brand-title">MAHA FLOOD </span>
         </div>
       </div>
 
@@ -354,7 +496,7 @@
       </div>
 
       <div class="controls-row">
-        <div class="year-filter-box">
+        <div class="year-filter-box normal-only">
           <label for="yearSelect" style="color: var(--text-muted);">Filter Incidents:</label>
           <select id="yearSelect" onchange="loadGisData(this.value)" style="min-width:180px;">
             <option value="live" selected>LIVE WEATHER MAP</option>
@@ -362,6 +504,7 @@
             {% for year in years %}<option value="{{ year }}">{{ year }}</option>{% endfor %}
           </select>
         </div>
+        <label class="demo-toggle"><input id="demoModeToggle" type="checkbox" onchange="toggleDemoMode(this.checked)"> Demo Safe-Route Mode</label>
       </div>
     </div>
 
@@ -374,9 +517,45 @@
       </div>
     </div>
 
-    <div class="route-panel">
-      <h3>🛡️ Safe Evacuation Corridors</h3>
-      <div class="route-controls"><select id="routeDistrict">{% for d in districts %}<option value="{{ d }}">{{ d }}</option>{% endfor %}</select><button onclick="loadSafeRoutes()">Find Safer Corridors</button><span id="routeStatus" style="font-size:.78rem;color:#94a3b8"></span></div>
+
+    <div class="demo-panel demo-only" id="demoPanel">
+      <div class="demo-header">
+        <div>
+          <div class="demo-title">🧪 Flood Route Demo — Multiple Maharashtra Districts</div>
+          <div class="demo-subtitle">Change the simulated flood conditions. ForesightX scores the predefined demo corridors and draws <b>only the safest corridor</b> on the Leaflet map.</div>
+        </div>
+        <span class="demo-badge">SIMULATION • NOT LIVE NAVIGATION</span>
+      </div>
+      <div class="demo-controls">
+        <div class="demo-field">
+          <label>City <span id="demoCityValue">Mumbai</span></label>
+          <select id="demoCity" onchange="renderDemoMap()"><option>Mumbai</option><option>Pune</option><option>Thane</option><option>Nashik</option><option>Nagpur</option><option>Kolhapur</option><option>Satara</option><option>Raigad</option><option>Chhatrapati Sambhajinagar</option></select>
+        </div>
+        <div class="demo-field">
+          <label>Rainfall <span><b id="rainfallValue">150</b> mm</span></label>
+          <input id="demoRainfall" type="range" min="0" max="500" value="150" step="10" oninput="updateDemoLabels()">
+        </div>
+        <div class="demo-field">
+          <label>Water Depth <span><b id="waterDepthValue">0.4</b> m</span></label>
+          <input id="demoWaterDepth" type="range" min="0" max="2.5" value="0.4" step="0.1" oninput="updateDemoLabels()">
+        </div>
+        <div class="demo-field">
+          <label>Road Blockage <span><b id="blockageValue">20</b>%</span></label>
+          <input id="demoBlockage" type="range" min="0" max="100" value="20" step="5" oninput="updateDemoLabels()">
+        </div>
+      </div>
+      <div class="demo-actions">
+        <label style="display:flex;align-items:center;gap:.5rem;color:#cbd5e1;font-size:.78rem;font-weight:700;"><input id="riverOverflow" type="checkbox" onchange="renderDemoMap()"> River / drain overflow</label>
+        <button class="demo-btn" onclick="renderDemoMap()">🛡️ Find Safest Route</button>
+        <button class="demo-btn secondary" onclick="resetDemo()">Reset Demo</button>
+      </div>
+      <div class="demo-result" id="demoResult"></div>
+      <div class="demo-note">Demo routes are predefined visualization corridors, not turn-by-turn road directions. For real emergencies, verify closures and evacuation instructions from local authorities.</div>
+    </div>
+
+    <div class="route-panel normal-only">
+      <h3>🧭 Best Safe Route Navigator</h3>
+      <div class="route-controls"><select id="routeDistrict">{% for d in districts %}{% if d|lower != "ahmednagar" and d|lower != "ahemadnagar" %}<option value="{{ d }}">{{ d }}</option>{% endif %}{% endfor %}</select><button onclick="loadSafeRoutes()">Find Safer Corridors</button><span id="routeStatus" style="font-size:.78rem;color:#94a3b8"></span></div>
       <div id="routeList"></div><div class="route-note">Corridors are district-level guidance calculated only from the project's supplied coordinates and live risk. They are not turn-by-turn road directions; confirm road closures and official evacuation instructions before travel.</div>
     </div>
 
@@ -399,9 +578,9 @@
   <script>
     let map=null, markersLayer=null, routeLayer=null;
     function initMap(){
-      map=L.map('mapContainer',{center:[19.1,75.6],zoom:7,zoomControl:true});
+      map=L.map('mapContainer',{center:[19.7515,75.7139],zoom:7,zoomControl:true,maxBounds:[[15.55,72.45],[22.10,80.95]],maxBoundsViscosity:1.0,minZoom:6});
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
-      markersLayer=L.layerGroup().addTo(map); routeLayer=L.layerGroup().addTo(map);
+      markersLayer=L.layerGroup().addTo(map); routeLayer=L.layerGroup().addTo(map); map.fitBounds([[15.55,72.45],[22.10,80.95]],{padding:[10,10]});
     }
     function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
     async function loadGisData(mode='live'){
@@ -416,7 +595,7 @@
             marker.bindPopup(`<div style="min-width:220px"><strong>📍 ${esc(item.district)}</strong><br>🌡️ ${item.temperature} °C<br>🌧️ ${item.rainfall} mm<br>💧 ${item.humidity}%<br>💨 ${item.wind_speed} km/h<br><b>Flood risk: ${item.risk_level} • ${item.risk_percentage}%</b><p style="margin-top:6px">Live weather point. Values refresh from the live weather service.</p></div>`);
             bounds.push([item.lat,item.lon]);
             const card=document.createElement('div'); card.className='incident-item'; card.innerHTML=`<div class="incident-district"><span>📍 ${esc(item.district)}</span><span class="incident-date">LIVE</span></div><div class="incident-cause">${esc(item.risk_level)} flood risk • ${item.risk_percentage}%</div><div class="incident-meta-row"><span>🌧️ ${item.rainfall} mm</span><span>🌡️ ${item.temperature} °C</span></div>`; card.onclick=()=>{map.flyTo([item.lat,item.lon],9);marker.openPopup()}; list.appendChild(card);
-          }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20]}); return;
+          }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20],maxZoom:10}); return;
         }
         const res=await fetch(`/api/gis/historical-floods?year=${encodeURIComponent(mode)}`); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'History unavailable');
         document.getElementById('incidentCount').innerText=`${data.flood_incidents.length} Records Found`; list.innerHTML='';
@@ -427,14 +606,14 @@
           const details=`<div style="font-size:.88rem;line-height:1.45;min-width:230px"><strong style="color:#0284c7">📍 ${esc(item.district)} (${item.year})</strong><br>📅 ${esc(item.start_date)}${item.end_date?' – '+esc(item.end_date):''}<br>⚠️ Cause: ${esc(item.main_cause)}<br>🚨 Fatalities: ${esc(item.fatalities)}<p style="margin-top:6px;border-top:1px solid #ddd;padding-top:6px">${esc(item.description||item.damage||'Historical flood event recorded in the supplied dataset.')}</p></div>`;
           marker.bindTooltip(details,{direction:'top',sticky:true,opacity:.98,className:'flood-hover-tooltip'});
           const card=document.createElement('div');card.className='incident-item';card.innerHTML=`<div class="incident-district"><span>📍 ${esc(item.district)}</span><span class="incident-date">${item.year}</span></div><div class="incident-cause">${esc(item.main_cause)}</div><div class="incident-meta-row"><span>🚨 Fatalities: ${esc(item.fatalities)}</span><span>📅 ${esc(item.start_date)}</span></div>`;card.onclick=()=>{map.flyTo([item.lat,item.lon],9);marker.openPopup()};list.appendChild(card);
-        }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20]});
+        }); if(bounds.length)map.fitBounds(bounds,{padding:[20,20],maxZoom:10});
       }catch(e){console.error(e);document.getElementById('incidentCount').innerText='Error';list.innerHTML=`<div class="no-data-notice">${esc(e.message)}</div>`}
     }
     async function loadSafeRoutes(){
       const district=document.getElementById('routeDistrict').value; const list=document.getElementById('routeList'); const status=document.getElementById('routeStatus');
       list.innerHTML='<div style="padding:.7rem;color:#94a3b8">Calculating live safer corridors…</div>'; status.textContent=''; if(routeLayer)routeLayer.clearLayers();
       try{
-        const res=await fetch(`/api/gis/safe-routes?location=${encodeURIComponent(district)}`); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'Safe route service unavailable');
+        const res=await fetch(`/api/gis/safe-routes?location=${encodeURIComponent(district)}`); const data=await res.json(); if(data.status!=='success')throw new Error(data.error||'Best route service unavailable');
         list.innerHTML=''; status.textContent=`Origin risk: ${data.origin_risk.risk_level} • ${data.origin_risk.risk_percentage}%`;
         data.routes.forEach((r,i)=>{
           const line=L.polyline(r.points,{color:i===0?'#10b981':'#00d2ff',weight:i===0?6:4,dashArray:i===0?'':'8 8',opacity:.9}).addTo(routeLayer);
@@ -445,7 +624,164 @@
       }catch(e){list.innerHTML=`<div style="padding:.7rem;color:#fca5a5">${esc(e.message)}</div>`;}
     }
 
-    document.addEventListener('DOMContentLoaded',()=>{initMap();loadGisData('live');loadSafeRoutes();});
+    function startBestRoute(){
+      const first=document.querySelector('#routeList .route-item');
+      const district=document.getElementById('routeDistrict')?.value||'selected area';
+      if(!first){ alert('Please find the best route first.'); return; }
+      const text=first.innerText.replace(/\s+/g,' ');
+      alert('Navigation started. Go to the highlighted safest corridor and follow the route to the lower-risk destination.\n\n' + text);
+      first.click();
+    }
+
+    const DEMO_ROUTES = {
+      Mumbai: {
+        center:[19.0760,72.8777], zoom:11,
+        start:{name:"Mumbai Central", point:[18.9690,72.8195]},
+        end:{name:"BKC Relief Centre", point:[19.0660,72.8650]},
+        floodZones:[
+          {name:"Mithi / Kurla lowlands", center:[19.072,72.884], radius:1500, weight:1.25},
+          {name:"Sion–Dharavi lowlands", center:[19.044,72.859], radius:1250, weight:1.15},
+          {name:"Western lowlands", center:[19.135,72.836], radius:1100, weight:0.9}
+        ],
+        routes:[
+          {name:"Eastern Elevated Corridor", base:0.30, points:[[18.9690,72.8195],[18.9785,72.8310],[19.0040,72.8440],[19.0320,72.8550],[19.0660,72.8650]]},
+          {name:"Central City Corridor", base:0.55, points:[[18.9690,72.8195],[18.9880,72.8270],[19.0180,72.8350],[19.0450,72.8510],[19.0660,72.8650]]},
+          {name:"Western Corridor", base:0.78, points:[[18.9690,72.8195],[18.9860,72.8140],[19.0180,72.8200],[19.0480,72.8360],[19.0660,72.8650]]}
+        ]
+      },
+      Pune: {
+        center:[18.5204,73.8567], zoom:11,
+        start:{name:"Swargate", point:[18.5018,73.8636]},
+        end:{name:"Aundh Relief Centre", point:[18.5590,73.8070]},
+        floodZones:[
+          {name:"Mutha river lowlands", center:[18.523,73.852], radius:1400, weight:1.25},
+          {name:"Khadakwasla downstream", center:[18.505,73.798], radius:1600, weight:1.15},
+          {name:"Mula river belt", center:[18.556,73.823], radius:1250, weight:0.95}
+        ],
+        routes:[
+          {name:"Deccan Elevated Corridor", base:0.28, points:[[18.5018,73.8636],[18.5100,73.8500],[18.5280,73.8390],[18.5480,73.8230],[18.5590,73.8070]]},
+          {name:"Katraj–University Corridor", base:0.52, points:[[18.5018,73.8636],[18.5070,73.8420],[18.5300,73.8310],[18.5500,73.8180],[18.5590,73.8070]]},
+          {name:"River-side Corridor", base:0.82, points:[[18.5018,73.8636],[18.5120,73.8550],[18.5300,73.8490],[18.5480,73.8330],[18.5590,73.8070]]}
+        ]
+      }
+    ,      Thane: {center:[19.2183,72.9781],zoom:11,start:{name:"Thane Station",point:[19.186,72.976]},end:{name:"Thane Relief Centre",point:[19.246,73.012]},floodZones:[{name:"Creek lowlands",center:[19.21,72.99],radius:1400,weight:1.2}],routes:[{name:"Eastern High Ground",base:.30,points:[[19.186,72.976],[19.20,72.99],[19.225,73.002],[19.246,73.012]]},{name:"Central Corridor",base:.55,points:[[19.186,72.976],[19.205,72.982],[19.23,72.995],[19.246,73.012]]}]},
+      Nashik: {center:[19.9975,73.7898],zoom:11,start:{name:"Nashik Road",point:[19.96,73.82]},end:{name:"Nashik Relief Centre",point:[20.04,73.78]},floodZones:[{name:"Godavari belt",center:[20.0,73.79],radius:1500,weight:1.2}],routes:[{name:"Hill Bypass",base:.28,points:[[19.96,73.82],[19.98,73.81],[20.01,73.795],[20.04,73.78]]},{name:"City Corridor",base:.58,points:[[19.96,73.82],[19.99,73.80],[20.02,73.79],[20.04,73.78]]}]},
+      Nagpur: {center:[21.1458,79.0882],zoom:11,start:{name:"Nagpur Central",point:[21.145,79.08]},end:{name:"North Relief Centre",point:[21.19,79.10]},floodZones:[{name:"Nag river lowlands",center:[21.16,79.09],radius:1300,weight:1.15}],routes:[{name:"Ring Road High Ground",base:.25,points:[[21.145,79.08],[21.16,79.085],[21.175,79.095],[21.19,79.10]]},{name:"Central Corridor",base:.56,points:[[21.145,79.08],[21.155,79.10],[21.175,79.105],[21.19,79.10]]}]},
+      Kolhapur: {center:[16.705,74.2433],zoom:11,start:{name:"Kolhapur Central",point:[16.69,74.23]},end:{name:"Elevated Relief Centre",point:[16.74,74.26]},floodZones:[{name:"Panchganga lowlands",center:[16.71,74.24],radius:1500,weight:1.25}],routes:[{name:"Eastern Elevated Corridor",base:.27,points:[[16.69,74.23],[16.705,74.24],[16.72,74.25],[16.74,74.26]]},{name:"City Bypass",base:.57,points:[[16.69,74.23],[16.70,74.22],[16.725,74.24],[16.74,74.26]]}]},
+      Satara: {center:[17.6805,73.9933],zoom:11,start:{name:"Satara Bus Stand",point:[17.68,73.98]},end:{name:"Hill Relief Centre",point:[17.72,74.01]},floodZones:[{name:"Krishna basin",center:[17.69,74.0],radius:1300,weight:1.15}],routes:[{name:"Highway Safe Corridor",base:.26,points:[[17.68,73.98],[17.69,73.99],[17.705,74.0],[17.72,74.01]]},{name:"Town Corridor",base:.60,points:[[17.68,73.98],[17.69,74.01],[17.705,74.015],[17.72,74.01]]}]},
+      Raigad: {center:[18.5158,73.1822],zoom:10,start:{name:"Alibag Approach",point:[18.60,72.90]},end:{name:"Elevated Relief Centre",point:[18.68,73.0]},floodZones:[{name:"Coastal lowlands",center:[18.64,72.95],radius:1800,weight:1.3}],routes:[{name:"Inland High Ground",base:.24,points:[[18.60,72.90],[18.62,72.93],[18.65,72.97],[18.68,73.0]]},{name:"Coastal Corridor",base:.66,points:[[18.60,72.90],[18.63,72.89],[18.66,72.94],[18.68,73.0]]}]},
+      "Chhatrapati Sambhajinagar": {center:[19.8762,75.3433],zoom:11,start:{name:"City Centre",point:[19.87,75.34]},end:{name:"East Relief Centre",point:[19.91,75.38]},floodZones:[{name:"Urban drainage belt",center:[19.885,75.35],radius:1200,weight:1.1}],routes:[{name:"Airport High Ground",base:.27,points:[[19.87,75.34],[19.88,75.35],[19.895,75.365],[19.91,75.38]]},{name:"Ring Corridor",base:.59,points:[[19.87,75.34],[19.875,75.37],[19.89,75.38],[19.91,75.38]]}]}
+    };
+
+    let demoLayers=null;
+
+    function toggleDemoMode(enabled){
+      document.body.classList.toggle('demo-active', enabled);
+      document.getElementById('demoPanel').classList.toggle('active', enabled);
+      if(enabled){
+        document.getElementById('yearSelect').value='live';
+        renderDemoMap();
+      }else{
+        if(demoLayers) demoLayers.clearLayers();
+        loadGisData('live');
+      }
+      setTimeout(()=>map.invalidateSize(),30);
+    }
+
+    function updateDemoLabels(){
+      document.getElementById('rainfallValue').textContent=document.getElementById('demoRainfall').value;
+      document.getElementById('waterDepthValue').textContent=Number(document.getElementById('demoWaterDepth').value).toFixed(1);
+      document.getElementById('blockageValue').textContent=document.getElementById('demoBlockage').value;
+      if(document.getElementById('demoModeToggle').checked) renderDemoMap();
+    }
+
+    function pointToSegmentDistanceKm(p,a,b){
+      const latScale=111, lonScale=104;
+      const px=p[1]*lonScale, py=p[0]*latScale, ax=a[1]*lonScale, ay=a[0]*latScale, bx=b[1]*lonScale, by=b[0]*latScale;
+      const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
+      let t=len2 ? ((px-ax)*dx+(py-ay)*dy)/len2 : 0; t=Math.max(0,Math.min(1,t));
+      const cx=ax+t*dx, cy=ay+t*dy;
+      return Math.sqrt((px-cx)**2+(py-cy)**2);
+    }
+
+    function routeFloodExposure(route, city){
+      let exposure=route.base;
+      city.floodZones.forEach(z=>{
+        for(let i=0;i<route.points.length-1;i++){
+          if(pointToSegmentDistanceKm(z.center,route.points[i],route.points[i+1]) <= z.radius/1000){
+            exposure += z.weight; break;
+          }
+        }
+      });
+      return exposure;
+    }
+
+    function renderDemoMap(){
+      const cityName=document.getElementById('demoCity').value;
+      const city=DEMO_ROUTES[cityName];
+      document.getElementById('demoCityValue').textContent=cityName;
+      if(!demoLayers) demoLayers=L.layerGroup().addTo(map);
+      demoLayers.clearLayers();
+      routeLayer.clearLayers();
+      markersLayer.clearLayers();
+
+      const rain=Number(document.getElementById('demoRainfall').value);
+      const depth=Number(document.getElementById('demoWaterDepth').value);
+      const blockage=Number(document.getElementById('demoBlockage').value);
+      const river=document.getElementById('riverOverflow').checked;
+      const severity=Math.min(3, rain/180 + depth/1.2 + blockage/80 + (river?0.8:0));
+
+      city.floodZones.forEach((z,i)=>{
+        const intensity=Math.min(0.55,0.10 + severity*0.12 + i*0.02);
+        L.circle(z.center,{radius:z.radius*(0.85+severity*.12),color:'#ef4444',weight:2,fillColor:'#ef4444',fillOpacity:intensity})
+          .bindTooltip(`<b>Simulated flood zone</b><br>${z.name}<br>Severity index: ${severity.toFixed(1)}`,{sticky:true})
+          .addTo(demoLayers);
+      });
+
+      const scored=city.routes.map(r=>{
+        let score=routeFloodExposure(r,city);
+        score += (rain/500)*0.9 + (depth/2.5)*1.2 + (blockage/100)*1.0;
+        score += river ? routeFloodExposure(r,city)*0.28 : 0;
+        // Corridor-specific sensitivity makes the demo respond differently as conditions change.
+        score += r.base * (0.25 + severity*0.10);
+        return {...r,score};
+      }).sort((a,b)=>a.score-b.score);
+      const safest=scored[0];
+
+      const route=L.polyline(safest.points,{color:'#10b981',weight:7,opacity:.95,lineCap:'round',lineJoin:'round'}).addTo(demoLayers);
+      route.bindTooltip(`🛡️ <b>SAFEST DEMO ROUTE</b><br>${safest.name}`,{sticky:true,direction:'top'});
+      L.circleMarker(city.start.point,{radius:9,fillColor:'#2563eb',color:'#fff',weight:3,fillOpacity:1})
+        .bindTooltip(`🚩 Start: ${city.start.name}`).addTo(demoLayers);
+      L.circleMarker(city.end.point,{radius:10,fillColor:'#10b981',color:'#fff',weight:3,fillOpacity:1})
+        .bindTooltip(`🛡️ Evacuation: ${city.end.name}`).addTo(demoLayers);
+      L.marker(city.end.point,{opacity:0.01,interactive:false}).addTo(demoLayers);
+      map.setView(city.center,city.zoom);
+      setTimeout(()=>map.fitBounds(route.getBounds(),{padding:[45,45],maxZoom:12}),30);
+
+      const riskLabel=severity>=3?'CRITICAL':severity>=2?'HIGH':severity>=1?'MEDIUM':'LOW';
+      const result=document.getElementById('demoResult');
+      result.classList.add('show');
+      result.innerHTML=`<strong>🛡️ Safest route selected: ${esc(safest.name)}</strong>
+        <div class="demo-route-card">
+          <div class="demo-stat"><span>City</span><b>${esc(cityName)}</b></div>
+          <div class="demo-stat"><span>Flood condition</span><b>${riskLabel}</b></div>
+          <div class="demo-stat"><span>Route score</span><b>${safest.score.toFixed(2)}</b></div>
+          <div class="demo-stat"><span>Visible routes</span><b>1 (safest only)</b></div>
+        </div>`;
+      document.querySelector('.map-badge-overlay').innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;"></span><span>${cityName} • Demo flood + safest route</span>`;
+    }
+
+    function resetDemo(){
+      document.getElementById('demoCity').value='Mumbai';
+      document.getElementById('demoRainfall').value=150;
+      document.getElementById('demoWaterDepth').value=.4;
+      document.getElementById('demoBlockage').value=20;
+      document.getElementById('riverOverflow').checked=false;
+      updateDemoLabels(); renderDemoMap();
+    }
+
+
+    document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('#routeDistrict option').forEach(o=>{if(/^(ahmednagar|ahemadnagar)$/i.test(o.value.trim()))o.remove()});initMap();loadGisData('live');loadSafeRoutes();});
   </script>
 </body>
 </html>
