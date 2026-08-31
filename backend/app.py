@@ -248,6 +248,38 @@ def last_7_days(location):
     return {"success": True, "dates": [d.strftime("%d %b") for d in daily["date"]], "temperature": daily["temperature"].round(1).tolist(), "rainfall": daily["rainfall"].round(2).tolist(), "source": result["source"]}
 
 
+def last_24_hours(location):
+    result = fetch_open_meteo(location, 1)
+    if not result.get("success"):
+        return result
+    hourly = result.get("hourly", {})
+    times = pd.to_datetime(hourly.get("time", []))
+    frame = pd.DataFrame({
+        "time": times,
+        "rainfall": hourly.get("precipitation", []),
+    }).dropna(subset=["time"])
+    if frame.empty:
+        return {"success": False, "error": "Hourly live weather data unavailable"}
+    frame = frame.tail(24).copy()
+    current = result.get("current", {})
+    temperature = float(current.get("temperature", 25) or 25)
+    humidity = float(current.get("humidity", 70) or 70)
+    wind = float(current.get("wind_speed", 10) or 10)
+    risks = []
+    for rain in frame["rainfall"].fillna(0).astype(float).tolist():
+        try:
+            risks.append(float(predict_flood_risk(rain, temperature, humidity, wind).get("risk_score", 0)))
+        except Exception:
+            risks.append(0.0)
+    return {
+        "success": True,
+        "hours": frame["time"].dt.strftime("%H:%M").tolist(),
+        "rainfall": frame["rainfall"].fillna(0).astype(float).round(2).tolist(),
+        "flood_risk": [round(v, 2) for v in risks],
+        "source": result.get("source", "Open-Meteo")
+    }
+
+
 def risk_for_weather(w):
     p = predict_flood_risk(w["rainfall"], w["temperature"], w["humidity"], w["wind_speed"])
     p.update({
@@ -368,7 +400,7 @@ def api_dashboard_data():
     w=live_weather(loc)
     if not w.get("success"): return jsonify({"status":"error","error":w.get("error","Weather unavailable")}), 503
     p=risk_for_weather(w); save_live(w,p)
-    series=last_7_days(loc)
+    series=last_24_hours(loc)
     return jsonify({"status":"success","weather":w,"prediction":p,"series":series})
 
 @app.route("/api/weather/live")
