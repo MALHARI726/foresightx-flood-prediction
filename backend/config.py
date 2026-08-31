@@ -130,10 +130,9 @@ GEOCODING_API_URL = "https://geocoding-api.open-meteo.com/v1/search"
 
 API_TIMEOUT = 10
 
-<<<<<<< HEAD
 
-=======
->>>>>>> d3689bc6189636978fc610f6b13e1ff77de5bb37
+
+
 TIMEZONE = "Asia/Kolkata"
 
 
@@ -169,7 +168,4 @@ DISTRICT_COORDINATES = {
 TIMEZONE = "Asia/Kolkata"
 
 TIMEZONE = "Asia/Kolkata"
-<<<<<<< HEAD
 
-=======
->>>>>>> d3689bc6189636978fc610f6b13e1ff77de5bb37
