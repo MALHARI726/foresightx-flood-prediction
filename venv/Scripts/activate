@@ -40,10 +40,10 @@ deactivate nondestructive
 if [ "${OSTYPE:-}" = "cygwin" ] || [ "${OSTYPE:-}" = "msys" ] ; then
     # transform D:\path\to\venv to /d/path/to/venv on MSYS
     # and to /cygdrive/d/path/to/venv on Cygwin
-    export VIRTUAL_ENV=$(cygpath 'C:\Users\Malhari Gaikwad\Desktop\foresightx-flood-prediction\foresightx-flood-prediction\venv')
+    export VIRTUAL_ENV=$(cygpath 'C:\Users\Palak\OneDrive\Documents\github\foresightx-flood-prediction\venv')
 else
     # use the path as-is
-    export VIRTUAL_ENV='C:\Users\Malhari Gaikwad\Desktop\foresightx-flood-prediction\foresightx-flood-prediction\venv'
+    export VIRTUAL_ENV='C:\Users\Palak\OneDrive\Documents\github\foresightx-flood-prediction\venv'
 fi
 
 _OLD_VIRTUAL_PATH="$PATH"
