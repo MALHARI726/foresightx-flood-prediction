@@ -152,3 +152,19 @@ LIVE_CSV_PATH = os.path.join(
     DATA_DIR,
     "live_weather_data.csv"
 )
+
+# ==========================================
+# DISTRICT COORDINATES
+# ==========================================
+
+DISTRICT_COORDINATES = {
+    "Sindhudurg": {
+        "latitude": 16.3492,
+        "longitude": 73.5178
+    }
+}
+TIMEZONE = "Asia/Kolkata"
+
+TIMEZONE = "Asia/Kolkata"
+
+
