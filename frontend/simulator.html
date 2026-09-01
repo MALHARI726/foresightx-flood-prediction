@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAHA FLOOD AI – What-If Scenario Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #060c18;
+      --bg-card: rgba(13, 24, 44, 0.85);
+      --bg-card-hover: rgba(18, 34, 60, 0.95);
+      --border-glass: rgba(0, 210, 255, 0.22);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #00d2ff;
+      --neon-blue: #0088ff;
+      --neon-green: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop');
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(5, 11, 20, 0.96);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .brand-section { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+    .brand-logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #00d2ff, #0066cc);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+      flex-shrink: 0;
+    }
+    .brand-logo-icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; }
+    .brand-text-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 900; letter-spacing: 0.5px; color: #ffffff; line-height: 1.1; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.4px; }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .nav-item a {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.75rem 0.95rem; color: var(--text-muted);
+      text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      border-radius: 8px; transition: all 0.2s ease;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+    .nav-item.active a { background: rgba(0, 210, 255, 0.14); border-left: 3px solid var(--neon-cyan); color: #fff; font-weight: 700; }
+    .nav-item svg { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
+
+    .sidebar-footer { background: rgba(8, 16, 28, 0.85); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem; }
+    .sidebar-footer-title { font-size: 0.72rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem; letter-spacing: 0.4px; }
+    .sidebar-footer-desc { font-size: 0.68rem; color: var(--text-muted); line-height: 1.35; }
+
+    /* Main Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 1.75rem 2.5rem 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .page-title { font-family: var(--font-heading); font-size: 1.85rem; font-weight: 900; color: #fff; }
+    .page-desc { color: var(--text-muted); font-size: 0.85rem; margin-top: 3px; }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .sim-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .sim-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .control-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .control-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .control-name { font-size: 0.85rem; font-weight: 700; color: #cbd5e1; }
+    .control-val { font-size: 0.95rem; font-weight: 800; color: var(--neon-cyan); }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    /* Output Section */
+    .gauge-box {
+      text-align: center;
+      padding: 1.25rem;
+      background: rgba(8, 18, 34, 0.7);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 1.25rem;
+    }
+
+    .gauge-pct {
+      font-family: var(--font-heading);
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      line-height: 1.1;
+    }
+
+    .gauge-label {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+
+    .gauge-label.critical { background: rgba(239, 68, 68, 0.25); color: #ef4444; border: 1px solid #ef4444; }
+    .gauge-label.warning { background: rgba(245, 158, 11, 0.25); color: #f59e0b; border: 1px solid #f59e0b; }
+    .gauge-label.safe { background: rgba(16, 185, 129, 0.25); color: #10b981; border: 1px solid #10b981; }
+
+    /* Safety Guides and Early Warnings panels (Requested) */
+    .guides-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .guide-card {
+      background: rgba(8, 18, 34, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .guide-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
+    .guide-card-body {
+      color: #cbd5e1;
+      line-height: 1.45;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 900px) {
+      .sim-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 650px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; padding: 1.2rem; }
+    }
+  
+    /* Permanent cloud background lock */
+    body {
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Reference-style glassmorphism applied consistently across every page */
+    :root {
+      --bg-card: rgba(8, 22, 40, 0.50) !important;
+      --bg-card-hover: rgba(12, 30, 52, 0.62) !important;
+      --border-glass: rgba(120, 190, 225, 0.16) !important;
+      --border-subtle: rgba(255, 255, 255, 0.08) !important;
+    }
+    body {
+      background-color: #06111f !important;
+      background-image:
+        linear-gradient(90deg, rgba(3, 12, 24, 0.64) 0%, rgba(4, 16, 30, 0.38) 46%, rgba(3, 12, 24, 0.54) 100%),
+        radial-gradient(circle at 53% 10%, rgba(10, 29, 50, 0.18) 0%, rgba(3, 12, 24, 0.46) 72%),
+        url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=90&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(1,8,18,.14), rgba(1,8,18,.28));
+    }
+    .sidebar {
+      background: rgba(4, 14, 28, 0.64) !important;
+      backdrop-filter: blur(18px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+    }
+    .main-wrapper { position: relative; }
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .graph-card,
+    .chart-container, .station-summary-grid, .settings-card, .sim-card, .guide-card,
+    .gauge-box, .guides-box, .warning-card, .emergency-directory-card, .map-card-full,
+    .incidents-section, .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .sidebar-footer {
+      background: rgba(7, 22, 40, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+      backdrop-filter: blur(14px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+    }
+    .core-card:hover, .metric-card:hover, .sim-card:hover, .guide-card:hover,
+    .warning-card:hover, .settings-card:hover {
+      background: rgba(10, 30, 52, 0.58) !important;
+    }
+    .emergency-alert-card { background: rgba(16, 12, 22, 0.82) !important; }
+
+  
+
+    /* FINAL GLOBAL GLASS TRANSPARENCY — applied to sidebar and cards on every page */
+    :root {
+      --bg-card: rgba(10, 24, 42, 0.30) !important;
+      --bg-card-hover: rgba(15, 35, 58, 0.42) !important;
+    }
+    .sidebar {
+      background: rgba(3, 13, 28, 0.32) !important;
+      border-right: 1px solid rgba(255,255,255,0.09) !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.12) !important;
+      backdrop-filter: blur(14px) saturate(125%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+    }
+    .sidebar-footer,
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .stat-card,
+    .graph-card, .chart-container, .station-summary-grid, .settings-card,
+    .sim-card, .guide-card, .gauge-box, .guides-box, .warning-card,
+    .emergency-directory-card, .map-card-full, .incidents-section,
+    .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .weather-card, .forecast-card,
+    .history-card, .map-panel, .content-card, .card, .panel {
+      background: rgba(8, 24, 43, 0.30) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16) !important;
+      backdrop-filter: blur(12px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    }
+    .weather-metric-item, .metric-item, .metric-box, .stat-item,
+    .mini-card, .info-card, .weather-stat, .data-tile {
+      background: rgba(4, 17, 32, 0.28) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .nav-item a:hover { background: rgba(255,255,255,0.08) !important; }
+    .nav-item.active a { background: rgba(27, 126, 219, 0.28) !important; }
+    .core-card:hover, .metric-card:hover, .stat-card:hover, .sim-card:hover,
+    .guide-card:hover, .warning-card:hover, .settings-card:hover, .card:hover {
+      background: rgba(12, 32, 54, 0.40) !important;
+    }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-title">MAHA FLOOD</span>
+   
+        </div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</a></li>
+        <li class="nav-item"><a href="/gis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>Flood GIS Map</a></li>
+        <li class="nav-item"><a href="/weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>Live Weather</a></li>
+        <li class="nav-item active"><a href="/simulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg>What-if Simulator</a></li>
+        <li class="nav-item"><a href="/warnings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>Early Warnings</a></li>
+        <li class="nav-item"><a href="/previous_floods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Previous Floods</a></li>
+        <li class="nav-item"><a href="/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a></li>
+      </ul>
+    </div>
+
+
+  </aside>
+
+  <!-- Main Wrapper -->
+  <main class="main-wrapper">
+    <div>
+      <h1 class="page-title">What-If Flood Risk Simulator</h1>
+      <p class="page-desc">Simulate heavy monsoon rainstorms, high humidity and wind scenarios to evaluate flood probability in real-time.</p>
+    </div>
+
+    <div class="sim-grid">
+      <!-- Controls -->
+      <div class="sim-card">
+        <div class="sim-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          Scenario Parameters
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row"><span class="control-name">📍 District</span></div>
+          <select id="simDistrict" style="width:100%;padding:.75rem;border-radius:10px;background:#0b1728;color:#fff;border:1px solid rgba(0,210,255,.25);">
+            {% for d in districts %}<option value="{{ d }}" {% if d == initial_location %}selected{% endif %}>{{ d }}</option>{% endfor %}
+          </select>
+          <div id="liveBaseline" style="font-size:.75rem;color:#94a3b8;margin-top:.45rem;">Loading current live values…</div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span class="control-name">🌧️ Simulated Rainfall (mm)</span>
+            <span class="control-val" id="lblRain">45 mm</span>
+          </div>
+          <input type="range" id="simRain" min="0" max="100" value="45" oninput="runSimulation()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span class="control-name">🌡️ Simulated Temperature (°C)</span>
+            <span class="control-val" id="lblTemp">26 °C</span>
+          </div>
+          <input type="range" id="simTemp" min="15" max="42" value="26" oninput="runSimulation()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span class="control-name">💧 Simulated Humidity (%)</span>
+            <span class="control-val" id="lblHum">90 %</span>
+          </div>
+          <input type="range" id="simHum" min="40" max="100" value="90" oninput="runSimulation()">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label-row">
+            <span class="control-name">💨 Simulated Wind Speed (km/h)</span>
+            <span class="control-val" id="lblWind">20 km/h</span>
+          </div>
+          <input type="range" id="simWind" min="0" max="50" value="20" oninput="runSimulation()">
+        </div>
+      </div>
+
+      <!-- Result with Safety Guides & Early Warnings (Requested) -->
+      <div class="sim-card">
+        <div class="sim-card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Hydrological Simulation Output
+        </div>
+
+        <div class="gauge-box">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Estimated Risk Probability</div>
+          <div class="gauge-pct" id="simGaugePct">94.8%</div>
+          <div class="gauge-label critical" id="simGaugeBadge">HIGH RISK</div>
+        </div>
+
+        <!-- Safety Guides & Early Warnings -->
+        <div class="guides-box">
+          <div class="guide-card" style="border-left: 3px solid var(--neon-cyan);">
+            <div class="guide-card-header">
+              <span style="color: var(--neon-cyan);">🛡️ Safety Guides</span>
+            </div>
+            <div class="guide-card-body" id="safetyGuidesText">
+              Move to higher elevation if near river banks. Keep emergency flashlights, potable water, first aid supplies, and document waterproof bags ready. Avoid walking or driving through moving floodwaters.
+            </div>
+          </div>
+
+          <div class="guide-card" style="border-left: 3px solid var(--neon-amber);">
+            <div class="guide-card-header">
+              <span style="color: var(--neon-amber);">⚠️ Early Warnings</span>
+            </div>
+            <div class="guide-card-body" id="earlyWarningsText">
+              Elevated storm surge and catchment saturation detected. Local disaster management units (NDRF/SDRF) on alert for flood plain zones.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let liveValues=null;
+    const $=id=>document.getElementById(id);
+    async function loadLiveValues(){
+      const loc=$('simDistrict').value;
+      try{const r=await fetch(`/api/weather/live?location=${encodeURIComponent(loc)}`),d=await r.json();if(d.status!=='success')throw new Error(d.error);liveValues=d.data;['simRain','simTemp','simHum','simWind'].forEach((id,i)=>{});
+        $('simRain').value=Math.min(100,Math.max(0,liveValues.rainfall));$('simTemp').value=Math.min(42,Math.max(15,liveValues.temperature));$('simHum').value=Math.min(100,Math.max(40,liveValues.humidity));$('simWind').value=Math.min(50,Math.max(0,liveValues.wind_speed));
+        $('liveBaseline').innerText=`Live baseline: ${liveValues.temperature}°C • ${liveValues.rainfall} mm rain • ${liveValues.humidity}% humidity • ${liveValues.wind_speed} km/h wind`;
+        runSimulation();
+      }catch(e){$('liveBaseline').innerText=e.message}}
+    async function runSimulation(){
+      const loc=$('simDistrict').value,rain=+$('simRain').value,temp=+$('simTemp').value,hum=+$('simHum').value,wind=+$('simWind').value;
+      $('lblRain').innerText=`${rain} mm`;$('lblTemp').innerText=`${temp} °C`;$('lblHum').innerText=`${hum} %`;$('lblWind').innerText=`${wind} km/h`;
+      try{const r=await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:loc,rainfall:rain,temperature:temp,humidity:hum,wind_speed:wind})});const d=await r.json();if(d.status!=='success')throw new Error(d.error);const sim=d.simulation;
+        $('simGaugePct').innerText=`${sim.risk_percentage}%`;$('simGaugeBadge').innerText=sim.risk_level;$('simGaugeBadge').className=`gauge-label ${sim.alert_class}`;
+        $('safetyGuidesText').innerText=sim.risk_percentage>=70?'High-risk scenario. Prepare emergency supplies, avoid low-lying roads and follow official evacuation instructions if issued.':sim.risk_percentage>=40?'Moderate-risk scenario. Monitor rainfall, drainage and official alerts; avoid unnecessary travel through waterlogged areas.':'Low-risk scenario. Continue normal monsoon precautions and monitor changes.';
+        $('earlyWarningsText').innerText=`LIVE ${loc}: ${sim.risk_level} • ${sim.risk_percentage}%. ${d.sensitivity_insight}`;
+      }catch(e){console.error(e)}
+    }
+    document.addEventListener('DOMContentLoaded',()=>{$('simDistrict').addEventListener('change',loadLiveValues);['simRain','simTemp','simHum','simWind'].forEach(id=>$(id).addEventListener('input',runSimulation));loadLiveValues()});
+  </script>
+</body>
+</html>

@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ForesightX - Flood GIS Map</title>
+
+
+    <!-- =====================================================
+         LEAFLET CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+
+        body {
+
+            background: #06111e;
+
+            color: white;
+
+            height: 100vh;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ====================================================== */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 270px;
+
+            height: 100vh;
+
+            background:
+                rgba(5,18,32,0.97);
+
+            border-right:
+                1px solid
+                rgba(255,255,255,0.08);
+
+            padding: 22px 15px;
+
+            z-index: 1000;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding:
+                8px 10px 25px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.08);
+        }
+
+
+        .logo-icon {
+
+            width: 45px;
+            height: 45px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00c6ff,
+                    #0072ff
+                );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 21px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(0,174,255,0.3);
+        }
+
+
+        .logo h2 {
+
+            font-size: 17px;
+        }
+
+
+        .logo p {
+
+            color: #7f9bb8;
+
+            font-size: 10px;
+
+            margin-top: 3px;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ====================================================== */
+
+        .menu {
+
+            margin-top: 20px;
+        }
+
+
+        .menu a {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            height: 46px;
+
+            padding: 0 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 11px;
+
+            color: #9ab4cf;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            transition: 0.25s;
+        }
+
+
+        .menu a:hover,
+        .menu a.active {
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(0,125,255,0.28),
+                    rgba(0,200,255,0.08)
+                );
+
+            border:
+                1px solid
+                rgba(0,153,255,0.35);
+        }
+
+
+        .menu i {
+
+            width: 20px;
+
+            text-align: center;
+        }
+
+
+        /* =====================================================
+           MAP AREA
+        ====================================================== */
+
+        .map-container {
+
+            position: absolute;
+
+            left: 270px;
+
+            top: 0;
+
+            right: 0;
+
+            bottom: 0;
+        }
+
+
+        #map {
+
+            width: 100%;
+
+            height: 100%;
+        }
+
+
+        /* =====================================================
+           TOP BAR
+        ====================================================== */
+
+        .top-bar {
+
+            position: absolute;
+
+            top: 20px;
+
+            left: 20px;
+
+            right: 20px;
+
+            z-index: 500;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            pointer-events: none;
+        }
+
+
+        .top-title {
+
+            pointer-events: auto;
+
+            background:
+                rgba(5,20,35,0.90);
+
+            backdrop-filter:
+                blur(15px);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            border-radius: 15px;
+
+            padding:
+                15px 20px;
+        }
+
+
+        .top-title h1 {
+
+            font-size: 20px;
+        }
+
+
+        .top-title p {
+
+            color: #89a8c4;
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+
+        .live-status {
+
+            pointer-events: auto;
+
+            background:
+                #00c997;
+
+            color: #001b16;
+
+            padding:
+                9px 15px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           SEARCH
+        ====================================================== */
+
+        .search-box {
+
+            position: absolute;
+
+            top: 105px;
+
+            left: 20px;
+
+            z-index: 500;
+
+            width: 300px;
+
+            display: flex;
+
+            background:
+                rgba(5,20,35,0.92);
+
+            backdrop-filter:
+                blur(15px);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.13);
+
+            border-radius: 12px;
+
+            overflow: hidden;
+        }
+
+
+        .search-box input {
+
+            flex: 1;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            color: white;
+
+            padding:
+                13px 15px;
+
+            font-size: 13px;
+        }
+
+
+        .search-box input::placeholder {
+
+            color: #7895b1;
+        }
+
+
+        .search-box button {
+
+            border: none;
+
+            background:
+                #007cff;
+
+            color: white;
+
+            width: 50px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           CONTROL BUTTONS
+        ====================================================== */
+
+        .map-controls {
+
+            position: absolute;
+
+            right: 20px;
+
+            top: 105px;
+
+            z-index: 500;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .control-btn {
+
+            width: 45px;
+
+            height: 45px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background:
+                rgba(5,20,35,0.92);
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            backdrop-filter:
+                blur(10px);
+
+            transition: 0.2s;
+        }
+
+
+        .control-btn:hover {
+
+            background:
+                #007cff;
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        /* =====================================================
+           LEGEND
+        ====================================================== */
+
+        .legend {
+
+            position: absolute;
+
+            bottom: 25px;
+
+            left: 20px;
+
+            z-index: 500;
+
+            padding: 16px;
+
+            min-width: 180px;
+
+            background:
+                rgba(5,20,35,0.93);
+
+            backdrop-filter:
+                blur(15px);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            border-radius: 15px;
+        }
+
+
+        .legend h3 {
+
+            font-size: 12px;
+
+            margin-bottom: 12px;
+
+            color: #b9d2e7;
+        }
+
+
+        .legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            font-size: 11px;
+
+            color: #9ab4cf;
+
+            margin-top: 8px;
+        }
+
+
+        .legend-dot {
+
+            width: 11px;
+
+            height: 11px;
+
+            border-radius: 50%;
+        }
+
+
+        .low {
+            background: #27e6a1;
+        }
+
+
+        .medium {
+            background: #ffd23f;
+        }
+
+
+        .high {
+            background: #ef3340;
+        }
+
+
+        /* =====================================================
+           INFO PANEL
+        ====================================================== */
+
+        .info-panel {
+
+            position: absolute;
+
+            right: 20px;
+
+            bottom: 25px;
+
+            width: 310px;
+
+            z-index: 500;
+
+            background:
+                rgba(5,20,35,0.94);
+
+            backdrop-filter:
+                blur(18px);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            border-radius: 18px;
+
+            padding: 20px;
+
+            display: none;
+        }
+
+
+        .info-panel.show {
+
+            display: block;
+
+            animation:
+                slideUp 0.3s ease;
+        }
+
+
+        @keyframes slideUp {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(20px);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        .info-header {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+        }
+
+
+        .info-header h2 {
+
+            font-size: 18px;
+        }
+
+
+        .close-btn {
+
+            background: none;
+
+            border: none;
+
+            color: #8faac2;
+
+            cursor: pointer;
+
+            font-size: 18px;
+        }
+
+
+        .risk-large {
+
+            font-size: 28px;
+
+            font-weight: 900;
+
+            margin-bottom: 10px;
+        }
+
+
+        .info-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 10px;
+        }
+
+
+        .info-card {
+
+            background:
+                rgba(255,255,255,0.05);
+
+            padding: 12px;
+
+            border-radius: 10px;
+        }
+
+
+        .info-card i {
+
+            color: #35c9ff;
+
+            margin-bottom: 6px;
+        }
+
+
+        .info-card h4 {
+
+            font-size: 17px;
+        }
+
+
+        .info-card p {
+
+            color: #7895b1;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            margin-top: 3px;
+        }
+
+
+        /* =====================================================
+           LEAFLET CUSTOMIZATION
+        ====================================================== */
+
+        .leaflet-control-zoom {
+
+            margin-top: 170px !important;
+
+            margin-right: 20px !important;
+        }
+
+
+        .leaflet-control-zoom a {
+
+            background:
+                #071b2d !important;
+
+            color: white !important;
+
+            border-color:
+                rgba(255,255,255,0.1) !important;
+        }
+
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+
+            background:
+                #071b2d;
+
+            color: white;
+        }
+
+
+        .leaflet-popup-content {
+
+            font-size: 13px;
+        }
+
+
+        .popup-title {
+
+            font-weight: 800;
+
+            font-size: 15px;
+
+            margin-bottom: 6px;
+
+            color: #35c9ff;
+        }
+
+
+        .popup-risk {
+
+            font-weight: 800;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media(max-width: 800px) {
+
+            .sidebar {
+
+                width: 70px;
+
+                padding:
+                    15px 8px;
+            }
+
+
+            .logo {
+
+                justify-content:
+                    center;
+            }
+
+
+            .logo h2,
+            .logo p {
+
+                display: none;
+            }
+
+
+            .menu span {
+
+                display: none;
+            }
+
+
+            .menu a {
+
+                justify-content:
+                    center;
+
+                padding: 0;
+            }
+
+
+            .map-container {
+
+                left: 70px;
+            }
+
+
+            .search-box {
+
+                width: 230px;
+
+                left: 15px;
+            }
+
+
+            .info-panel {
+
+                width: 270px;
+
+                right: 15px;
+
+                bottom: 15px;
+            }
+
+
+            .legend {
+
+                bottom: 15px;
+
+                left: 15px;
+            }
+        }
+
+
+        @media(max-width: 600px) {
+
+            .top-title {
+
+                padding:
+                    10px 14px;
+            }
+
+
+            .top-title h1 {
+
+                font-size: 15px;
+            }
+
+
+            .top-title p {
+
+                display: none;
+            }
+
+
+            .live-status {
+
+                font-size: 9px;
+
+                padding:
+                    8px 10px;
+            }
+
+
+            .search-box {
+
+                top: 90px;
+
+                width: 200px;
+            }
+
+
+            .info-panel {
+
+                width:
+                    calc(100% - 30px);
+
+                right: 15px;
+            }
+
+
+            .legend {
+
+                display: none;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
+<aside class="sidebar">
+
+
+    <div class="logo">
+
+        <div class="logo-icon">
+
+            <i class="fa-solid fa-water"></i>
+
+        </div>
+
+
+        <div>
+
+            <h2>
+                MAHA FLOOD AI
+            </h2>
+
+            <p>
+                Maharashtra Early Warning
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <nav class="menu">
+
+
+        <a href="{{ url_for('dashboard') }}">
+
+            <i class="fa-solid fa-table-columns"></i>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('flood_map') }}"
+            class="active">
+
+            <i class="fa-solid fa-map"></i>
+
+            <span>
+                Flood GIS Map
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('dashboard') }}#weather">
+
+            <i class="fa-solid fa-cloud-rain"></i>
+
+            <span>
+                Live Weather
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('dashboard') }}#prediction">
+
+            <i class="fa-solid fa-brain"></i>
+
+            <span>
+                AI Prediction & ML
+            </span>
+
+        </a>
+
+
+        <a href="{{ url_for('dashboard') }}#prediction">
+
+            <i class="fa-solid fa-flask"></i>
+
+            <span>
+                What-if Simulator
+            </span>
+
+        </a>
+
+
+        <a href="#">
+
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            <span>
+                Early Warnings
+            </span>
+
+        </a>
+
+
+        <a href="#">
+
+            <i class="fa-solid fa-life-ring"></i>
+
+            <span>
+                Safety Precautions
+            </span>
+
+        </a>
+
+
+        <a href="#">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            <span>
+                Historical Weather
+            </span>
+
+        </a>
+
+
+        <a href="#">
+
+            <i class="fa-solid fa-water"></i>
+
+            <span>
+                Previous Floods
+            </span>
+
+        </a>
+
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAP
+====================================================== -->
+
+<div class="map-container">
+
+
+    <div id="map"></div>
+
+
+
+    <!-- =================================================
+         TOP BAR
+    ================================================== -->
+
+    <div class="top-bar">
+
+
+        <div class="top-title">
+
+            <h1>
+                🌊 Maharashtra Flood GIS Map
+            </h1>
+
+            <p>
+                Real-time weather & flood-risk monitoring
+            </p>
+
+        </div>
+
+
+        <div class="live-status">
+
+            ● LIVE MONITORING
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SEARCH
+    ================================================== -->
+
+    <div class="search-box">
+
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="Search Maharashtra location..."
+        >
+
+        <button
+            onclick="searchLocation()">
+
+            <i class="fa-solid fa-search"></i>
+
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         CONTROLS
+    ================================================== -->
+
+    <div class="map-controls">
+
+
+        <button
+            class="control-btn"
+            title="My Location"
+            onclick="findMyLocation()">
+
+            <i class="fa-solid fa-location-crosshairs"></i>
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            title="Maharashtra"
+            onclick="goToMaharashtra()">
+
+            <i class="fa-solid fa-house"></i>
+
+        </button>
+
+
+        <button
+            class="control-btn"
+            title="Refresh Weather"
+            onclick="loadAllWeather()">
+
+            <i class="fa-solid fa-rotate"></i>
+
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         LEGEND
+    ================================================== -->
+
+    <div class="legend">
+
+        <h3>
+            FLOOD RISK
+        </h3>
+
+
+        <div class="legend-item">
+
+            <span class="legend-dot low"></span>
+
+            Low Risk
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <span class="legend-dot medium"></span>
+
+            Medium Risk
+
+        </div>
+
+
+        <div class="legend-item">
+
+            <span class="legend-dot high"></span>
+
+            High Risk
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         INFO PANEL
+    ================================================== -->
+
+    <div
+        id="infoPanel"
+        class="info-panel">
+
+
+        <div class="info-header">
+
+            <h2 id="infoLocation">
+                Ratnagiri
+            </h2>
+
+
+            <button
+                class="close-btn"
+                onclick="closePanel()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="infoRisk"
+            class="risk-large">
+
+            LOW
+
+        </div>
+
+
+        <div class="info-grid">
+
+
+            <div class="info-card">
+
+                <i class="fa-solid fa-temperature-half"></i>
+
+                <h4 id="infoTemperature">
+                    --°C
+                </h4>
+
+                <p>
+                    Temperature
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <i class="fa-solid fa-cloud-rain"></i>
+
+                <h4 id="infoRain">
+                    -- mm
+                </h4>
+
+                <p>
+                    Rainfall
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <i class="fa-solid fa-droplet"></i>
+
+                <h4 id="infoHumidity">
+                    --%
+                </h4>
+
+                <p>
+                    Humidity
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <i class="fa-solid fa-wind"></i>
+
+                <h4 id="infoWind">
+                    -- km/h
+                </h4>
+
+                <p>
+                    Wind Speed
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     LEAFLET JS
+====================================================== -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+
+<script>
+
+
+/* =====================================================
+   MAHARASHTRA MAP
+====================================================== */
+
+const map =
+    L.map("map", {
+
+        zoomControl: true,
+
+        minZoom: 6,
+
+        maxZoom: 16
+
+    }).setView(
+
+        [19.7515, 75.7139],
+
+        7
+
+    );
+
+
+/* =====================================================
+   OPEN STREET MAP
+====================================================== */
+
+L.tileLayer(
+
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+    {
+
+        maxZoom: 19,
+
+        attribution:
+            "&copy; OpenStreetMap contributors"
+
+    }
+
+).addTo(map);
+
+
+
+/* =====================================================
+   MARKERS
+====================================================== */
+
+let markers = [];
+
+
+
+/* =====================================================
+   MAHARASHTRA LOCATIONS
+====================================================== */
+
+const locations = [
+
+    {
+        name: "Ratnagiri",
+        lat: 16.9902,
+        lon: 73.3120
+    },
+
+    {
+        name: "Mumbai",
+        lat: 19.0760,
+        lon: 72.8777
+    },
+
+    {
+        name: "Pune",
+        lat: 18.5204,
+        lon: 73.8567
+    },
+
+    {
+        name: "Nashik",
+        lat: 19.9975,
+        lon: 73.7898
+    },
+
+    {
+        name: "Kolhapur",
+        lat: 16.7050,
+        lon: 74.2433
+    },
+
+    {
+        name: "Satara",
+        lat: 17.6805,
+        lon: 74.0183
+    },
+
+    {
+        name: "Sangli",
+        lat: 16.8524,
+        lon: 74.5815
+    },
+
+    {
+        name: "Aurangabad",
+        lat: 19.8762,
+        lon: 75.3433
+    },
+
+    {
+        name: "Nagpur",
+        lat: 21.1458,
+        lon: 79.0882
+    },
+
+    {
+        name: "Thane",
+        lat: 19.2183,
+        lon: 72.9781
+    },
+
+    {
+        name: "Raigad",
+        lat: 18.5158,
+        lon: 73.1822
+    },
+
+    {
+        name: "Sindhudurg",
+        lat: 16.3492,
+        lon: 73.5594
+    }
+
+];
+
+
+
+/* =====================================================
+   CREATE CUSTOM MARKER
+====================================================== */
+
+function createMarkerIcon(
+    risk
+) {
+
+    let color;
+
+
+    if (risk === "HIGH") {
+
+        color = "#ef3340";
+
+    }
+
+    else if (risk === "MEDIUM") {
+
+        color = "#ffd23f";
+
+    }
+
+    else {
+
+        color = "#27e6a1";
+
+    }
+
+
+    return L.divIcon({
+
+        className: "",
+
+        html: `
+
+            <div style="
+
+                width: 22px;
+
+                height: 22px;
+
+                border-radius: 50%;
+
+                background: ${color};
+
+                border: 3px solid white;
+
+                box-shadow:
+                    0 0 15px ${color};
+
+            "></div>
+
+        `,
+
+        iconSize: [
+            22,
+            22
+        ],
+
+        iconAnchor: [
+            11,
+            11
+        ]
+
+    });
+
+}
+
+
+
+/* =====================================================
+   GET WEATHER
+====================================================== */
+
+async function getWeather(
+    location
+) {
+
+    try {
+
+        const response =
+            await fetch(
+
+                `/api/weather?lat=${location.lat}&lon=${location.lon}&location=${encodeURIComponent(location.name)}`
+
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Weather API failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error
+            );
+
+        }
+
+
+        return data;
+
+    }
+
+    catch(error) {
+
+        console.error(
+            location.name,
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+
+/* =====================================================
+   ADD LOCATION MARKER
+====================================================== */
+
+async function addLocation(
+    location
+) {
+
+    const data =
+        await getWeather(
+            location
+        );
+
+
+    if (!data) {
+
+        return;
+
+    }
+
+
+    const risk =
+        data.risk.level;
+
+
+    const marker =
+        L.marker(
+
+            [
+                location.lat,
+                location.lon
+            ],
+
+            {
+                icon:
+                    createMarkerIcon(
+                        risk
+                    )
+            }
+
+        ).addTo(map);
+
+
+    marker.bindPopup(`
+
+        <div class="popup-title">
+
+            ${location.name}
+
+        </div>
+
+        <div>
+
+            🌡️ Temperature:
+            <b>${data.temperature}°C</b>
+
+        </div>
+
+        <div>
+
+            🌧️ Rainfall:
+            <b>${data.rainfall} mm</b>
+
+        </div>
+
+        <div>
+
+            💧 Humidity:
+            <b>${data.humidity}%</b>
+
+        </div>
+
+        <div>
+
+            💨 Wind:
+            <b>${data.wind_speed} km/h</b>
+
+        </div>
+
+        <div class="popup-risk">
+
+            Risk:
+            ${data.risk.level}
+
+        </div>
+
+        <br>
+
+        <button
+            onclick='showLocationInfo(${JSON.stringify(location)}, ${JSON.stringify(data)})'
+            style="
+                border:none;
+                background:#007cff;
+                color:white;
+                padding:8px 12px;
+                border-radius:7px;
+                cursor:pointer;
+            "
+        >
+
+            View Details
+
+        </button>
+
+    `);
+
+
+    marker.on(
+        "click",
+        function() {
+
+            showLocationInfo(
+                location,
+                data
+            );
+
+        }
+    );
+
+
+    markers.push(
+        marker
+    );
+
+}
+
+
+
+/* =====================================================
+   LOAD ALL WEATHER
+====================================================== */
+
+async function loadAllWeather() {
+
+    /* Remove existing markers */
+
+    markers.forEach(
+        marker =>
+            map.removeLayer(
+                marker
+            )
+    );
+
+
+    markers = [];
+
+
+    /* Load each location */
+
+    for (
+        const location
+        of locations
+    ) {
+
+        await addLocation(
+            location
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   SHOW INFO
+====================================================== */
+
+function showLocationInfo(
+    location,
+    data
+) {
+
+    document.getElementById(
+        "infoLocation"
+    ).textContent =
+        location.name;
+
+
+    document.getElementById(
+        "infoRisk"
+    ).textContent =
+        data.risk.level;
+
+
+    document.getElementById(
+        "infoTemperature"
+    ).textContent =
+        data.temperature +
+        "°C";
+
+
+    document.getElementById(
+        "infoRain"
+    ).textContent =
+        data.rainfall +
+        " mm";
+
+
+    document.getElementById(
+        "infoHumidity"
+    ).textContent =
+        data.humidity +
+        "%";
+
+
+    document.getElementById(
+        "infoWind"
+    ).textContent =
+        data.wind_speed +
+        " km/h";
+
+
+    const risk =
+        document.getElementById(
+            "infoRisk"
+        );
+
+
+    if (
+        data.risk.level ===
+        "HIGH"
+    ) {
+
+        risk.style.color =
+            "#ef3340";
+
+    }
+
+    else if (
+        data.risk.level ===
+        "MEDIUM"
+    ) {
+
+        risk.style.color =
+            "#ffd23f";
+
+    }
+
+    else {
+
+        risk.style.color =
+            "#27e6a1";
+
+    }
+
+
+    document.getElementById(
+        "infoPanel"
+    ).classList.add(
+        "show"
+    );
+
+}
+
+
+
+/* =====================================================
+   CLOSE PANEL
+====================================================== */
+
+function closePanel() {
+
+    document.getElementById(
+        "infoPanel"
+    ).classList.remove(
+        "show"
+    );
+
+}
+
+
+
+/* =====================================================
+   GO TO MAHARASHTRA
+====================================================== */
+
+function goToMaharashtra() {
+
+    map.setView(
+
+        [
+            19.7515,
+            75.7139
+        ],
+
+        7
+
+    );
+
+}
+
+
+
+/* =====================================================
+   USER LOCATION
+====================================================== */
+
+function findMyLocation() {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        alert(
+            "Geolocation is not supported by your browser."
+        );
+
+        return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const lat =
+                position.coords.latitude;
+
+            const lon =
+                position.coords.longitude;
+
+
+            map.setView(
+
+                [
+                    lat,
+                    lon
+                ],
+
+                12
+
+            );
+
+
+            L.marker(
+
+                [
+                    lat,
+                    lon
+                ]
+
+            )
+
+            .addTo(map)
+
+            .bindPopup(
+                "📍 Your current location"
+            )
+
+            .openPopup();
+
+        },
+
+        function() {
+
+            alert(
+                "Unable to access your location."
+            );
+
+        }
+
+    );
+
+}
+
+
+
+/* =====================================================
+   SEARCH LOCATION
+====================================================== */
+
+function searchLocation() {
+
+    const input =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const search =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!search) {
+
+        return;
+
+    }
+
+
+    const location =
+        locations.find(
+
+            item =>
+                item.name
+                    .toLowerCase()
+                    .includes(search)
+
+        );
+
+
+    if (!location) {
+
+        alert(
+            "Location not found in the Maharashtra monitoring list."
+        );
+
+        return;
+
+    }
+
+
+    map.setView(
+
+        [
+            location.lat,
+            location.lon
+        ],
+
+        11
+
+    );
+
+
+    /* Find marker */
+
+    const marker =
+        markers.find(
+
+            item => {
+
+                const position =
+                    item.getLatLng();
+
+
+                return (
+
+                    Math.abs(
+                        position.lat -
+                        location.lat
+                    ) < 0.01
+
+                    &&
+
+                    Math.abs(
+                        position.lng -
+                        location.lon
+                    ) < 0.01
+
+                );
+
+            }
+
+        );
+
+
+    if (marker) {
+
+        marker.openPopup();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   ENTER KEY SEARCH
+====================================================== */
+
+document
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+
+        "keydown",
+
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                searchLocation();
+
+            }
+
+        }
+
+    );
+
+
+
+/* =====================================================
+   INITIAL LOAD
+====================================================== */
+
+loadAllWeather();
+
+
+
+/* =====================================================
+   AUTO REFRESH
+====================================================== */
+
+setInterval(
+
+    loadAllWeather,
+
+    5 * 60 * 1000
+
+);
+
+</script>
+
+
+</body>
+
+</html>

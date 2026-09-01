@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAHA FLOOD AI – Flood & Weather Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-dark: #060c18;
+      --bg-card: rgba(13, 24, 44, 0.86);
+      --bg-card-hover: rgba(18, 34, 60, 0.95);
+      --border-glass: rgba(0, 210, 255, 0.22);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #00d2ff;
+      --neon-blue: #0088ff;
+      --neon-green: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+      transition: background-image 0.8s ease-in-out;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(5, 11, 20, 0.96);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand-logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #00d2ff, #0066cc);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; }
+
+    .brand-text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.75rem 0.95rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    .nav-item.active a {
+      background: rgba(0, 210, 255, 0.14);
+      border-left: 3px solid var(--neon-cyan);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .nav-item svg { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
+
+    .sidebar-footer {
+      background: rgba(8, 16, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem;
+    }
+
+    .sidebar-footer-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.4px;
+    }
+
+    .sidebar-footer-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 1.75rem 2.5rem 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      min-height: 100vh;
+    }
+
+    /* Topbar Search */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .greeting-pill {
+      background: rgba(0, 210, 255, 0.12);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      color: #e0f2fe;
+      padding: 0.45rem 1.1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .search-bar-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(10, 22, 40, 0.9);
+      border: 1px solid var(--border-glass);
+      padding: 0.4rem 0.5rem 0.4rem 1.1rem;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      width: 420px;
+      max-width: 100%;
+      transition: all 0.2s ease;
+    }
+
+    .search-bar-wrapper:focus-within {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.25);
+    }
+
+    .search-bar-wrapper svg { color: var(--neon-cyan); width: 18px; height: 18px; flex-shrink: 0; }
+
+    .search-bar-wrapper input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+    }
+
+    .search-bar-wrapper input::placeholder {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #00d2ff, #0077ff);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .live-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: var(--neon-green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.45rem 1.1rem;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: 0.6px;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .live-indicator-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+    }
+
+    /* Hero Section */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 900px;
+      margin: 0.25rem auto 0.5rem auto;
+      width: 100%;
+    }
+
+    .telemetry-chip {
+      background: rgba(8, 18, 34, 0.9);
+      border: 1px solid var(--border-glass);
+      padding: 0.45rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+    }
+
+    .hero-greeting-sub {
+      font-size: 1.15rem;
+      color: var(--neon-cyan);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.35rem;
+      font-family: var(--font-heading);
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 3.4rem;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.85rem;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+    }
+
+    .hero-title-cyan {
+      color: #00d2ff;
+      display: block;
+      text-shadow: 0 0 35px rgba(0, 210, 255, 0.5);
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      max-width: 680px;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Stat Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.2rem 1rem;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0, 210, 255, 0.6);
+      background: var(--bg-card-hover);
+    }
+
+    .stat-icon {
+      color: var(--neon-cyan);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .stat-icon svg { width: 24px; height: 24px; }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Action Buttons */
+    .actions-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 30px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d2ff 0%, #0077ff 100%);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(0, 210, 255, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 210, 255, 0.7);
+    }
+
+    .btn-secondary {
+      background: rgba(10, 22, 40, 0.88);
+      border: 1px solid var(--border-glass);
+      color: #f1f5f9;
+      backdrop-filter: blur(12px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(16, 32, 58, 0.95);
+      border-color: rgba(0, 210, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Dashboard Graph Section (Added as requested) */
+    .dashboard-graph-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      width: 100%;
+    }
+
+    .graph-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .graph-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .graph-canvas-container {
+      position: relative;
+      height: 280px;
+      width: 100%;
+    }
+
+    /* Dashboard Live Weather & Emergency Contacts Dual Grid */
+    .dashboard-lower-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .dash-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.4rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .dash-box-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-box-title-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .weather-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .weather-mini-card {
+      background: rgba(6, 14, 28, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .weather-mini-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .weather-mini-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-heading);
+    }
+
+    /* Dashboard Live Weather Component Styles */
+    .weather-component-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .weather-component-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00d2ff, #0088ff, #10b981);
+    }
+
+    .weather-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .weather-location-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .weather-location-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .weather-theme-pill {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      color: #e0f2fe;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      letter-spacing: 0.3px;
+    }
+
+    .weather-theme-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00d2ff;
+      box-shadow: 0 0 8px #00d2ff;
+    }
+
+    .weather-actions-top {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .detect-loc-btn {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 0.4rem 0.95rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .detect-loc-btn:hover {
+      background: rgba(16, 185, 129, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Quick Region Selector Bar */
+    .quick-regions-scroll {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+      scrollbar-width: thin;
+    }
+
+    .quick-region-chip {
+      background: rgba(8, 18, 36, 0.85);
+      border: 1px solid var(--border-subtle);
+      color: #94a3b8;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .quick-region-chip:hover {
+      background: rgba(0, 210, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .quick-region-chip.active {
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.25), rgba(0, 119, 255, 0.25));
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+    }
+
+    /* Weather Main Grid Layout */
+    .weather-main-panel {
+      display: grid;
+      grid-template-columns: 310px 1fr 280px;
+      gap: 1.15rem;
+      align-items: stretch;
+    }
+
+    .weather-primary-box {
+      background: linear-gradient(145deg, rgba(8, 20, 42, 0.9), rgba(5, 12, 26, 0.95));
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .weather-primary-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .weather-big-icon {
+      font-size: 3.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 16px rgba(0, 210, 255, 0.4));
+    }
+
+    .weather-temp-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .weather-temp-huge {
+      font-family: var(--font-heading);
+      font-size: 2.75rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .weather-feels-like {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .weather-condition-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #00d2ff;
+      font-family: var(--font-heading);
+    }
+
+    .weather-condition-desc {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    /* 6 Metrics Grid */
+    .weather-metrics-6grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .weather-metric-item {
+      background: rgba(6, 14, 28, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.35rem;
+    }
+
+    .metric-item-head {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-item-val {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #ffffff;
+    }
+
+    .metric-item-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+
+    /* Weather Catchment Status Box */
+    .weather-catchment-box {
+      background: linear-gradient(145deg, rgba(8, 20, 42, 0.9), rgba(5, 12, 26, 0.95));
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+    }
+
+    .catchment-box-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .catchment-basin-name {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .catchment-risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.78rem;
+      width: fit-content;
+    }
+
+    .catchment-advisory-text {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border-left: 2px solid var(--neon-cyan);
+    }
+
+    @media (max-width: 1100px) {
+      .weather-main-panel { grid-template-columns: 1fr 1fr; }
+      .weather-catchment-box { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 750px) {
+      .weather-main-panel { grid-template-columns: 1fr; }
+      .weather-metrics-6grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Emergency Contact Cards */
+    .emergency-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .emergency-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(6, 14, 28, 0.75);
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.84rem;
+    }
+
+    .emergency-name { display:none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .emergency-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      background: rgba(0, 210, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 210, 255, 0.25);
+    }
+
+    /* Prediction Result Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-card {
+      background: #0b1526;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 18px;
+      max-width: 540px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 0 40px rgba(0, 210, 255, 0.3);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+
+    .modal-score {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    .score-pct {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+    }
+
+    .risk-tag {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    .risk-tag.safe { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+    .risk-tag.warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+    .risk-tag.critical { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+    @media (max-width: 950px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .dashboard-lower-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2.8rem; }
+    }
+
+    @media (max-width: 650px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; padding: 1.2rem; }
+      .hero-title { font-size: 2.2rem; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .search-bar-wrapper { width: 100%; }
+    }
+
+  
+    /* Permanent cloud background lock */
+    body {
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Core dashboard layout: live weather, flood risk and 24-hour trend only */
+    .dashboard-core-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:1.25rem;margin:1.2rem 0;}
+    .core-card{background:rgba(13,24,44,.88);border:1px solid rgba(0,210,255,.20);border-radius:20px;padding:1.45rem;box-shadow:0 18px 50px rgba(0,0,0,.18);backdrop-filter:blur(16px)}
+    .core-card-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem}.core-card-title{font-family:var(--font-heading);font-size:1.18rem;font-weight:800}.core-card-sub{font-size:.76rem;color:var(--text-muted);margin-top:.2rem}
+    .core-live{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .75rem;border-radius:999px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;font-size:.72rem;font-weight:900;letter-spacing:.08em}
+    .weather-metrics-four{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}.weather-metric-item{min-height:126px;background:rgba(6,14,28,.64);border:1px solid rgba(0,210,255,.18);border-radius:14px;padding:1rem}.metric-item-head{display:flex;align-items:center;gap:.45rem;color:#b9c7d9;font-size:.76rem;font-weight:700}.metric-item-val{font-family:var(--font-heading);font-size:1.35rem;font-weight:900;color:#f8fafc;margin-top:.75rem}.metric-item-sub{font-size:.68rem;color:var(--text-muted);margin-top:.28rem}
+    .risk-card{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}.risk-gauge{width:148px;height:148px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#22c55e calc(var(--risk) * 1%),rgba(255,255,255,.09) 0);position:relative;margin:1rem 0}.risk-gauge:before{content:'';position:absolute;inset:12px;border-radius:50%;background:#0b1728}.risk-gauge-content{position:relative;z-index:1}.risk-value{font-family:var(--font-heading);font-size:2rem;font-weight:900}.risk-label{font-size:.72rem;color:var(--text-muted);font-weight:800;letter-spacing:.08em}.risk-status{padding:.55rem 1rem;border-radius:999px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:#6ee7b7;font-weight:900;letter-spacing:.08em}.risk-advisory{color:#b7c4d5;font-size:.82rem;line-height:1.5;margin-top:1rem;max-width:420px}
+    .dashboard-graph-card{margin:1.25rem 0 2rem;background:rgba(13,24,44,.88);border:1px solid rgba(0,210,255,.20);border-radius:20px;padding:1.35rem;backdrop-filter:blur(16px)}.graph-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}.graph-card-title{font-family:var(--font-heading);font-weight:800}.graph-canvas-container{height:320px;position:relative}
+    @media(max-width:900px){.dashboard-core-grid{grid-template-columns:1fr}.weather-metrics-four{grid-template-columns:repeat(2,1fr)}}
+
+
+    /* Reference-style glassmorphism applied consistently across every page */
+    :root {
+      --bg-card: rgba(8, 22, 40, 0.50) !important;
+      --bg-card-hover: rgba(12, 30, 52, 0.62) !important;
+      --border-glass: rgba(120, 190, 225, 0.16) !important;
+      --border-subtle: rgba(255, 255, 255, 0.08) !important;
+    }
+    body {
+      background-color: #06111f !important;
+      background-image:
+        linear-gradient(90deg, rgba(3, 12, 24, 0.64) 0%, rgba(4, 16, 30, 0.38) 46%, rgba(3, 12, 24, 0.54) 100%),
+        radial-gradient(circle at 53% 10%, rgba(10, 29, 50, 0.18) 0%, rgba(3, 12, 24, 0.46) 72%),
+        url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=90&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(1,8,18,.14), rgba(1,8,18,.28));
+    }
+    .sidebar {
+      background: rgba(4, 14, 28, 0.64) !important;
+      backdrop-filter: blur(18px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+    }
+    .main-wrapper { position: relative; }
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .graph-card,
+    .chart-container, .station-summary-grid, .settings-card, .sim-card, .guide-card,
+    .gauge-box, .guides-box, .warning-card, .emergency-directory-card, .map-card-full,
+    .incidents-section, .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .sidebar-footer {
+      background: rgba(7, 22, 40, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+      backdrop-filter: blur(14px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+    }
+    .core-card:hover, .metric-card:hover, .sim-card:hover, .guide-card:hover,
+    .warning-card:hover, .settings-card:hover {
+      background: rgba(10, 30, 52, 0.58) !important;
+    }
+    .emergency-alert-card { background: rgba(16, 12, 22, 0.82) !important; }
+
+  
+
+    /* FINAL GLOBAL GLASS TRANSPARENCY — applied to sidebar and cards on every page */
+    :root {
+      --bg-card: rgba(10, 24, 42, 0.30) !important;
+      --bg-card-hover: rgba(15, 35, 58, 0.42) !important;
+    }
+    .sidebar {
+      background: rgba(3, 13, 28, 0.32) !important;
+      border-right: 1px solid rgba(255,255,255,0.09) !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.12) !important;
+      backdrop-filter: blur(14px) saturate(125%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+    }
+    .sidebar-footer,
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .stat-card,
+    .graph-card, .chart-container, .station-summary-grid, .settings-card,
+    .sim-card, .guide-card, .gauge-box, .guides-box, .warning-card,
+    .emergency-directory-card, .map-card-full, .incidents-section,
+    .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .weather-card, .forecast-card,
+    .history-card, .map-panel, .content-card, .card, .panel {
+      background: rgba(8, 24, 43, 0.30) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16) !important;
+      backdrop-filter: blur(12px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    }
+    .weather-metric-item, .metric-item, .metric-box, .stat-item,
+    .mini-card, .info-card, .weather-stat, .data-tile {
+      background: rgba(4, 17, 32, 0.28) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .nav-item a:hover { background: rgba(255,255,255,0.08) !important; }
+    .nav-item.active a { background: rgba(27, 126, 219, 0.28) !important; }
+    .core-card:hover, .metric-card:hover, .stat-card:hover, .sim-card:hover,
+    .guide-card:hover, .warning-card:hover, .settings-card:hover, .card:hover {
+      background: rgba(12, 32, 54, 0.40) !important;
+    }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-title">MAHA FLOOD </span>
+        </div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item active"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</a></li>
+        <li class="nav-item"><a href="/gis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>Flood GIS Map</a></li>
+        <li class="nav-item"><a href="/weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>Live Weather</a></li>
+        <li class="nav-item"><a href="/simulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg>What-if Simulator</a></li>
+        <li class="nav-item"><a href="/warnings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>Early Warnings</a></li>
+        <li class="nav-item"><a href="/previous_floods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Previous Floods</a></li>
+        <li class="nav-item"><a href="/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-wrapper">
+    <!-- Topbar -->
+    <div class="topbar">
+<div class="search-bar-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="regionSearchInput" placeholder="Search any region in Maharashtra (e.g. Pune, Kolhapur, Chiplun, Mumbai)..." onkeydown="if(event.key==='Enter') executeSearch()" value="Mumbai" />
+        <button class="search-btn" onclick="executeSearch()">Search</button>
+      </div>
+
+      
+<div class="live-pill">
+        <span class="live-indicator-dot"></span>
+        <span id="activeRegionBadge"> LIVE</span>
+      </div>
+    </div>
+
+    <!-- Dashboard core -->
+    <div class="hero-container" style="padding-bottom:.2rem;">
+      <div id="timeGreeting" style="font-size:1.05rem;font-weight:800;color:var(--neon-cyan);margin-bottom:8px;letter-spacing:.02em;">Good Evening, Welcome</div>
+      <h1 class="hero-title">Flood &amp; <span class="hero-title-cyan">Weather Intelligence</span></h1>
+      <p class="hero-subtitle">Monitor live weather conditions and AI-based flood risk across Maharashtra.</p>
+      <div class="actions-row" style="margin-top:1rem;">
+        <button class="btn btn-primary" onclick="runPredictionModal()">Run Flood Prediction</button>
+        <a href="/gis" class="btn btn-secondary">Open Flood GIS Map</a>
+      </div>
+    </div>
+
+    <div class="dashboard-core-grid">
+      <section class="core-card">
+        <div class="core-card-head">
+          <div><div class="core-card-title">Live Weather</div><div class="core-card-sub" id="weatherCardLocTitle">District: Mumbai</div></div>
+          <span class="core-live">LIVE</span>
+        </div>
+        <div class="weather-metrics-four">
+          <div class="weather-metric-item"><div class="metric-item-head"><span>🌡️</span><span>Temperature</span></div><div class="metric-item-val" id="wCardTemp">--°C</div><div class="metric-item-sub">Current</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>🌧️</span><span>Rainfall</span></div><div class="metric-item-val" id="wCardRainVal">-- mm</div><div class="metric-item-sub">Live precipitation</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>💧</span><span>Humidity</span></div><div class="metric-item-val" id="wCardHumVal">--%</div><div class="metric-item-sub">Relative</div></div>
+          <div class="weather-metric-item"><div class="metric-item-head"><span>💨</span><span>Wind Speed</span></div><div class="metric-item-val" id="wCardWindVal">-- km/h</div><div class="metric-item-sub">Current wind</div></div>
+        </div>
+      </section>
+
+      <section class="core-card risk-card">
+        <div class="core-card-head" style="width:100%;"><div><div class="core-card-title">AI Flood Risk Prediction</div><div class="core-card-sub">Live weather-based assessment</div></div></div>
+        <div class="risk-gauge" id="riskGauge" style="--risk:0"><div class="risk-gauge-content"><div class="risk-value" id="riskPercent">--%</div><div class="risk-label">FLOOD RISK</div></div></div>
+        <div class="risk-status" id="riskLevel">LOW RISK</div>
+        <div class="risk-advisory" id="riskAdvisory">Live assessment will appear after weather data is loaded.</div>
+      </section>
+    </div>
+
+    <div class="dashboard-graph-card">
+      <div class="graph-card-header"><div><div class="graph-card-title">24-Hour Rainfall &amp; Flood Probability Trend</div><div class="core-card-sub" id="dashGraphTitle">Hourly live telemetry for Mumbai</div></div><span class="weather-theme-pill">LIVE TREND</span></div>
+      <div class="graph-canvas-container"><canvas id="dashboardTelemetryChart"></canvas></div>
+    </div>
+
+  <!-- Prediction Modal -->
+  <div class="modal-overlay" id="predictionModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">AI Hydrological Prediction</div>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.9rem;" id="modalStationDesc">Evaluation based on real-time sensor catchment data</p>
+
+      <div class="modal-score">
+        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Probability of Flooding</div>
+        <div class="score-pct" id="modalProb">18.4%</div>
+        <div class="risk-tag safe" id="modalBadge">LOW RISK</div>
+      </div>
+
+      <div style="background: rgba(6, 12, 24, 0.8); padding: 1rem; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 1.5rem;">
+        <div style="font-size: 0.85rem; color: #fff; font-weight: 700; margin-bottom: 0.4rem;">Safety Advisory:</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.45;" id="modalAdvisory">No immediate evacuation required. River flows remain within baseline capacity.</div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <a href="/simulator" class="btn btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">What-If Simulator</a>
+        <button class="btn btn-primary" onclick="closeModal()" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Safely receive the location from Flask/Jinja
+    let currentRegion = "Mumbai";
+    let dashChart = null;
+    const DASH_CACHE_TTL = 60 * 1000;
+    function updateTimeGreeting(){
+      const h=new Date().getHours();
+      const g=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+      const el=document.getElementById('timeGreeting'); if(el) el.textContent=`${g}, Welcome`;
+    }
+    updateTimeGreeting();
+
+    function renderDashboardGraph(location, series) {
+        const canvas = document.getElementById('dashboardTelemetryChart');
+        if (!canvas || typeof Chart === 'undefined' || !series) return;
+        const title = document.getElementById('dashGraphTitle');
+        if (title) title.innerText = `Hourly live telemetry for ${location}`;
+        if (dashChart) dashChart.destroy();
+        dashChart = new Chart(canvas.getContext('2d'), {
+          type:'line',
+          data:{labels:series.hours||series.dates||[],datasets:[
+            {label:'Rainfall (mm)',data:series.rainfall||[],borderColor:'#35c9f5',backgroundColor:'rgba(53,201,245,.14)',tension:.35,fill:true,yAxisID:'rain'},
+            {label:'Flood Risk (%)',data:series.flood_risk||[],borderColor:'#ff6262',backgroundColor:'transparent',tension:.35,fill:false,yAxisID:'risk'}
+          ]},
+          options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{labels:{color:'#cbd5e1'}}},scales:{x:{ticks:{color:'#94a3b8',maxRotation:0,autoSkip:true,maxTicksLimit:12},grid:{color:'rgba(255,255,255,.05)'}},rain:{position:'left',title:{display:true,text:'Rainfall (mm)',color:'#35c9f5'},ticks:{color:'#35c9f5'},grid:{color:'rgba(255,255,255,.06)'}},risk:{position:'right',min:0,max:100,title:{display:true,text:'Flood Risk (%)',color:'#ff6262'},ticks:{color:'#ff6262'},grid:{drawOnChartArea:false}}}}
+        });
+    }
+
+    function setText(id, value) {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.innerText = value;
+        }
+    }
+
+
+    async function fetchDistrictWeather(district) {
+
+        const target =
+            (district || '').trim() || currentRegion || 'Mumbai';
+        setText(
+            'activeRegionBadge',
+            'LOADING'
+        );
+
+        try {
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            const res = await fetch(
+                `/api/dashboard-data?location=${encodeURIComponent(target)}`,
+                { signal: controller.signal, cache: 'force-cache' }
+            );
+            clearTimeout(timeout);
+
+            if (!res.ok) {
+                throw new Error(`Server error: ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            if (data.status !== 'success') {
+                throw new Error(
+                    data.error || 'Weather unavailable'
+                );
+            }
+
+            currentRegion = data.weather.location;
+
+            const w = data.weather;
+            const p = data.prediction;
+
+
+            // Live badge
+            setText(
+                'activeRegionBadge',
+                'LIVE'
+            );
+
+
+            // Weather location
+            setText(
+                'weatherCardLocTitle',
+                `${w.location} Live Weather`
+            );
+
+
+            // Weather metrics
+            setText('wCardTemp', `${w.temperature}°C`);
+            setText(
+                'wCardRainVal',
+                `${w.rainfall} mm`
+            );
+
+            setText(
+                'wCardHumVal',
+                `${w.humidity}%`
+            );
+
+            setText(
+                'wCardWindVal',
+                `${w.wind_speed} km/h`
+            );
+
+            // Flood risk card
+            setText('riskPercent', `${p.risk_percentage}%`);
+            setText('riskLevel', `${p.risk_level} RISK`);
+            setText('riskAdvisory', p.action_guideline || 'Continue monitoring official advisories.');
+            const gauge = document.getElementById('riskGauge');
+            if (gauge) gauge.style.setProperty('--risk', Math.max(0, Math.min(100, Number(p.risk_percentage)||0)));
+
+            // Search box
+            const search =
+                document.getElementById('regionSearchInput');
+
+            if (search) {
+                search.value = w.location;
+            }
+
+
+            // Graph
+            renderDashboardGraph(
+                w.location,
+                data.series
+            );
+
+
+            // Send risk event
+            window.dispatchEvent(
+                new CustomEvent(
+                    'foresightx:risk',
+                    {
+                        detail: p
+                    }
+                )
+            );
+
+        }
+        catch (err) {
+
+            console.error(
+                'Weather fetch error:',
+                err
+            );
+
+            setText(
+                'activeRegionBadge',
+                'WEATHER ERROR'
+            );
+
+            alert(
+                err.message ||
+                'Unable to load weather data.'
+            );
+        }
+    }
+
+
+    function selectQuickRegion(name) {
+
+        fetchDistrictWeather(name);
+    }
+
+
+    function executeSearch() {
+
+        const input =
+            document.getElementById(
+                'regionSearchInput'
+            );
+
+        if (!input) {
+            return;
+        }
+
+        const query = input.value.trim();
+
+        if (query) {
+            fetchDistrictWeather(query);
+        }
+    }
+
+
+    function detectUserLocation() {
+
+        if (navigator.geolocation) {
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+
+                    fetchDistrictWeather(currentRegion);
+                },
+
+                function() {
+
+                    fetchDistrictWeather(currentRegion);
+                }
+            );
+
+        }
+        else {
+
+            fetchDistrictWeather(currentRegion);
+        }
+    }
+
+
+    async function runPredictionModal() {
+
+        const modal =
+            document.getElementById(
+                'predictionModal'
+            );
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/predict?location=${encodeURIComponent(currentRegion)}`
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    `Prediction server error: ${response.status}`
+                );
+            }
+
+            const data =
+                await response.json();
+
+            if (data.status !== 'success') {
+                throw new Error(
+                    data.error ||
+                    'Prediction unavailable'
+                );
+            }
+
+            const p = data.prediction;
+
+
+            setText(
+                'modalStationDesc',
+                `Live weather assessment for ${currentRegion}`
+            );
+
+            setText(
+                'modalProb',
+                `${p.risk_percentage}%`
+            );
+
+            setText(
+                'modalBadge',
+                p.risk_level
+            );
+
+            setText(
+                'modalAdvisory',
+                p.action_guideline
+            );
+
+
+            modal.classList.add('active');
+
+        }
+        catch (error) {
+
+            console.error(
+                'Prediction error:',
+                error
+            );
+
+            alert(
+                error.message ||
+                'Unable to run flood prediction.'
+            );
+        }
+    }
+
+
+    function closeModal() {
+
+        const modal =
+            document.getElementById(
+                'predictionModal'
+            );
+
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+
+    // Start dashboard
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            fetchDistrictWeather(
+                currentRegion
+            );
+
+            setInterval(
+                function() {
+                    fetchDistrictWeather(
+                        currentRegion
+                    );
+                },
+                300000
+            );
+
+        }
+    );
+</script>
+</body>
+</html>

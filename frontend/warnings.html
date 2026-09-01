@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAHA FLOOD AI – Early Warnings & Bulletins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #060c18;
+      --bg-card: rgba(13, 24, 44, 0.85);
+      --bg-card-hover: rgba(18, 34, 60, 0.95);
+      --border-glass: rgba(0, 210, 255, 0.22);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #00d2ff;
+      --neon-blue: #0088ff;
+      --neon-green: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop');
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: rgba(5, 11, 20, 0.96);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.5rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+    }
+
+    .brand-section { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+    .brand-logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #00d2ff, #0066cc);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+      flex-shrink: 0;
+    }
+    .brand-logo-icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; }
+    .brand-text-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 900; letter-spacing: 0.5px; color: #ffffff; line-height: 1.1; }
+    .brand-subtitle { font-size: 0.72rem; color: var(--neon-cyan); font-weight: 700; letter-spacing: 0.4px; }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .nav-item a {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.75rem 0.95rem; color: var(--text-muted);
+      text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      border-radius: 8px; transition: all 0.2s ease;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+    .nav-item.active a { background: rgba(0, 210, 255, 0.14); border-left: 3px solid var(--neon-cyan); color: #fff; font-weight: 700; }
+    .nav-item svg { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
+
+    .sidebar-footer { background: rgba(8, 16, 28, 0.85); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 0.85rem; }
+    .sidebar-footer-title { font-size: 0.72rem; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem; letter-spacing: 0.4px; }
+    .sidebar-footer-desc { font-size: 0.68rem; color: var(--text-muted); line-height: 1.35; }
+
+    /* Main Area */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 1.75rem 2.5rem 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .page-title { font-family: var(--font-heading); font-size: 1.85rem; font-weight: 900; color: #fff; }
+    .page-desc { color: var(--text-muted); font-size: 0.85rem; margin-top: 3px; }
+
+    /* Active Warnings Section (4-5 priority bulletins) */
+    .warnings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .warning-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.4rem;
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .warning-card.critical {
+      border-left: 4px solid var(--neon-red);
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(28, 14, 24, 0.9);
+    }
+    .warning-card.warning {
+      border-left: 4px solid var(--neon-amber);
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(28, 20, 14, 0.9);
+    }
+
+    .warning-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .warning-district {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .level-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .level-red { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid #ef4444; }
+    .level-orange { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid #f59e0b; }
+
+    .warning-meta-row {
+      display: flex;
+      gap: 1.25rem;
+      background: rgba(6, 12, 24, 0.85);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .warning-action {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--neon-cyan);
+    }
+
+    /* Emergency Hotlines Directory */
+    .emergency-directory-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .info-box-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .helpline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .helpline-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(8, 16, 32, 0.8);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+    }
+
+    .helpline-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      background: rgba(0, 210, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 210, 255, 0.25);
+    }
+
+    @media (max-width: 950px) {
+      .warnings-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 650px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; padding: 1rem; }
+    }
+  
+    .alert-control{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;background:rgba(0,210,255,.08);border:1px solid rgba(0,210,255,.25);padding:.8rem 1rem;border-radius:12px;margin:1rem 0 1.2rem}.alert-control select,.alert-control button{padding:.65rem .85rem;border-radius:9px;border:1px solid rgba(0,210,255,.3);background:#0b1728;color:#fff;font-weight:700}.alert-control button{cursor:pointer}.alert-control button:hover{background:#10304b}.alert-live-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 12px #10b981;display:inline-block}.danger-pulse{animation:dangerPulse .9s infinite}.warning-card.critical{animation:cardPulse 1.2s infinite}@keyframes dangerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 14px rgba(239,68,68,0)}}@keyframes cardPulse{50%{transform:translateY(-2px)}}
+    #emergencyAlert{display:none;position:fixed;inset:0;z-index:9999;background:rgba(70,0,0,.82);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:1rem}.emergency-alert-card{max-width:560px;width:100%;background:#100c14;border:2px solid #ef4444;border-radius:20px;padding:2rem;text-align:center;box-shadow:0 0 50px rgba(239,68,68,.45)}.emergency-alert-card h2{font-size:1.8rem;color:#f87171;margin-bottom:.5rem}.emergency-alert-card p{color:#e2e8f0;line-height:1.55}.alert-close{margin-top:1rem;padding:.7rem 1.2rem;border:0;border-radius:9px;background:#ef4444;color:#fff;font-weight:800;cursor:pointer}
+
+    /* Permanent cloud background lock */
+    body {
+      background-image: radial-gradient(circle at 50% 15%, rgba(6, 14, 28, 0.78) 0%, rgba(6, 12, 24, 0.92) 80%), url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=85&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    
+    /* Reference-style glassmorphism applied consistently across every page */
+    :root {
+      --bg-card: rgba(8, 22, 40, 0.50) !important;
+      --bg-card-hover: rgba(12, 30, 52, 0.62) !important;
+      --border-glass: rgba(120, 190, 225, 0.16) !important;
+      --border-subtle: rgba(255, 255, 255, 0.08) !important;
+    }
+    body {
+      background-color: #06111f !important;
+      background-image:
+        linear-gradient(90deg, rgba(3, 12, 24, 0.64) 0%, rgba(4, 16, 30, 0.38) 46%, rgba(3, 12, 24, 0.54) 100%),
+        radial-gradient(circle at 53% 10%, rgba(10, 29, 50, 0.18) 0%, rgba(3, 12, 24, 0.46) 72%),
+        url('https://images.unsplash.com/photo-1499346030926-9a72daac6c63?q=90&w=2200&auto=format&fit=crop') !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(1,8,18,.14), rgba(1,8,18,.28));
+    }
+    .sidebar {
+      background: rgba(4, 14, 28, 0.64) !important;
+      backdrop-filter: blur(18px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(120%) !important;
+    }
+    .main-wrapper { position: relative; }
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .graph-card,
+    .chart-container, .station-summary-grid, .settings-card, .sim-card, .guide-card,
+    .gauge-box, .guides-box, .warning-card, .emergency-directory-card, .map-card-full,
+    .incidents-section, .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .sidebar-footer {
+      background: rgba(7, 22, 40, 0.48) !important;
+      border: 1px solid rgba(255, 255, 255, 0.10) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+      backdrop-filter: blur(14px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(120%) !important;
+    }
+    .core-card:hover, .metric-card:hover, .sim-card:hover, .guide-card:hover,
+    .warning-card:hover, .settings-card:hover {
+      background: rgba(10, 30, 52, 0.58) !important;
+    }
+    .emergency-alert-card { background: rgba(16, 12, 22, 0.82) !important; }
+
+  
+
+    /* FINAL GLOBAL GLASS TRANSPARENCY — applied to sidebar and cards on every page */
+    :root {
+      --bg-card: rgba(10, 24, 42, 0.30) !important;
+      --bg-card-hover: rgba(15, 35, 58, 0.42) !important;
+    }
+    .sidebar {
+      background: rgba(3, 13, 28, 0.32) !important;
+      border-right: 1px solid rgba(255,255,255,0.09) !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.12) !important;
+      backdrop-filter: blur(14px) saturate(125%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(125%) !important;
+    }
+    .sidebar-footer,
+    .core-card, .dashboard-graph-card, .risk-card, .metric-card, .stat-card,
+    .graph-card, .chart-container, .station-summary-grid, .settings-card,
+    .sim-card, .guide-card, .gauge-box, .guides-box, .warning-card,
+    .emergency-directory-card, .map-card-full, .incidents-section,
+    .year-filter-box, .table-container, .route-panel, .demo-panel,
+    .demo-route-card, .search-bar-wrapper, .weather-card, .forecast-card,
+    .history-card, .map-panel, .content-card, .card, .panel {
+      background: rgba(8, 24, 43, 0.30) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.16) !important;
+      backdrop-filter: blur(12px) saturate(120%) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(120%) !important;
+    }
+    .weather-metric-item, .metric-item, .metric-box, .stat-item,
+    .mini-card, .info-card, .weather-stat, .data-tile {
+      background: rgba(4, 17, 32, 0.28) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .nav-item a:hover { background: rgba(255,255,255,0.08) !important; }
+    .nav-item.active a { background: rgba(27, 126, 219, 0.28) !important; }
+    .core-card:hover, .metric-card:hover, .stat-card:hover, .sim-card:hover,
+    .guide-card:hover, .warning-card:hover, .settings-card:hover, .card:hover {
+      background: rgba(12, 32, 54, 0.40) !important;
+    }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 17c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/><path d="M2 7c.6.5 1.2 1 2.5 1s2.5-1 3.5-1 2.2.5 3.5 1 2.5-1 3.5-1 2.2.5 3.5 1 1.9-.5 2.5-1"/></svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-title">MAHA FLOOD</span>
+        </div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="nav-item"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>Dashboard</a></li>
+        <li class="nav-item"><a href="/gis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>Flood GIS Map</a></li>
+        <li class="nav-item"><a href="/weather"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 19v3"/></svg>Live Weather</a></li>
+        <li class="nav-item"><a href="/simulator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/></svg>What-if Simulator</a></li>
+        <li class="nav-item active"><a href="/warnings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>Early Warnings</a></li>
+        <li class="nav-item"><a href="/previous_floods"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Previous Floods</a></li>
+        <li class="nav-item"><a href="/settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a></li>
+      </ul>
+    </div>
+
+    
+  </aside>
+
+  <!-- Main Wrapper -->
+  <main class="main-wrapper">
+    <div>
+      <h1 class="page-title">Maharashtra Early Flood Warnings &amp; Bulletins</h1>
+      <p class="page-desc">Live district warnings with instant visual, vibration and browser-notification alerts.</p>
+    <div class="alert-control">
+      <span class="alert-live-dot"></span><strong>LIVE ALERT MONITOR</strong>
+      <select id="warningDistrict">{% for d in districts %}<option value="{{ d }}" {% if d == initial_location %}selected{% endif %}>{{ d }}</option>{% endfor %}</select>
+      <button onclick="testAlert()">⚡ Test Alert</button>
+      <span id="alertState" style="color:#94a3b8;font-size:.78rem">Browser alerts off</span>
+    </div>
+    </div>
+
+    <!-- Active District Bulletins List -->
+    <div>
+      <h2 style="font-family: var(--font-heading); font-size: 1.3rem; color: #fff; font-weight: 800; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+        Active District Flood Bulletins
+      </h2>
+      <div class="warnings-grid" id="warningsList">
+        <!-- Dynamically filled -->
+      </div>
+    </div>
+
+    <!-- Emergency Helplines Directory -->
+    <div class="emergency-directory-card">
+      <div class="info-box-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Emergency Helplines &amp; Disaster Control Centers</span>
+      </div>
+      <div class="helpline-grid">
+        <div class="helpline-item">
+          <span>State Emergency Operation Centre (SEOC)</span>
+          <span class="helpline-num">1077 / 112</span>
+        </div>
+        <div class="helpline-item">
+          <span>NDRF 5th Battalion Pune HQ</span>
+          <span class="helpline-num">020-27103250</span>
+        </div>
+        <div class="helpline-item">
+          <span>Brihanmumbai Flood Disaster Cell</span>
+          <span class="helpline-num">1916</span>
+        </div>
+        <div class="helpline-item">
+          <span>Central Water Commission Monitoring</span>
+          <span class="helpline-num">011-24363260</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<div id="emergencyAlert"><div class="emergency-alert-card danger-pulse"><div style="font-size:3rem">🚨</div><h2 id="emergencyAlertTitle">FLOOD ALERT</h2><p id="emergencyAlertText">High flood risk detected.</p><p id="emergencyAlertInstruction" style="font-size:.78rem;color:#94a3b8">Move to a safer elevated location and follow local authority instructions.</p><button class="alert-close" id="alertCloseButton" onclick="closeEmergencyAlert()">Acknowledge Alert</button></div></div>
+
+  <script>
+    let alertsEnabled=false, lastAlertKey='';
+    function selectedDistrict(){return document.getElementById('warningDistrict')?.value || '{{ initial_location }}';}
+    function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    async function enableAlerts(){
+      alertsEnabled=true;
+      if('Notification' in window && Notification.permission==='default') await Notification.requestPermission();
+      document.getElementById('alertState').textContent=('Notification' in window && Notification.permission==='granted')?'Alerts enabled • vibration ready':'Visual alerts enabled';
+      testAlert(true);
+    }
+    function vibrate(){ if(navigator.vibrate) navigator.vibrate([250,120,250,120,500]); }
+    function getAlertLanguage(){try{return JSON.parse(localStorage.getItem('mahaFloodSettings')||'{}').voice||'en-IN'}catch(e){return 'en-IN'}}
+    function localizedWarningForVoice(w){const place=w.location||'this area';if(getAlertLanguage()==='mr-IN')return `${place} येथे पूराचा धोका जास्त आहे. कृपया सुरक्षित उंच ठिकाणी जा आणि स्थानिक प्रशासनाच्या सूचना पाळा.`;if(getAlertLanguage()==='hi-IN')return `${place} में बाढ़ का खतरा अधिक है। कृपया सुरक्षित ऊंचे स्थान पर जाएँ और स्थानीय प्रशासन के निर्देशों का पालन करें।`;return `Emergency flood warning for ${place}. High flood risk detected. Move to a safer elevated location and follow local authority instructions.`;}
+    function localizedAlertTitle(){const lang=getAlertLanguage();if(lang==='mr-IN')return 'पूर इशारा';if(lang==='hi-IN')return 'बाढ़ चेतावनी';return 'FLOOD ALERT';}
+    function localizedAlertInstruction(){const lang=getAlertLanguage();if(lang==='mr-IN')return 'सुरक्षित उंच ठिकाणी जा आणि स्थानिक प्रशासनाच्या सूचनांचे पालन करा.';if(lang==='hi-IN')return 'सुरक्षित ऊंचे स्थान पर जाएँ और स्थानीय प्रशासन के निर्देशों का पालन करें।';return 'Move to a safer elevated location and follow local authority instructions.';}
+    function warningTextEnglish(w){const place=w.location||'this area';return `Emergency flood warning for ${place}. High flood risk detected. Move to a safer elevated location and follow local authority instructions.`;}
+    function visualWarningText(w){return getAlertLanguage()==='en-IN'?warningTextEnglish(w):localizedWarningForVoice(w);}
+    function speak(text){ try{ if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=getAlertLanguage();speechSynthesis.speak(u);} }catch(e){} }
+    function showEmergencyAlert(w,force=false){
+      const key=`${w.location}-${w.risk_level}-${w.risk_percentage}`;
+      if(!force && key===lastAlertKey) return;
+      lastAlertKey=key;
+      const lang=getAlertLanguage();
+      document.getElementById('emergencyAlertTitle').textContent=localizedAlertTitle();
+      document.getElementById('emergencyAlertText').textContent=visualWarningText(w);
+      document.getElementById('emergencyAlertInstruction').textContent=localizedAlertInstruction();
+      document.getElementById('alertCloseButton').textContent=lang==='mr-IN'?'इशारा मान्य करा':lang==='hi-IN'?'चेतावनी स्वीकार करें':'Acknowledge Alert';
+      document.getElementById('emergencyAlert').style.display='flex';
+      vibrate();
+      if('Notification' in window && Notification.permission==='granted') new Notification(`ForesightX ${localizedAlertTitle()}`,{body:visualWarningText(w)});
+      if(w.risk_percentage>=80) speak(localizedWarningForVoice(w));
+    }
+    function closeEmergencyAlert(){document.getElementById('emergencyAlert').style.display='none';}
+    function testAlert(){showEmergencyAlert({location:selectedDistrict(),risk_level:'TEST ALERT',risk_percentage:80,rainfall_mm:'—'},true);}
+    async function loadWarnings(){
+      const district=selectedDistrict();
+      try{
+        const res=await fetch(`/api/warnings/active?location=${encodeURIComponent(district)}`); const data=await res.json();
+        if(data.status!=='success') throw new Error(data.error||'Unable to load warnings');
+        const container=document.getElementById('warningsList'); container.innerHTML='';
+        const warnings=data.warnings||[];
+        if(!warnings.length){container.innerHTML=`<div style="grid-column:1/-1;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);padding:2rem;border-radius:14px;text-align:center;color:#a7f3d0"><h3>🟢 ${esc(district)} is within the current warning threshold</h3><p style="font-size:.85rem;margin-top:.4rem;color:#cbd5e1">Live monitoring remains active.</p></div>`;return;}
+        const strongest=[...warnings].sort((a,b)=>b.risk_percentage-a.risk_percentage)[0];
+        if(strongest.risk_percentage>=60 && alertsEnabled) showEmergencyAlert(strongest);
+        warnings.forEach(w=>{
+          const card=document.createElement('div'); card.className=`warning-card ${w.alert_class||''}`;
+          const localizedAdvisory=getAlertLanguage()==='mr-IN'?`${w.location} येथे सतर्क रहा. सुरक्षित ठिकाणी जा आणि प्रशासनाच्या सूचनांचे पालन करा.`:getAlertLanguage()==='hi-IN'?`${w.location} में सतर्क रहें। सुरक्षित स्थान पर जाएँ और प्रशासन के निर्देशों का पालन करें।`:w.action_guideline;
+          const advisoryLabel=getAlertLanguage()==='mr-IN'?'सल्ला':getAlertLanguage()==='hi-IN'?'सलाह':'Advisory';
+          card.innerHTML=`<div class="warning-head"><div class="warning-district">📍 ${esc(w.location)} District</div><span class="level-badge ${w.alert_class==='critical'?'level-red':'level-orange'}">${esc(w.risk_level)} • ${w.risk_percentage}%</span></div><div class="warning-meta-row"><div><strong>Weather:</strong> ${esc(w.river_name||'Live weather')}</div><div><strong>Rain:</strong> ${esc(w.rainfall_mm)} mm</div></div><div class="warning-action"><strong>${advisoryLabel}:</strong> ${esc(localizedAdvisory)}</div>`;
+          container.appendChild(card);
+        });
+      }catch(err){document.getElementById('warningsList').innerHTML=`<div class="no-data-notice">${esc(err.message)}</div>`;}
+    }
+    document.addEventListener('DOMContentLoaded',()=>{loadWarnings();document.getElementById('warningDistrict').addEventListener('change',loadWarnings);setInterval(loadWarnings,60000);});
+  </script>
+</body>
+</html>
