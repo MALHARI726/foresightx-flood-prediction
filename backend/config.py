@@ -130,12 +130,6 @@ GEOCODING_API_URL = "https://geocoding-api.open-meteo.com/v1/search"
 
 API_TIMEOUT = 10
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> d122be2bc0b1dbe636b91a84db26106ba4598de1
 TIMEZONE = "Asia/Kolkata"
 
 
@@ -158,7 +152,7 @@ LIVE_CSV_PATH = os.path.join(
     DATA_DIR,
     "live_weather_data.csv"
 )
-<<<<<<< HEAD
+
 # ==========================================
 # DISTRICT COORDINATES
 # ==========================================
@@ -173,5 +167,4 @@ TIMEZONE = "Asia/Kolkata"
 
 TIMEZONE = "Asia/Kolkata"
 
-=======
->>>>>>> d122be2bc0b1dbe636b91a84db26106ba4598de1
+
