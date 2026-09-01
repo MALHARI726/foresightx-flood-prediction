@@ -1,4 +1,9 @@
 {
+<<<<<<< HEAD
+    "python-envs.defaultEnvManager": "ms-python.python:system"
+}
+=======
   "python.defaultInterpreterPath": "venv\\Scripts\\python.exe",
   "python.terminal.activateEnvironment": true
 }
+>>>>>>> 2665e893e8ce1b3bd88dbd3a515f70ae0396da13

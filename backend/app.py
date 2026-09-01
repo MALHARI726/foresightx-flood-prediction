@@ -37,13 +37,14 @@ app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "frontend"), static
 app.config["SECRET_KEY"] = "maha-flood-ai-2026"
 
 
+
+
 def clean_text(value):
     if pd.isna(value):
         return ""
     return str(value).strip()
-
-
 HISTORICAL_FLOOD_EVENTS=[
+
     {
         "year": "2005",
         "event_name": "Maharashtra & Mumbai Cloudburst Deluge",
